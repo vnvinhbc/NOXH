@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Edit(**)",
+      "MultiEdit(**)",
+      "Write(**)",
+      "Glob(**)",
+      "Grep(**)",
+      "LS(**)",
+      "Bash(rg:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(mvn test:*)",
+      "Bash(mvn clean test:*)",
+      "Bash(mvn -q test:*)",
+      "Bash(mvn -q -DskipTests compile:*)",
+      "Bash(mvn -DskipTests compile:*)",
+      "Bash(./mvnw test:*)",
+      "Bash(./mvnw clean test:*)",
+      "Bash(./mvnw -q test:*)",
+      "Bash(./mvnw -q -DskipTests compile:*)",
+      "Bash(mvnw.cmd test:*)",
+      "Bash(mvnw.cmd clean test:*)",
+      "Bash(mvnw.cmd -q test:*)",
+      "Bash(mvnw.cmd -q -DskipTests compile:*)"
+    ],
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(del:*)",
+      "Bash(rmdir:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git checkout --:*)",
+      "Bash(git clean -fd:*)"
+    ]
+  }
+}

@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #001f49;
+  --color-primary-container: #003471;
+  --color-primary-fixed: #d7e2ff;
+  --color-primary-fixed-dim: #acc7ff;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #669eff;
+  --color-on-primary-fixed: #001a40;
+  --color-on-primary-fixed-variant: #004491;
+  --color-inverse-primary: #acc7ff;
+
+  --color-secondary: #465f88;
+  --color-secondary-container: #b6d0ff;
+  --color-secondary-fixed: #d6e3ff;
+  --color-secondary-fixed-dim: #aec7f7;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #3f5881;
+  --color-on-secondary-fixed: #001b3d;
+  --color-on-secondary-fixed-variant: #2e476f;
+
+  --color-tertiary: #321c00;
+  --color-tertiary-container: #4f2f00;
+  --color-tertiary-fixed: #ffddb9;
+  --color-tertiary-fixed-dim: #f1bd81;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #c6965e;
+  --color-on-tertiary-fixed: #2b1700;
+  --color-on-tertiary-fixed-variant: #623f0f;
+
+  --color-surface: #f8f9fa;
+  --color-surface-dim: #d9dadb;
+  --color-surface-bright: #f8f9fa;
+  --color-surface-tint: #115cb9;
+  --color-surface-variant: #e1e3e4;
+  --color-surface-container: #edeeef;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #44474e;
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #f0f1f2;
+
+  --color-background: #f8f9fa;
+  --color-on-background: #191c1d;
+
+  --color-outline: #74777f;
+  --color-outline-variant: #c4c6cf;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  color: #191c1d;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}

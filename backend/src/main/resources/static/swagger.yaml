@@ -1,0 +1,1084 @@
+openapi: 3.0.3
+info:
+  title: NOXH API
+  version: 1.0.0
+  description: API documentation for the NOXH backend.
+servers:
+  - url: http://localhost:8080
+    description: Spring Boot backend
+  - url: http://localhost:3000/api
+    description: Vite dev proxy
+tags:
+  - name: Auth
+  - name: Users
+  - name: Applications
+  - name: Dashboard
+  - name: Projects
+  - name: Notifications
+  - name: Provinces
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a citizen account
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login with email, phone number, or CCCD
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Logged in successfully
+          headers:
+            Set-Cookie:
+              description: HttpOnly refresh token cookie named refresh_token
+              schema:
+                type: string
+                example: refresh_token=uuid-value; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Request a password reset OTP
+      operationId: forgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '200':
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoidApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/verify-otp:
+    post:
+      tags:
+        - Auth
+      summary: Verify a password reset OTP
+      operationId: verifyOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+      responses:
+        '200':
+          description: OTP verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooleanApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/reset-password:
+    post:
+      tags:
+        - Auth
+      summary: Reset password using OTP
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoidApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/refresh:
+    post:
+      tags:
+        - Auth
+      summary: Rotate refresh token and return a new access token
+      operationId: refreshToken
+      parameters:
+        - $ref: '#/components/parameters/RefreshTokenCookie'
+      responses:
+        '200':
+          description: Access token refreshed
+          headers:
+            Set-Cookie:
+              description: Rotated HttpOnly refresh token cookie named refresh_token
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthApiResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout and clear refresh token cookie
+      operationId: logout
+      parameters:
+        - $ref: '#/components/parameters/RefreshTokenCookie'
+      responses:
+        '200':
+          description: Logged out successfully
+          headers:
+            Set-Cookie:
+              description: Expired refresh_token cookie
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoidApiResponse'
+  /users/my-info:
+    get:
+      tags:
+        - Users
+      summary: Get current user profile
+      operationId: getMyInfo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserApiResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags:
+        - Users
+      summary: Update current user profile
+      operationId: updateProfile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /users/kyc:
+    post:
+      tags:
+        - Users
+      summary: Submit KYC data
+      operationId: submitKyc
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KycRequest'
+      responses:
+        '200':
+          description: KYC submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /applications:
+    get:
+      tags:
+        - Applications
+      summary: Get current user's applications
+      operationId: getMyApplications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Application list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationListApiResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags:
+        - Applications
+      summary: Create an application for a project
+      operationId: createApplication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationRequest'
+      responses:
+        '201':
+          description: Application created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationApiResponse'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /applications/{id}:
+    get:
+      tags:
+        - Applications
+      summary: Get an application by ID
+      operationId: getApplicationById
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Application detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationApiResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+  /dashboard:
+    get:
+      tags:
+        - Dashboard
+      summary: Get current user's dashboard
+      operationId: getDashboard
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardApiResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /projects:
+    get:
+      tags:
+        - Projects
+      summary: Get all projects
+      operationId: getAllProjects
+      responses:
+        '200':
+          description: Project list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectListApiResponse'
+  /projects/{id}:
+    get:
+      tags:
+        - Projects
+      summary: Get a project by ID
+      operationId: getProjectById
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Project detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectApiResponse'
+        '404':
+          $ref: '#/components/responses/ErrorResponse'
+  /notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get current user's notifications
+      operationId: getMyNotifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Notification list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListApiResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /notifications/read-all:
+    put:
+      tags:
+        - Notifications
+      summary: Mark all current user's notifications as read
+      operationId: markAllNotificationsRead
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Notifications marked as read
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoidApiResponse'
+        '401':
+          $ref: '#/components/responses/ErrorResponse'
+  /provinces:
+    get:
+      tags:
+        - Provinces
+      summary: Get provinces
+      operationId: getProvinces
+      responses:
+        '200':
+          description: Legacy province list from local bundled data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvinceListApiResponse'
+  /provinces/{code}/districts:
+    get:
+      tags:
+        - Provinces
+      summary: Get districts by province code
+      operationId: getDistricts
+      parameters:
+        - $ref: '#/components/parameters/NumericCode'
+      responses:
+        '200':
+          description: Province detail including districts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProvinceDetailApiResponse'
+  /provinces/districts/{code}/wards:
+    get:
+      tags:
+        - Provinces
+      summary: Get wards by district code
+      operationId: getWards
+      parameters:
+        - $ref: '#/components/parameters/NumericCode'
+      responses:
+        '200':
+          description: District detail including wards
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DistrictDetailApiResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    UuidId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    NumericCode:
+      name: code
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int32
+      example: 1
+    RefreshTokenCookie:
+      name: refresh_token
+      in: cookie
+      required: false
+      schema:
+        type: string
+        format: uuid
+  responses:
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorApiResponse'
+  schemas:
+    ApiResponseBase:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          default: 1000
+          example: 1000
+        message:
+          type: string
+          nullable: true
+    ErrorApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            code:
+              type: integer
+              format: int32
+              example: 1008
+            message:
+              type: string
+              example: Invalid credentials
+    VoidApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+    BooleanApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              type: boolean
+    AuthApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/AuthResponse'
+    UserApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/UserResponse'
+    ApplicationApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/ApplicationResponse'
+    ApplicationListApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              type: array
+              items:
+                $ref: '#/components/schemas/ApplicationResponse'
+    DashboardApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/DashboardResponse'
+    ProjectApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/ProjectResponse'
+    ProjectListApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProjectResponse'
+    NotificationListApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              type: array
+              items:
+                $ref: '#/components/schemas/NotificationResponse'
+    ProvinceListApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              type: array
+              items:
+                $ref: '#/components/schemas/Province'
+    ProvinceDetailApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/ProvinceDetail'
+    DistrictDetailApiResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponseBase'
+        - type: object
+          properties:
+            result:
+              $ref: '#/components/schemas/DistrictDetail'
+    RegisterRequest:
+      type: object
+      required:
+        - fullName
+        - email
+        - password
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+          example: Nguyen Van An
+        email:
+          type: string
+          format: email
+          example: an@example.com
+        phoneNumber:
+          type: string
+          nullable: true
+          example: '0912345678'
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: password123
+        dateOfBirth:
+          type: string
+          format: date
+          nullable: true
+          example: '1995-01-20'
+        gender:
+          type: string
+          nullable: true
+          example: NAM
+    LoginRequest:
+      type: object
+      required:
+        - identifier
+        - password
+      properties:
+        identifier:
+          type: string
+          description: Email, phone number, or CCCD.
+          example: an@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+    ForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: an@example.com
+    VerifyOtpRequest:
+      type: object
+      required:
+        - email
+        - otp
+      properties:
+        email:
+          type: string
+          example: an@example.com
+        otp:
+          type: string
+          example: '123456'
+    ResetPasswordRequest:
+      type: object
+      required:
+        - email
+        - otp
+        - newPassword
+      properties:
+        email:
+          type: string
+          example: an@example.com
+        otp:
+          type: string
+          example: '123456'
+        newPassword:
+          type: string
+          minLength: 8
+          format: password
+          example: newpassword123
+    UserUpdateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        phoneNumber:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        province:
+          type: string
+        district:
+          type: string
+        ward:
+          type: string
+        currentAddress:
+          type: string
+        occupation:
+          type: string
+        incomePerMonth:
+          type: integer
+          format: int64
+        householdSize:
+          type: integer
+          format: int32
+        priorityCategory:
+          type: string
+    KycRequest:
+      type: object
+      required:
+        - fullName
+        - cccdNumber
+      properties:
+        fullName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        cccdNumber:
+          type: string
+        permanentAddress:
+          type: string
+        province:
+          type: string
+        district:
+          type: string
+        ward:
+          type: string
+        occupation:
+          type: string
+        incomePerMonth:
+          type: integer
+          format: int64
+        householdSize:
+          type: integer
+          format: int32
+        priorityCategory:
+          type: string
+    ApplicationRequest:
+      type: object
+      required:
+        - projectId
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        province:
+          type: string
+        district:
+          type: string
+        ward:
+          type: string
+        detailedAddress:
+          type: string
+        householdSize:
+          type: integer
+          format: int32
+        priorityCategory:
+          type: string
+        incomePerMonth:
+          type: integer
+          format: int64
+        taxCode:
+          type: string
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token for Authorization Bearer header.
+        userId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/Role'
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+        cccdNumber:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+        province:
+          type: string
+        district:
+          type: string
+        ward:
+          type: string
+        currentAddress:
+          type: string
+        permanentAddress:
+          type: string
+        occupation:
+          type: string
+        incomePerMonth:
+          type: integer
+          format: int64
+        householdSize:
+          type: integer
+          format: int32
+        priorityCategory:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+        isVerified:
+          type: boolean
+        kycStatus:
+          $ref: '#/components/schemas/KycStatus'
+        createdAt:
+          type: string
+          format: date-time
+    ApplicationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        projectName:
+          type: string
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        priorityScore:
+          type: integer
+          format: int32
+        lotteryNumber:
+          type: string
+        province:
+          type: string
+        district:
+          type: string
+        ward:
+          type: string
+        detailedAddress:
+          type: string
+        householdSize:
+          type: integer
+          format: int32
+        priorityCategory:
+          type: string
+        incomePerMonth:
+          type: integer
+          format: int64
+        taxCode:
+          type: string
+        lotteryResult:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationDocumentResponse'
+    ApplicationDocumentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        fileUrl:
+          type: string
+        fileName:
+          type: string
+        status:
+          type: string
+          example: UPLOADED
+        uploadedAt:
+          type: string
+          format: date-time
+    DashboardResponse:
+      type: object
+      properties:
+        currentApplication:
+          allOf:
+            - $ref: '#/components/schemas/ApplicationResponse'
+          nullable: true
+        recentNotifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationResponse'
+        stats:
+          $ref: '#/components/schemas/DashboardStats'
+    DashboardStats:
+      type: object
+      properties:
+        totalApplications:
+          type: integer
+          format: int64
+        approvedCount:
+          type: integer
+          format: int64
+        pendingCount:
+          type: integer
+          format: int64
+    ProjectResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        province:
+          type: string
+        totalUnits:
+          type: integer
+          format: int32
+        availableUnits:
+          type: integer
+          format: int32
+        pricePerSqm:
+          type: integer
+          format: int64
+        minArea:
+          type: number
+          format: double
+        maxArea:
+          type: number
+          format: double
+        registrationStart:
+          type: string
+          format: date
+        registrationEnd:
+          type: string
+          format: date
+        lotteryDate:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ProjectStatus'
+        imageUrl:
+          type: string
+        daysRemaining:
+          type: integer
+          format: int64
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    Province:
+      type: object
+      additionalProperties: true
+      properties:
+        code:
+          type: integer
+          format: int32
+        name:
+          type: string
+        division_type:
+          type: string
+        codename:
+          type: string
+        phone_code:
+          type: integer
+          format: int32
+    ProvinceDetail:
+      allOf:
+        - $ref: '#/components/schemas/Province'
+        - type: object
+          properties:
+            districts:
+              type: array
+              items:
+                $ref: '#/components/schemas/District'
+    District:
+      type: object
+      additionalProperties: true
+      properties:
+        code:
+          type: integer
+          format: int32
+        name:
+          type: string
+        division_type:
+          type: string
+        codename:
+          type: string
+        province_code:
+          type: integer
+          format: int32
+    DistrictDetail:
+      allOf:
+        - $ref: '#/components/schemas/District'
+        - type: object
+          properties:
+            wards:
+              type: array
+              items:
+                $ref: '#/components/schemas/Ward'
+    Ward:
+      type: object
+      additionalProperties: true
+      properties:
+        code:
+          type: integer
+          format: int32
+        name:
+          type: string
+        division_type:
+          type: string
+        codename:
+          type: string
+        district_code:
+          type: integer
+          format: int32
+    Role:
+      type: string
+      enum:
+        - USER
+        - ADMIN
+    KycStatus:
+      type: string
+      enum:
+        - PENDING
+        - IN_PROGRESS
+        - VERIFIED
+        - REJECTED
+    ApplicationStatus:
+      type: string
+      enum:
+        - DRAFT
+        - SUBMITTED
+        - UNDER_REVIEW
+        - APPROVED
+        - REJECTED
+        - LOTTERY_QUALIFIED
+    ProjectStatus:
+      type: string
+      enum:
+        - OPEN
+        - CLOSED
+        - COMPLETED
+    DocumentType:
+      type: string
+      enum:
+        - CCCD
+        - HOUSEHOLD_REGISTRATION
+        - INCOME_CERTIFICATE
+        - RESIDENCE_CERTIFICATE
+        - OTHER

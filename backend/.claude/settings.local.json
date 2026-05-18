@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn spring-boot:run:*)",
+      "Bash(mvn -DskipTests spring-boot:run:*)",
+      "Bash(mvn spotless:apply:*)",
+      "Bash(./mvnw spring-boot:run:*)",
+      "Bash(./mvnw -DskipTests spring-boot:run:*)",
+      "Bash(./mvnw spotless:apply:*)",
+      "Bash(mvnw.cmd spring-boot:run:*)",
+      "Bash(mvnw.cmd -DskipTests spring-boot:run:*)",
+      "Bash(mvnw.cmd spotless:apply:*)"
+    ]
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true
+  }
+}
