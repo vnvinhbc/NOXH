@@ -38,11 +38,10 @@ const refreshAccessToken = async () => {
   return refreshPromise
 }
 
-export const ensureFreshAccessToken = async () => refreshAccessToken()
-
 const shouldSkipAuthRedirect = (url?: string) =>
   url === '/auth/login' || url === '/auth/register' || url === '/auth/forgot-password' ||
-  url === '/auth/verify-otp' || url === '/auth/reset-password'
+  url === '/auth/verify-otp' || url === '/auth/reset-password' ||
+  url === '/auth/refresh' || url === '/auth/logout'
 
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken

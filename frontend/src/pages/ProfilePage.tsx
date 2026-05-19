@@ -6,7 +6,6 @@ import { Circle, Eye, FileText, Upload, User } from 'lucide-react'
 import dayjs from 'dayjs'
 import { userApi } from '@/api/user'
 import { provinceApi } from '@/api/province'
-import { ensureFreshAccessToken } from '@/api/axios'
 import { useAuthStore } from '@/stores/authStore'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import UploadPreviewDialog, { type UploadDialogSlot } from '@/components/common/UploadPreviewDialog'
@@ -322,8 +321,6 @@ export default function ProfilePage() {
     }
 
     try {
-      await ensureFreshAccessToken()
-
       for (const slot of uploadSlots) {
         currentUploadLabel = `${pendingUpload.label} - ${slot.label}`
         setUploadingLabel(currentUploadLabel)
