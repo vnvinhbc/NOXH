@@ -9,6 +9,10 @@ import ProjectsPage from '@/pages/ProjectsPage'
 import ProfilePage from '@/pages/ProfilePage'
 import ProtectedRoute from '@/components/common/ProtectedRoute'
 import MainLayout from '@/components/layout/MainLayout'
+import AdminProtectedRoute from '@/admin/components/AdminProtectedRoute'
+import AdminLayout from '@/admin/layout/AdminLayout'
+import AdminLoginPage from '@/admin/pages/AdminLoginPage'
+import AdminApplicationsPage from '@/admin/pages/AdminApplicationsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 1000 * 60 * 5 } },
@@ -20,9 +24,16 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route element={<AdminProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<Navigate to="/admin/applications" replace />} />
+              <Route path="/admin/applications" element={<AdminApplicationsPage />} />
+            </Route>
+          </Route>
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/dashboard" element={<DashboardPage />} />

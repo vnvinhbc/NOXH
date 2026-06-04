@@ -1,12 +1,19 @@
 package com.caovinh.noxh.service;
 
+import com.caovinh.noxh.constant.ApplicationStatus;
 import com.caovinh.noxh.constant.DocumentType;
 import com.caovinh.noxh.dto.response.FileUploadResponse;
 import com.caovinh.noxh.dto.response.UserDocumentResponse;
+import com.caovinh.noxh.entity.Application;
+import com.caovinh.noxh.entity.ApplicationDocument;
+import com.caovinh.noxh.entity.Project;
 import com.caovinh.noxh.entity.User;
 import com.caovinh.noxh.entity.UserDocument;
 import com.caovinh.noxh.exception.AppException;
 import com.caovinh.noxh.exception.ErrorCode;
+import com.caovinh.noxh.repository.ApplicationDocumentRepository;
+import com.caovinh.noxh.repository.ApplicationRepository;
+import com.caovinh.noxh.repository.ProjectRepository;
 import com.caovinh.noxh.repository.UserDocumentRepository;
 import com.caovinh.noxh.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -37,6 +45,9 @@ public class UserDocumentService {
     ImageKitService imageKitService;
     UserDocumentRepository userDocumentRepository;
     UserRepository userRepository;
+    ApplicationRepository applicationRepository;
+    ApplicationDocumentRepository applicationDocumentRepository;
+    ProjectRepository projectRepository;
 
     public List<UserDocumentResponse> getMyDocuments() {
         UUID userId = getCurrentUserId();
@@ -69,9 +80,10 @@ public class UserDocumentService {
         return toResponse(savedDocument);
     }
 
+    @Transactional
     public boolean submitDocuments() {
         UUID userId = getCurrentUserId();
-        userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         List<UserDocument> documents = userDocumentRepository.findByUserIdOrderByUploadedAtDesc(userId);
@@ -82,6 +94,41 @@ public class UserDocumentService {
         if (!uploadedTypes.containsAll(REQUIRED_DOCUMENT_TYPES)) {
             throw new AppException(ErrorCode.REQUIRED_DOCUMENTS_MISSING);
         }
+
+        Application application = applicationRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .findFirst()
+                .orElseGet(() -> createApplicationForSubmission(user));
+
+        validateSubmissionAllowed(application);
+
+        application.setProvince(user.getProvince());
+        application.setDistrict(user.getDistrict());
+        application.setWard(user.getWard());
+        application.setDetailedAddress(
+                user.getCurrentAddress() != null && !user.getCurrentAddress().isBlank()
+                        ? user.getCurrentAddress()
+                        : user.getPermanentAddress());
+        application.setHouseholdSize(user.getHouseholdSize());
+        application.setPriorityCategory(user.getPriorityCategory());
+        application.setIncomePerMonth(user.getIncomePerMonth());
+        application.setStatus(ApplicationStatus.SUBMITTED);
+        application.setRejectReason(null);
+        application.setSubmittedAt(LocalDateTime.now());
+
+        Application savedApplication = applicationRepository.save(application);
+        applicationDocumentRepository.deleteByApplicationId(savedApplication.getId());
+
+        List<ApplicationDocument> applicationDocuments = documents.stream()
+                .map(document -> ApplicationDocument.builder()
+                        .application(savedApplication)
+                        .documentType(document.getDocumentType())
+                        .fileUrl(document.getFileUrl())
+                        .fileName(document.getFileName())
+                        .status(document.getStatus())
+                        .uploadedAt(document.getUploadedAt())
+                        .build())
+                .toList();
+        applicationDocumentRepository.saveAll(applicationDocuments);
 
         return true;
     }
@@ -113,5 +160,41 @@ public class UserDocumentService {
         }
 
         return documentType.name().toLowerCase() + "-" + UUID.randomUUID() + extension;
+    }
+
+    private Application createApplicationForSubmission(User user) {
+        Project project = projectRepository.findByStatus(com.caovinh.noxh.constant.ProjectStatus.OPEN).stream()
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        return Application.builder()
+                .user(user)
+                .project(project)
+                .status(ApplicationStatus.DRAFT)
+                .province(user.getProvince())
+                .district(user.getDistrict())
+                .ward(user.getWard())
+                .detailedAddress(
+                        user.getCurrentAddress() != null && !user.getCurrentAddress().isBlank()
+                                ? user.getCurrentAddress()
+                                : user.getPermanentAddress())
+                .householdSize(user.getHouseholdSize())
+                .priorityCategory(user.getPriorityCategory())
+                .incomePerMonth(user.getIncomePerMonth())
+                .priorityScore(0)
+                .build();
+    }
+
+    private void validateSubmissionAllowed(Application application) {
+        if (application.getStatus() == null) {
+            return;
+        }
+
+        switch (application.getStatus()) {
+            case SUBMITTED, UNDER_REVIEW -> throw new AppException(ErrorCode.APPLICATION_RESUBMISSION_NOT_ALLOWED);
+            case APPROVED, LOTTERY_QUALIFIED -> throw new AppException(ErrorCode.APPLICATION_ALREADY_APPROVED);
+            default -> {
+            }
+        }
     }
 }

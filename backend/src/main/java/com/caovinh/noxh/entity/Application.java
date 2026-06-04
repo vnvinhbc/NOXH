@@ -63,6 +63,9 @@ public class Application {
     @Column(name = "lottery_result")
     String lotteryResult;
 
+    @Column(name = "reject_reason", columnDefinition = "TEXT")
+    String rejectReason;
+
     @Column(name = "submitted_at")
     LocalDateTime submittedAt;
 

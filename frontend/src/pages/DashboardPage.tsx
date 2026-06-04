@@ -37,6 +37,9 @@ export default function DashboardPage() {
       : ['APPROVED', 'LOTTERY_QUALIFIED'].includes(data.currentApplication.status) ? 3
       : 2
     : 0
+  const currentStatus = data?.currentApplication?.status
+  const isApproved = ['APPROVED', 'LOTTERY_QUALIFIED'].includes(currentStatus || '')
+  const isRejected = currentStatus === 'REJECTED'
 
   const greeting = () => {
     const h = new Date().getHours()
@@ -126,6 +129,11 @@ export default function DashboardPage() {
                   <h3 className="text-xl font-bold mt-2">
                     {data?.currentApplication?.projectName || 'Chua dang ky'}
                   </h3>
+                  {isApproved && data?.currentApplication?.applicationCode && (
+                    <div className="mt-4 inline-flex rounded-full bg-white/12 px-3 py-1 font-mono text-xs font-bold text-white">
+                      Ma ho so: {data.currentApplication.applicationCode}
+                    </div>
+                  )}
                   {data?.stats && (
                     <div className="mt-4 space-y-2">
                       <div className="flex justify-between text-sm">
@@ -161,6 +169,22 @@ export default function DashboardPage() {
               </div>
             </div>
 
+            {isRejected && data?.currentApplication?.rejectReason && (
+              <div className="mt-6 rounded-2xl border border-[#93000a]/15 bg-[#fff1ef] p-5">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#93000a]">Ho so bi tu choi</p>
+                <p className="mt-2 text-sm font-semibold text-[#541000]">Ly do phan hoi tu admin</p>
+                <p className="mt-1 text-sm leading-relaxed text-[#6d1b10]">
+                  {data.currentApplication.rejectReason}
+                </p>
+                <Link
+                  to="/profile#documents"
+                  className="mt-4 inline-flex rounded-lg bg-[#93000a] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white"
+                >
+                  Chinh sua va nop lai
+                </Link>
+              </div>
+            )}
+
             <div className="grid grid-cols-3 gap-4 mt-6">
               {[
                 { icon: Trophy, label: 'Xem thong tin ca nhan', path: '/profile' },
@@ -191,22 +215,24 @@ export default function DashboardPage() {
             </h2>
 
             {data?.recentNotifications && data.recentNotifications.length > 0 ? (
-              <div className="space-y-6 relative">
-                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-[#c4c6cf]" />
-                {data.recentNotifications.map((notif) => (
-                  <div key={notif.id} className="relative pl-10">
-                    <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-[#edeeef] flex items-center justify-center">
-                      <div className={`w-2 h-2 rounded-full ${notif.isRead ? 'bg-[#44474e]' : 'bg-[#115cb9]'}`} />
+              <div className="max-h-[30rem] overflow-y-auto pr-2">
+                <div className="relative space-y-6">
+                  <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-[#c4c6cf]" />
+                  {data.recentNotifications.map((notif) => (
+                    <div key={notif.id} className="relative pl-10">
+                      <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-[#edeeef] flex items-center justify-center">
+                        <div className={`w-2 h-2 rounded-full ${notif.isRead ? 'bg-[#44474e]' : 'bg-[#115cb9]'}`} />
+                      </div>
+                      <div className="bg-white p-4 rounded-xl shadow-sm">
+                        <span className="text-[10px] font-bold text-[#44474e] block mb-1">
+                          {dayjs(notif.createdAt).format('DD/MM/YYYY HH:mm')}
+                        </span>
+                        <h4 className="text-sm font-bold text-[#001f49]">{notif.title}</h4>
+                        {notif.content && <p className="text-xs text-[#44474e] mt-1 leading-relaxed">{notif.content}</p>}
+                      </div>
                     </div>
-                    <div className="bg-white p-4 rounded-xl shadow-sm">
-                      <span className="text-[10px] font-bold text-[#44474e] block mb-1">
-                        {dayjs(notif.createdAt).format('DD/MM/YYYY HH:mm')}
-                      </span>
-                      <h4 className="text-sm font-bold text-[#001f49]">{notif.title}</h4>
-                      {notif.content && <p className="text-xs text-[#44474e] mt-1 leading-relaxed">{notif.content}</p>}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="text-center py-12">
@@ -224,8 +250,11 @@ export default function DashboardPage() {
                 <div>
                   <p className="text-xs font-bold">Luu y</p>
                   <p className="text-[11px] opacity-80 mt-1 leading-relaxed">
-                    Ban da co the bo sung thong tin ca nhan va giay to tren trang ho so.
-                    Luong nop ho so chinh thuc se duoc ket noi o buoc admin sau.
+                    {isApproved && data?.currentApplication?.applicationCode
+                      ? `Ho so da duoc phe duyet voi ma ${data.currentApplication.applicationCode}.`
+                      : isRejected
+                        ? 'Ho so da bi tu choi. Hay cap nhat thong tin va nop lai sau khi bo sung.'
+                        : 'Ho so da nop se duoc dua vao hang cho admin duyet. He thong se thong bao qua nut chuong khi co ket qua.'}
                   </p>
                 </div>
               </div>

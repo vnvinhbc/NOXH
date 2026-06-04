@@ -32,6 +32,10 @@ public enum ErrorCode {
     KYC_NOT_VERIFIED(1024, "KYC is not verified", HttpStatus.BAD_REQUEST),
     REQUIRED_DOCUMENTS_MISSING(1025, "Required documents are missing", HttpStatus.BAD_REQUEST),
     FILE_TOO_LARGE(1026, "Uploaded file is too large", HttpStatus.PAYLOAD_TOO_LARGE),
+    ADMIN_ACCESS_REQUIRED(1027, "Admin access required", HttpStatus.FORBIDDEN),
+    APPLICATION_RESUBMISSION_NOT_ALLOWED(1028, "Application is already being reviewed", HttpStatus.BAD_REQUEST),
+    APPLICATION_ALREADY_APPROVED(1029, "Application has already been approved", HttpStatus.BAD_REQUEST),
+    REJECTION_REASON_REQUIRED(1030, "Rejection reason is required", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

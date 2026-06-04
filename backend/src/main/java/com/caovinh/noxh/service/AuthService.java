@@ -3,6 +3,7 @@ package com.caovinh.noxh.service;
 import com.caovinh.noxh.constant.KycStatus;
 import com.caovinh.noxh.constant.Role;
 import com.caovinh.noxh.dto.request.*;
+import com.caovinh.noxh.dto.request.admin.AdminLoginRequest;
 import com.caovinh.noxh.dto.response.AuthResponse;
 import com.caovinh.noxh.dto.response.UserResponse;
 import com.caovinh.noxh.entity.OtpVerification;
@@ -88,14 +89,26 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginRequest request, HttpServletResponse response) {
-        User user = userRepository.findByIdentifier(request.getIdentifier())
+        return loginInternal(request.getIdentifier(), request.getPassword(), response, false);
+    }
+
+    @Transactional
+    public AuthResponse loginAdmin(AdminLoginRequest request, HttpServletResponse response) {
+        return loginInternal(request.getIdentifier(), request.getPassword(), response, true);
+    }
+
+    private AuthResponse loginInternal(String identifier, String password, HttpServletResponse response, boolean adminOnly) {
+        User user = userRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
         if (Boolean.FALSE.equals(user.getIsActive())) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        if (adminOnly && user.getRole() != Role.ADMIN) {
+            throw new AppException(ErrorCode.ADMIN_ACCESS_REQUIRED);
         }
 
         String accessToken = generateAccessToken(user);

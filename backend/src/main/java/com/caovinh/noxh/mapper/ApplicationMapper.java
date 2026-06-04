@@ -13,6 +13,7 @@ import java.util.List;
 public interface ApplicationMapper {
 
     @Mapping(target = "id", expression = "java(application.getId().toString())")
+    @Mapping(target = "applicationCode", expression = "java(toApplicationCode(application))")
     @Mapping(target = "userId", expression = "java(application.getUser().getId().toString())")
     @Mapping(target = "projectId", expression = "java(application.getProject().getId().toString())")
     @Mapping(target = "projectName", expression = "java(application.getProject().getName())")
@@ -24,4 +25,8 @@ public interface ApplicationMapper {
     @Mapping(target = "id", expression = "java(doc.getId().toString())")
     @Mapping(target = "documentType", expression = "java(doc.getDocumentType().name())")
     ApplicationDocumentResponse toDocumentResponse(ApplicationDocument doc);
+
+    default String toApplicationCode(Application application) {
+        return "HA-" + application.getId().toString().substring(0, 8).toUpperCase();
+    }
 }

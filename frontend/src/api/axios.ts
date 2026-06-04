@@ -39,7 +39,7 @@ const refreshAccessToken = async () => {
 }
 
 const shouldSkipAuthRedirect = (url?: string) =>
-  url === '/auth/login' || url === '/auth/register' || url === '/auth/forgot-password' ||
+  url === '/auth/login' || url === '/admin/auth/login' || url === '/auth/register' || url === '/auth/forgot-password' ||
   url === '/auth/verify-otp' || url === '/auth/reset-password' ||
   url === '/auth/refresh' || url === '/auth/logout'
 

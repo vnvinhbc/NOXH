@@ -1,12 +1,19 @@
 package com.caovinh.noxh.service;
 
+import com.caovinh.noxh.constant.ApplicationStatus;
 import com.caovinh.noxh.constant.DocumentType;
+import com.caovinh.noxh.constant.ProjectStatus;
 import com.caovinh.noxh.dto.response.FileUploadResponse;
 import com.caovinh.noxh.dto.response.UserDocumentResponse;
+import com.caovinh.noxh.entity.Application;
+import com.caovinh.noxh.entity.Project;
 import com.caovinh.noxh.entity.User;
 import com.caovinh.noxh.entity.UserDocument;
 import com.caovinh.noxh.exception.AppException;
 import com.caovinh.noxh.exception.ErrorCode;
+import com.caovinh.noxh.repository.ApplicationDocumentRepository;
+import com.caovinh.noxh.repository.ApplicationRepository;
+import com.caovinh.noxh.repository.ProjectRepository;
 import com.caovinh.noxh.repository.UserDocumentRepository;
 import com.caovinh.noxh.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -43,12 +51,27 @@ class UserDocumentServiceTest {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    ApplicationRepository applicationRepository;
+
+    @Mock
+    ApplicationDocumentRepository applicationDocumentRepository;
+
+    @Mock
+    ProjectRepository projectRepository;
+
     @InjectMocks
     UserDocumentService userDocumentService;
 
     @AfterEach
     void tearDown() {
         SecurityContextHolder.clearContext();
+    }
+
+    @Test
+    void submitDocuments_isTransactionalToKeepResubmissionAtomic() throws NoSuchMethodException {
+        assertThat(UserDocumentService.class.getMethod("submitDocuments").isAnnotationPresent(Transactional.class))
+                .isTrue();
     }
 
     @Test
@@ -165,6 +188,23 @@ class UserDocumentServiceTest {
                 .password("encoded")
                 .isVerified(false)
                 .kycStatus(com.caovinh.noxh.constant.KycStatus.PENDING)
+                .province("Ha Noi")
+                .district("Dong Anh")
+                .ward("Vinh Ngoc")
+                .currentAddress("Ngo 12, To 4")
+                .householdSize(4)
+                .priorityCategory("Khong")
+                .incomePerMonth(15000000L)
+                .build();
+        Project project = Project.builder()
+                .id(UUID.randomUUID())
+                .name("Green Sky")
+                .status(ProjectStatus.OPEN)
+                .build();
+        Application application = Application.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .project(project)
                 .build();
 
         SecurityContextHolder.getContext().setAuthentication(
@@ -178,7 +218,110 @@ class UserDocumentServiceTest {
                         UserDocument.builder().documentType(DocumentType.RESIDENCE_CERTIFICATE).fileUrl("residence").build(),
                         UserDocument.builder().documentType(DocumentType.INCOME_CERTIFICATE).fileUrl("income").build()
                 ));
+        when(applicationRepository.findByUserIdOrderByCreatedAtDesc(userId)).thenReturn(List.of());
+        when(projectRepository.findByStatus(ProjectStatus.OPEN)).thenReturn(List.of(project));
+        when(applicationRepository.save(any(Application.class))).thenReturn(application);
 
         assertThat(userDocumentService.submitDocuments()).isTrue();
+        verify(applicationDocumentRepository).deleteByApplicationId(application.getId());
+        verify(applicationDocumentRepository).saveAll(any());
+    }
+
+    @Test
+    void submitDocuments_underReview_throwsApplicationResubmissionNotAllowed() {
+        UUID userId = UUID.randomUUID();
+        User user = User.builder()
+                .id(userId)
+                .fullName("Nguyen Van An")
+                .email("an@example.com")
+                .password("encoded")
+                .province("Ha Noi")
+                .district("Dong Anh")
+                .ward("Vinh Ngoc")
+                .currentAddress("Ngo 12, To 4")
+                .householdSize(4)
+                .priorityCategory("Khong")
+                .incomePerMonth(15000000L)
+                .build();
+        Project project = Project.builder()
+                .id(UUID.randomUUID())
+                .name("Green Sky")
+                .status(ProjectStatus.OPEN)
+                .build();
+        Application application = Application.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .project(project)
+                .status(ApplicationStatus.UNDER_REVIEW)
+                .build();
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(userId.toString(), null));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userDocumentRepository.findByUserIdOrderByUploadedAtDesc(userId))
+                .thenReturn(List.of(
+                        UserDocument.builder().documentType(DocumentType.CCCD_FRONT).fileUrl("front").build(),
+                        UserDocument.builder().documentType(DocumentType.CCCD_BACK).fileUrl("back").build(),
+                        UserDocument.builder().documentType(DocumentType.HOUSEHOLD_REGISTRATION).fileUrl("household").build(),
+                        UserDocument.builder().documentType(DocumentType.RESIDENCE_CERTIFICATE).fileUrl("residence").build(),
+                        UserDocument.builder().documentType(DocumentType.INCOME_CERTIFICATE).fileUrl("income").build()
+                ));
+        when(applicationRepository.findByUserIdOrderByCreatedAtDesc(userId)).thenReturn(List.of(application));
+
+        assertThatThrownBy(() -> userDocumentService.submitDocuments())
+                .isInstanceOf(AppException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.APPLICATION_RESUBMISSION_NOT_ALLOWED);
+    }
+
+    @Test
+    void submitDocuments_rejectedApplication_resubmitsAndClearsRejectReason() {
+        UUID userId = UUID.randomUUID();
+        User user = User.builder()
+                .id(userId)
+                .fullName("Nguyen Van An")
+                .email("an@example.com")
+                .password("encoded")
+                .province("Ha Noi")
+                .district("Dong Anh")
+                .ward("Vinh Ngoc")
+                .currentAddress("Ngo 12, To 4")
+                .householdSize(4)
+                .priorityCategory("Khong")
+                .incomePerMonth(15000000L)
+                .build();
+        Project project = Project.builder()
+                .id(UUID.randomUUID())
+                .name("Green Sky")
+                .status(ProjectStatus.OPEN)
+                .build();
+        Application application = Application.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .project(project)
+                .status(ApplicationStatus.REJECTED)
+                .rejectReason("Thiếu giấy chứng nhận cư trú")
+                .build();
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(userId.toString(), null));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userDocumentRepository.findByUserIdOrderByUploadedAtDesc(userId))
+                .thenReturn(List.of(
+                        UserDocument.builder().documentType(DocumentType.CCCD_FRONT).fileUrl("front").build(),
+                        UserDocument.builder().documentType(DocumentType.CCCD_BACK).fileUrl("back").build(),
+                        UserDocument.builder().documentType(DocumentType.HOUSEHOLD_REGISTRATION).fileUrl("household").build(),
+                        UserDocument.builder().documentType(DocumentType.RESIDENCE_CERTIFICATE).fileUrl("residence").build(),
+                        UserDocument.builder().documentType(DocumentType.INCOME_CERTIFICATE).fileUrl("income").build()
+                ));
+        when(applicationRepository.findByUserIdOrderByCreatedAtDesc(userId)).thenReturn(List.of(application));
+        when(applicationRepository.save(any(Application.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        assertThat(userDocumentService.submitDocuments()).isTrue();
+
+        assertThat(application.getStatus()).isEqualTo(ApplicationStatus.SUBMITTED);
+        assertThat(application.getRejectReason()).isNull();
+        verify(applicationDocumentRepository).deleteByApplicationId(application.getId());
+        verify(applicationDocumentRepository).saveAll(any());
     }
 }

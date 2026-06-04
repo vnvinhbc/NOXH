@@ -86,6 +86,7 @@ export interface ApplicationDocumentResponse {
 
 export interface ApplicationResponse {
   id: string
+  applicationCode: string
   userId: string
   projectId: string
   projectName?: string
@@ -101,6 +102,7 @@ export interface ApplicationResponse {
   incomePerMonth?: number
   taxCode?: string
   lotteryResult?: string
+  rejectReason?: string
   submittedAt?: string
   createdAt?: string
   documents?: ApplicationDocumentResponse[]

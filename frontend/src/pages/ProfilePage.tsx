@@ -4,12 +4,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Circle, Eye, FileText, Upload, User } from 'lucide-react'
 import dayjs from 'dayjs'
+import { applicationApi } from '@/api/application'
 import { userApi } from '@/api/user'
 import { provinceApi } from '@/api/province'
 import { useAuthStore } from '@/stores/authStore'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import UploadPreviewDialog, { type UploadDialogSlot } from '@/components/common/UploadPreviewDialog'
 import type { Province } from '@/types'
+import { getProfileAccessState } from './profileAccess'
 
 type DocumentDefinition = {
   key: string
@@ -132,6 +134,11 @@ export default function ProfilePage() {
   const { data: userDocuments = [] } = useQuery({
     queryKey: ['userDocuments'],
     queryFn: () => userApi.getDocuments().then((r) => r.data.result || []),
+  })
+
+  const { data: dashboard } = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: () => applicationApi.getDashboard().then((response) => response.data.result),
   })
 
   const documentsByType = useMemo(
@@ -275,6 +282,8 @@ export default function ProfilePage() {
   }).length
 
   const openUploadDialog = (document: DocumentDefinition) => {
+    if (!profileAccess.canUploadDocuments) return
+
     setPendingUpload({
       key: document.key,
       label: document.label,
@@ -339,12 +348,49 @@ export default function ProfilePage() {
   }
 
   const submitDocumentsMutation = useMutation({
-    mutationFn: async () => true,
+    mutationFn: () => userApi.submitDocuments().then((response) => response.data.result),
     onSuccess: () => {
-      toast.info('Tinh nang nop ho so se duoc ket noi sau khi luong admin san sang.')
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      toast.success('Ho so da duoc gui len he thong admin')
       navigate('/dashboard')
     },
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
+      toast.error(message || 'Nop ho so that bai')
+    },
   })
+
+  const currentApplication = dashboard?.currentApplication
+  const currentApplicationStatus = currentApplication?.status || ''
+  const isWaitingForReview = ['SUBMITTED', 'UNDER_REVIEW'].includes(currentApplicationStatus)
+  const isApplicationApproved = ['APPROVED', 'LOTTERY_QUALIFIED'].includes(currentApplicationStatus)
+  const canResubmitRejected = currentApplicationStatus === 'REJECTED'
+  const profileAccess = getProfileAccessState(currentApplicationStatus)
+
+  useEffect(() => {
+    if (!profileAccess.canEditProfile && editing) {
+      setEditing(false)
+    }
+  }, [editing, profileAccess.canEditProfile])
+
+  useEffect(() => {
+    if (!profileAccess.canUploadDocuments && pendingUpload) {
+      setPendingUpload(null)
+    }
+  }, [pendingUpload, profileAccess.canUploadDocuments])
+
+  let submissionHint = 'Ban co the nop ho so sau khi tai du cac giay to bat buoc.'
+  if (isWaitingForReview) {
+    submissionHint = 'Ho so dang cho admin phan hoi va tam thoi o che do chi doc.'
+  } else if (isApplicationApproved) {
+    submissionHint = currentApplication?.applicationCode
+      ? `Ho so da duoc phe duyet voi ma ${currentApplication.applicationCode} va hien o che do chi doc.`
+      : 'Ho so da duoc phe duyet va hien o che do chi doc.'
+  } else if (canResubmitRejected) {
+    submissionHint = currentApplication?.rejectReason
+      ? `Ho so bi tu choi: ${currentApplication.rejectReason}`
+      : 'Ho so bi tu choi. Hay cap nhat thong tin va nop lai.'
+  }
 
   if (isLoading) {
     return <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>
@@ -368,7 +414,9 @@ export default function ProfilePage() {
       <header className="mb-10">
         <h1 className="text-4xl font-extrabold text-[#001f49] mb-3">Ho so cong dan</h1>
         <p className="text-[#44474e] max-w-3xl">
-          Bo sung thong tin ca nhan va tai day du giay to de hoan thien ho so cua ban.
+          {profileAccess.isReadOnly
+            ? 'Ho so cua ban hien o che do chi doc. Ban van co the xem thong tin va giay to da nop.'
+            : 'Bo sung thong tin ca nhan va tai day du giay to de hoan thien ho so cua ban.'}
         </p>
       </header>
 
@@ -379,13 +427,19 @@ export default function ProfilePage() {
               <h2 className="text-xl font-bold text-[#001f49] flex items-center gap-2">
                 <User size={22} className="text-[#115cb9]" /> Thong tin ca nhan
               </h2>
-              <button
-                type="button"
-                onClick={() => setEditing((current) => !current)}
-                className="px-4 py-2 bg-[#f3f4f5] text-[#001f49] rounded-xl text-sm font-bold hover:bg-[#edeeef] transition-colors"
-              >
-                {editing ? 'Huy' : 'Chinh sua'}
-              </button>
+              {profileAccess.canEditProfile ? (
+                <button
+                  type="button"
+                  onClick={() => setEditing((current) => !current)}
+                  className="px-4 py-2 bg-[#f3f4f5] text-[#001f49] rounded-xl text-sm font-bold hover:bg-[#edeeef] transition-colors"
+                >
+                  {editing ? 'Huy' : 'Chinh sua'}
+                </button>
+              ) : (
+                <span className="inline-flex items-center rounded-full bg-[#edeeef] px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#44474e]">
+                  Chi doc
+                </span>
+              )}
             </div>
 
             {editing ? (
@@ -656,34 +710,42 @@ export default function ProfilePage() {
                         )
                       })}
 
-                      <button
-                        type="button"
-                        onClick={() => openUploadDialog(document)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                          hasAnyFile
-                            ? 'bg-[#e1e3e4] text-[#001f49] hover:bg-white'
-                            : 'bg-[#115cb9] text-white hover:opacity-90'
-                        }`}
-                      >
-                        <Upload size={14} />
-                        {hasAnyFile ? 'Tai lai' : 'Upload'}
-                      </button>
+                      {profileAccess.canUploadDocuments && (
+                        <button
+                          type="button"
+                          onClick={() => openUploadDialog(document)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                            hasAnyFile
+                              ? 'bg-[#e1e3e4] text-[#001f49] hover:bg-white'
+                              : 'bg-[#115cb9] text-white hover:opacity-90'
+                          }`}
+                        >
+                          <Upload size={14} />
+                          {hasAnyFile ? 'Tai lai' : 'Upload'}
+                        </button>
+                      )}
                     </div>
                   </div>
                 )
               })}
             </div>
 
-            <div className="mt-8 flex justify-end">
-              <button
-                type="button"
-                onClick={() => submitDocumentsMutation.mutate()}
-                disabled={submitDocumentsMutation.isPending}
-                className="px-8 py-3 bg-[#001f49] text-white rounded-xl font-bold text-sm hover:bg-[#115cb9] transition-colors disabled:opacity-70"
-              >
-                {submitDocumentsMutation.isPending ? 'Dang xu ly...' : 'Nop ho so'}
-              </button>
-            </div>
+            {profileAccess.canSubmitDocuments && (
+              <div className="mt-8 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => submitDocumentsMutation.mutate()}
+                  disabled={submitDocumentsMutation.isPending}
+                  className="px-8 py-3 bg-[#001f49] text-white rounded-xl font-bold text-sm hover:bg-[#115cb9] transition-colors disabled:opacity-70"
+                >
+                  {submitDocumentsMutation.isPending
+                    ? 'Dang xu ly...'
+                    : canResubmitRejected
+                      ? 'Nop lai ho so'
+                      : 'Nop ho so'}
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -691,16 +753,22 @@ export default function ProfilePage() {
           <div className="bg-white rounded-2xl shadow-sm p-6">
             <h3 className="text-lg font-bold text-[#001f49] mb-4">Huong dan hoan thien ho so</h3>
             <div className="rounded-xl bg-[#f3f4f5] p-4 text-sm text-[#44474e] leading-relaxed">
-              Dien day du thong tin ca nhan, sau do tai CCCD va 3 loai giay to bat buoc de hoan thien ho so.
+              {profileAccess.isReadOnly
+                ? 'Ho so hien dang o che do chi doc. Ban co the xem lai thong tin va cac tep da nop, nhung khong the chinh sua hoac tai len them.'
+                : 'Dien day du thong tin ca nhan, sau do tai CCCD va 3 loai giay to bat buoc de hoan thien ho so.'}
             </div>
           </div>
 
           <div className="bg-[#001f49] text-white p-6 rounded-2xl">
             <h3 className="text-lg font-bold mb-2">Trang thai hien tai</h3>
             <p className="text-sm text-blue-100 leading-relaxed">
-              Luong nop ho so len admin chua duoc ket noi.
-              Ban co the chuan bi du lieu va giay to tren man hinh nay truoc.
+              {submissionHint}
             </p>
+            {currentApplication?.applicationCode && (
+              <div className="mt-4 inline-flex rounded-full bg-white/10 px-3 py-1 font-mono text-xs font-bold text-white">
+                Ma ho so: {currentApplication.applicationCode}
+              </div>
+            )}
             <Link
               to="/dashboard"
               className="mt-4 inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20 transition-colors"

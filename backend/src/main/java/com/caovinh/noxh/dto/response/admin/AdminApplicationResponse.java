@@ -1,6 +1,6 @@
-package com.caovinh.noxh.dto.response;
+package com.caovinh.noxh.dto.response.admin;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.caovinh.noxh.dto.response.ApplicationDocumentResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,21 +8,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApplicationResponse {
+public class AdminApplicationResponse {
 
     String id;
     String applicationCode;
     String userId;
+    String userFullName;
+    String userEmail;
     String projectId;
     String projectName;
     String status;
     Integer priorityScore;
-    String lotteryNumber;
     String province;
     String district;
     String ward;
@@ -30,7 +30,7 @@ public class ApplicationResponse {
     Integer householdSize;
     String priorityCategory;
     Long incomePerMonth;
-    String taxCode;
+    String lotteryNumber;
     String lotteryResult;
     String rejectReason;
     LocalDateTime submittedAt;
