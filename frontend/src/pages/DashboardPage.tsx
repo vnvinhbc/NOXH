@@ -40,6 +40,14 @@ export default function DashboardPage() {
   const currentStatus = data?.currentApplication?.status
   const isApproved = ['APPROVED', 'LOTTERY_QUALIFIED'].includes(currentStatus || '')
   const isRejected = currentStatus === 'REJECTED'
+  const canCompleteProfile = !currentStatus || currentStatus === 'DRAFT'
+  const dashboardActions = [
+    { icon: Trophy, label: 'Xem thong tin ca nhan', path: '/profile' },
+    ...(canCompleteProfile
+      ? [{ icon: UploadCloud, label: 'Bo sung giay to', path: '/profile#documents' }]
+      : []),
+    { icon: CalendarDays, label: 'Xem lich boc tham', path: '/projects' },
+  ]
 
   const greeting = () => {
     const h = new Date().getHours()
@@ -61,16 +69,18 @@ export default function DashboardPage() {
             Tai khoan: <span className="font-mono font-bold">{user?.email}</span>
           </p>
         </div>
-        <Link
-          to="/profile"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#d6e3ff] text-[#001f49] rounded-xl font-semibold text-sm hover:bg-[#c6d7ff] transition-colors"
-        >
-          <FileText size={16} />
-          Hoan thien ho so
-        </Link>
+        {canCompleteProfile && (
+          <Link
+            to="/profile"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#d6e3ff] text-[#001f49] rounded-xl font-semibold text-sm hover:bg-[#c6d7ff] transition-colors"
+          >
+            <FileText size={16} />
+            Hoan thien ho so
+          </Link>
+        )}
       </header>
 
-      {missingProfileDocs.length > 0 && (
+      {canCompleteProfile && missingProfileDocs.length > 0 && (
         <Link
           to="/profile#documents"
           className="mb-6 inline-flex px-4 py-2 bg-yellow-100 text-yellow-800 rounded-xl font-semibold text-sm hover:bg-yellow-200 transition-colors"
@@ -185,12 +195,8 @@ export default function DashboardPage() {
               </div>
             )}
 
-            <div className="grid grid-cols-3 gap-4 mt-6">
-              {[
-                { icon: Trophy, label: 'Xem thong tin ca nhan', path: '/profile' },
-                { icon: UploadCloud, label: 'Bo sung giay to', path: '/profile#documents' },
-                { icon: CalendarDays, label: 'Xem lich boc tham', path: '/projects' },
-              ].map(({ icon: Icon, label, path }) => (
+            <div className={`grid gap-4 mt-6 ${canCompleteProfile ? 'grid-cols-3' : 'grid-cols-2'}`}>
+              {dashboardActions.map(({ icon: Icon, label, path }) => (
                 <Link
                   key={label}
                   to={path}
@@ -238,9 +244,11 @@ export default function DashboardPage() {
               <div className="text-center py-12">
                 <div className="text-4xl mb-3">📋</div>
                 <p className="text-sm text-[#44474e]">Chua co hoat dong nao</p>
-                <Link to="/profile" className="mt-4 inline-block text-[#115cb9] text-sm font-bold hover:underline">
-                  Hoan thien ho so ngay →
-                </Link>
+                {canCompleteProfile && (
+                  <Link to="/profile" className="mt-4 inline-block text-[#115cb9] text-sm font-bold hover:underline">
+                    Hoan thien ho so ngay →
+                  </Link>
+                )}
               </div>
             )}
 

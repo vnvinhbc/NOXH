@@ -3,11 +3,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Badge, Lock, Building2 } from 'lucide-react'
+import { Eye, EyeOff, Badge, Lock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/stores/authStore'
+import BrandLogo from '@/components/common/BrandLogo'
 
 const schema = z.object({
   identifier: z.string().min(1, 'Vui lòng nhập CCCD, SĐT hoặc email'),
@@ -59,11 +60,9 @@ export default function LoginPage() {
         <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#001f49] via-[#003471]/80 to-transparent opacity-90" />
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-              <Building2 size={28} className="text-[#001f49]" />
-            </div>
+            <BrandLogo className="h-20 w-20 shrink-0 drop-shadow-[0_8px_18px_rgba(255,255,255,0.22)]" />
             <div>
-              <h1 className="text-white text-2xl font-extrabold tracking-tight">Hệ thống NOXH</h1>
+              <h1 className="text-white text-2xl font-extrabold tracking-tight">V-SPACE</h1>
               <p className="text-[#acc7ff] text-sm font-medium">Cổng thông tin chính thống</p>
             </div>
           </div>
@@ -100,8 +99,8 @@ export default function LoginPage() {
           className="w-full max-w-md"
         >
           <div className="md:hidden flex items-center gap-3 mb-8 justify-center">
-            <Building2 size={36} className="text-[#001f49]" />
-            <h1 className="text-[#001f49] text-2xl font-black tracking-tight">Hệ thống NOXH</h1>
+            <BrandLogo className="h-16 w-16 shrink-0" />
+            <h1 className="text-[#001f49] text-2xl font-black tracking-tight">V-SPACE</h1>
           </div>
 
           <div className="mb-10 text-center md:text-left">

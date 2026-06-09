@@ -36,6 +36,13 @@ public enum ErrorCode {
     APPLICATION_RESUBMISSION_NOT_ALLOWED(1028, "Application is already being reviewed", HttpStatus.BAD_REQUEST),
     APPLICATION_ALREADY_APPROVED(1029, "Application has already been approved", HttpStatus.BAD_REQUEST),
     REJECTION_REASON_REQUIRED(1030, "Rejection reason is required", HttpStatus.BAD_REQUEST),
+    LOTTERY_EVENT_NOT_FOUND(1031, "Lottery event not found", HttpStatus.NOT_FOUND),
+    LOTTERY_EVENT_INVALID_STATUS(1032, "Lottery event status is invalid for this action", HttpStatus.BAD_REQUEST),
+    LOTTERY_PARTICIPANTS_EMPTY(1033, "No approved applications found for lottery", HttpStatus.BAD_REQUEST),
+    LOTTERY_APARTMENTS_EMPTY(1034, "No available apartments found for lottery", HttpStatus.BAD_REQUEST),
+    LOTTERY_APARTMENTS_NOT_ENOUGH_FOR_PRIORITY(1035, "Available apartments are not enough for priority pool", HttpStatus.BAD_REQUEST),
+    LOTTERY_JOB_ALREADY_EXISTS(1036, "Lottery job already exists for this event", HttpStatus.BAD_REQUEST),
+    LOTTERY_RESULT_ALREADY_EXISTS(1037, "Lottery result already exists for this event", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

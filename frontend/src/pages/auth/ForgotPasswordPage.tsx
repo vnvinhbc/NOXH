@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
-import { Building2, Mail, Shield, KeyRound, CheckCircle } from 'lucide-react'
+import { Mail, Shield, KeyRound, CheckCircle } from 'lucide-react'
 import { authApi } from '@/api/auth'
 import { useNavigate } from 'react-router-dom'
+import BrandLogo from '@/components/common/BrandLogo'
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState(1)
@@ -67,10 +68,8 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="w-10 h-10 bg-[#001f49] rounded-xl flex items-center justify-center">
-            <Building2 size={22} className="text-white" />
-          </div>
-          <h1 className="text-[#001f49] text-xl font-extrabold">Hệ thống NOXH</h1>
+          <BrandLogo className="h-16 w-16 shrink-0" />
+          <h1 className="text-[#001f49] text-xl font-extrabold">V-SPACE</h1>
         </div>
 
         {/* Stepper */}

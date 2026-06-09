@@ -3,10 +3,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Building2 } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { authApi } from '@/api/auth'
+import BrandLogo from '@/components/common/BrandLogo'
 
 const schema = z.object({
   fullName: z.string().min(2, 'Họ tên phải có ít nhất 2 ký tự'),
@@ -61,11 +62,9 @@ export default function RegisterPage() {
         className="w-full max-w-lg bg-white rounded-2xl shadow-sm p-8 md:p-10"
       >
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-[#001f49] rounded-xl flex items-center justify-center">
-            <Building2 size={22} className="text-white" />
-          </div>
+          <BrandLogo className="h-16 w-16 shrink-0" />
           <div>
-            <h1 className="text-[#001f49] text-xl font-extrabold">Hệ thống NOXH</h1>
+            <h1 className="text-[#001f49] text-xl font-extrabold">V-SPACE</h1>
             <p className="text-[#44474e] text-xs">Đăng ký tài khoản công dân</p>
           </div>
         </div>

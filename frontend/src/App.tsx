@@ -13,6 +13,8 @@ import AdminProtectedRoute from '@/admin/components/AdminProtectedRoute'
 import AdminLayout from '@/admin/layout/AdminLayout'
 import AdminLoginPage from '@/admin/pages/AdminLoginPage'
 import AdminApplicationsPage from '@/admin/pages/AdminApplicationsPage'
+import AdminLotteryEventsPage from '@/admin/pages/AdminLotteryEventsPage'
+import LotteryVerificationPage from '@/pages/LotteryVerificationPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 1000 * 60 * 5 } },
@@ -27,11 +29,13 @@ function App() {
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/lottery-events/:eventId/verification" element={<LotteryVerificationPage />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route element={<AdminProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<Navigate to="/admin/applications" replace />} />
               <Route path="/admin/applications" element={<AdminApplicationsPage />} />
+              <Route path="/admin/lottery-events" element={<AdminLotteryEventsPage />} />
             </Route>
           </Route>
           <Route element={<ProtectedRoute />}>

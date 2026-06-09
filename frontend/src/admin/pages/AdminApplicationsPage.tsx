@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { adminApplicationsApi } from '@/admin/api/adminApplications'
 import type { AdminApplicationStatus } from '@/admin/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import FilePreviewDialog from '@/components/common/FilePreviewDialog'
 
 const tabs: { key: AdminApplicationStatus | 'ALL'; label: string }[] = [
   { key: 'ALL', label: 'Hang cho hien tai' },
@@ -40,6 +41,11 @@ export default function AdminApplicationsPage() {
   const [activeTab, setActiveTab] = useState<AdminApplicationStatus | 'ALL'>('ALL')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [reviewReason, setReviewReason] = useState('')
+  const [previewFile, setPreviewFile] = useState<{
+    title: string
+    fileUrl: string
+    fileName?: string
+  } | null>(null)
   const queryClient = useQueryClient()
 
   const { data: applications = [], isLoading } = useQuery({
@@ -82,6 +88,14 @@ export default function AdminApplicationsPage() {
 
   return (
     <div className="px-4 py-6 md:px-8 md:py-8">
+      <FilePreviewDialog
+        open={Boolean(previewFile)}
+        title={previewFile?.title || 'Xem giay to'}
+        fileUrl={previewFile?.fileUrl}
+        fileName={previewFile?.fileName}
+        onClose={() => setPreviewFile(null)}
+      />
+
       <div className="mb-8">
         <nav className="mb-2 flex items-center gap-2 text-xs text-[#43474e]">
           <span>Kho luu tru</span>
@@ -274,16 +288,19 @@ export default function AdminApplicationsPage() {
                 </div>
                 <div className="space-y-2">
                   {selectedApplication.documents.map((document) => (
-                    <a
+                    <button
                       key={document.id}
-                      href={document.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
+                      type="button"
+                      onClick={() => setPreviewFile({
+                        title: document.documentType,
+                        fileUrl: document.fileUrl,
+                        fileName: document.fileName,
+                      })}
                       className="flex items-center justify-between rounded-lg bg-white px-4 py-3 text-sm text-[#0d1c2e] shadow-sm hover:bg-[#eff4ff]"
                     >
                       <span>{document.documentType}</span>
                       <Eye size={14} className="text-[#002045]" />
-                    </a>
+                    </button>
                   ))}
                   {selectedApplication.documents.length === 0 && (
                     <div className="rounded-lg bg-white px-4 py-3 text-sm text-[#555f70] shadow-sm">

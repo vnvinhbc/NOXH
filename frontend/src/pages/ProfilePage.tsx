@@ -10,6 +10,7 @@ import { provinceApi } from '@/api/province'
 import { useAuthStore } from '@/stores/authStore'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import UploadPreviewDialog, { type UploadDialogSlot } from '@/components/common/UploadPreviewDialog'
+import FilePreviewDialog from '@/components/common/FilePreviewDialog'
 import type { Province } from '@/types'
 import { getProfileAccessState } from './profileAccess'
 
@@ -26,6 +27,12 @@ type PendingUpload = {
   label: string
   description: string
   slots: UploadDialogSlot[]
+} | null
+
+type PreviewFile = {
+  title: string
+  fileUrl: string
+  fileName?: string
 } | null
 
 const DOCUMENT_DEFINITIONS: DocumentDefinition[] = [
@@ -98,6 +105,7 @@ export default function ProfilePage() {
   const setUser = useAuthStore((s) => s.setUser)
   const [editing, setEditing] = useState(false)
   const [pendingUpload, setPendingUpload] = useState<PendingUpload>(null)
+  const [previewFile, setPreviewFile] = useState<PreviewFile>(null)
   const [uploadingLabel, setUploadingLabel] = useState<string | null>(null)
   const [occupationOption, setOccupationOption] = useState('')
   const [occupationOther, setOccupationOther] = useState('')
@@ -410,6 +418,13 @@ export default function ProfilePage() {
         onFileChange={updatePendingFile}
         onConfirm={confirmUpload}
       />
+      <FilePreviewDialog
+        open={Boolean(previewFile)}
+        title={previewFile?.title || 'Xem giay to'}
+        fileUrl={previewFile?.fileUrl}
+        fileName={previewFile?.fileName}
+        onClose={() => setPreviewFile(null)}
+      />
 
       <header className="mb-10">
         <h1 className="text-4xl font-extrabold text-[#001f49] mb-3">Ho so cong dan</h1>
@@ -697,16 +712,19 @@ export default function ProfilePage() {
                         const uploaded = documentsByType.get(slot.id)
                         if (!uploaded) return null
                         return (
-                          <a
+                          <button
                             key={slot.id}
-                            href={uploaded.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
+                            type="button"
+                            onClick={() => setPreviewFile({
+                              title: document.key === 'CCCD' ? `${document.label} - ${slot.label}` : document.label,
+                              fileUrl: uploaded.fileUrl,
+                              fileName: uploaded.fileName,
+                            })}
                             className="px-3 py-1.5 bg-white rounded-lg text-xs font-bold text-[#001f49] border border-[#e1e3e4] hover:bg-[#f8f9fa] transition-all inline-flex items-center gap-1.5"
                           >
                             <Eye size={14} />
                             {document.key === 'CCCD' ? slot.label : 'Xem'}
-                          </a>
+                          </button>
                         )
                       })}
 

@@ -1,6 +1,7 @@
 package com.caovinh.noxh.repository;
 
 import com.caovinh.noxh.entity.Application;
+import com.caovinh.noxh.constant.ApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +19,8 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
     Optional<Application> findByUserIdAndProjectId(UUID userId, UUID projectId);
 
     List<Application> findByProjectId(UUID projectId);
+
+    List<Application> findByProjectIdAndStatusOrderByCreatedAtAsc(UUID projectId, ApplicationStatus status);
 
     boolean existsByUserIdAndProjectId(UUID userId, UUID projectId);
 }

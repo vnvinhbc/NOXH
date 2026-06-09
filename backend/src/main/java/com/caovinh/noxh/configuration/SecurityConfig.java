@@ -49,6 +49,8 @@ public class SecurityConfig {
         "/webjars/**",
         "/v3/api-docs/**",
         "/provinces/**",
+        "/lottery-events/**",
+        "/ws/**",
     };
 
     @Bean

@@ -145,3 +145,99 @@ export interface Ward {
   name: string
   wards?: Ward[]
 }
+
+export interface ApartmentUnitResponse {
+  id: string
+  apartmentCode: string
+  building?: string
+  blockName?: string
+  floor?: number
+  unitNumber?: string
+  areaSqm?: number
+  bedroomCount?: number
+  direction?: string
+  pricePerSqm?: number
+  totalPrice?: number
+  status: string
+}
+
+export interface LotteryEventResponse {
+  id: string
+  projectId: string
+  projectName: string
+  name: string
+  status: string
+  algorithmType: string
+  commitmentHash?: string
+  participantHash?: string
+  apartmentHash?: string
+  xsmbDrawDate?: string
+  xsmbResult?: string
+  ethChainId?: number
+  ethBlockNumber?: number
+  ethBlockHash?: string
+  seedSourceNote?: string
+  clickedTimestamp?: string
+  finalSeed?: string
+  sortedNormalHash?: string
+  sortedWinnerHash?: string
+  sortedApartmentHash?: string
+  assignmentListHash?: string
+  resultHash?: string
+  failedReason?: string
+  lockedAt?: string
+  startedAt?: string
+  completedAt?: string
+  createdAt: string
+  participantCount: number
+  apartmentCount: number
+  resultCount: number
+}
+
+export interface LotteryParticipantResponse {
+  id: string
+  applicationId: string
+  lotteryCode: string
+  poolType: string
+  priorityTags?: string
+}
+
+export interface LotteryResultResponse {
+  eventId: string
+  participantId: string
+  lotteryCode: string
+  poolType: string
+  resultType: string
+  normalRandomValue?: string
+  winnerUnitHash?: string
+  apartmentId?: string
+  apartmentCode?: string
+  unitRandomValue?: string
+  drawOrder?: number
+  createdAt: string
+}
+
+export interface LotteryVerificationResponse {
+  eventId: string
+  projectName: string
+  algorithmType: string
+  participantHash?: string
+  apartmentHash?: string
+  commitmentHash?: string
+  privateSalt?: string
+  xsmbDrawDate?: string
+  xsmbResult?: string
+  ethChainId?: number
+  ethBlockNumber?: number
+  ethBlockHash?: string
+  clickedTimestamp?: string
+  finalSeed?: string
+  sortedNormalHash?: string
+  sortedWinnerHash?: string
+  sortedApartmentHash?: string
+  assignmentListHash?: string
+  resultHash?: string
+  participants: LotteryParticipantResponse[]
+  apartments: ApartmentUnitResponse[]
+  results: LotteryResultResponse[]
+}

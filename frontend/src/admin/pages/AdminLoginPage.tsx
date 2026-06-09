@@ -1,17 +1,20 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Building2, LockKeyhole, ShieldAlert, BadgeIcon, LogIn } from 'lucide-react'
+import { LockKeyhole, ShieldAlert, BadgeIcon, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/authStore'
 import { adminAuthApi } from '@/admin/api/adminAuth'
+import { applyAdminOtpBackspace, applyAdminOtpInput, createEmptyAdminOtp } from './adminOtpInput'
+import BrandLogo from '@/components/common/BrandLogo'
 
 const inputCls = 'w-full border-0 border-b-2 border-[#74777f] bg-transparent px-0 py-3 pl-8 text-sm font-medium text-[#0d1c2e] placeholder:text-[#74777f]/60 outline-none transition-colors focus:border-[#002045] focus:ring-0'
 
 export default function AdminLoginPage() {
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
-  const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const [otp, setOtp] = useState(createEmptyAdminOtp())
   const [loading, setLoading] = useState(false)
+  const otpRefs = useRef<Array<HTMLInputElement | null>>([])
   const setAuth = useAuthStore((s) => s.setAuth)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const user = useAuthStore((s) => s.user)
@@ -28,9 +31,31 @@ export default function AdminLoginPage() {
 
   const otpValue = useMemo(() => otp.join(''), [otp])
 
+  const focusOtpInput = (index: number | null) => {
+    if (index === null) return
+    window.requestAnimationFrame(() => {
+      otpRefs.current[index]?.focus()
+      otpRefs.current[index]?.select()
+    })
+  }
+
   const handleOtpChange = (index: number, value: string) => {
-    const nextValue = value.replace(/\D/g, '').slice(-1)
-    setOtp((current) => current.map((digit, digitIndex) => (digitIndex === index ? nextValue : digit)))
+    setOtp((current) => {
+      const result = applyAdminOtpInput(current, index, value)
+      focusOtpInput(result.focusIndex)
+      return result.otp
+    })
+  }
+
+  const handleOtpKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Backspace') return
+
+    event.preventDefault()
+    setOtp((current) => {
+      const result = applyAdminOtpBackspace(current, index)
+      focusOtpInput(result.focusIndex)
+      return result.otp
+    })
   }
 
   const onSubmit = async (event: React.FormEvent) => {
@@ -54,9 +79,7 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-[#f8f9ff] px-6 py-10 text-[#0d1c2e] [background-image:radial-gradient(#d5e3fc_0.5px,transparent_0.5px)] [background-size:24px_24px]">
       <main className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-xl flex-col justify-center">
         <header className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-xl bg-[#002045] text-white">
-            <Building2 size={36} />
-          </div>
+          <BrandLogo className="mx-auto mb-4 h-36 w-36" />
           <h1 className="text-3xl font-bold tracking-tight text-[#002045]">Kho luu tru chu quyen</h1>
           <p className="mt-2 text-sm font-medium uppercase tracking-[0.28em] text-[#43474e]">
             Cong quan tri co quan nha o
@@ -115,11 +138,17 @@ export default function AdminLoginPage() {
                 {otp.map((digit, index) => (
                   <input
                     key={index}
+                    ref={(element) => {
+                      otpRefs.current[index] = element
+                    }}
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
                     value={digit}
                     onChange={(event) => handleOtpChange(index, event.target.value)}
+                    onKeyDown={(event) => handleOtpKeyDown(index, event)}
+                    onFocus={(event) => event.target.select()}
+                    aria-label={`Ma 2FA so ${index + 1}`}
                     className="h-12 w-10 rounded-lg border-2 border-[#c4c6cf]/30 bg-white text-center text-lg font-bold text-[#002045] outline-none transition-colors focus:border-[#002045] sm:h-14 sm:w-12"
                   />
                 ))}

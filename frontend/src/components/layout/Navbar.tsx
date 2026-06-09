@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { authApi } from '@/api/auth'
 import { notificationApi } from '@/api/notification'
 import { useAuthStore } from '@/stores/authStore'
+import BrandLogo from '@/components/common/BrandLogo'
 
 export default function Navbar() {
   const location = useLocation()
@@ -64,8 +65,9 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md shadow-sm flex justify-between items-center px-6 h-16">
       <div className="flex items-center gap-8">
-        <Link to="/dashboard" className="text-xl font-bold text-[#001f49] tracking-tight">
-          Boc tham NOXH
+        <Link to="/dashboard" className="flex items-center gap-3 text-xl font-bold text-[#001f49] tracking-tight">
+          <BrandLogo className="h-14 w-14 shrink-0" />
+          <span className="hidden sm:inline">V-SPACE</span>
         </Link>
         <div className="hidden md:flex items-center gap-2">
           {navItems.map((item) => (

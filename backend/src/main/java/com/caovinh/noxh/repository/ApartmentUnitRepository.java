@@ -1,0 +1,17 @@
+package com.caovinh.noxh.repository;
+
+import com.caovinh.noxh.constant.lottery.ApartmentUnitStatus;
+import com.caovinh.noxh.entity.ApartmentUnit;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface ApartmentUnitRepository extends JpaRepository<ApartmentUnit, UUID> {
+
+    List<ApartmentUnit> findByProjectIdAndStatusOrderByApartmentCodeAsc(UUID projectId, ApartmentUnitStatus status);
+
+    List<ApartmentUnit> findByLockedEventIdOrderByApartmentCodeAsc(UUID eventId);
+}

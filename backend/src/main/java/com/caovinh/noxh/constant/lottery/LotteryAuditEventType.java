@@ -1,0 +1,15 @@
+package com.caovinh.noxh.constant.lottery;
+
+public enum LotteryAuditEventType {
+    LOTTERY_CREATED,
+    PARTICIPANTS_LOCKED,
+    APARTMENTS_LOCKED,
+    SEED_COMMITTED,
+    DRAW_STARTED,
+    SEED_REVEALED,
+    NORMAL_POOL_DRAWN,
+    APARTMENTS_ASSIGNED,
+    RESULT_HASH_CREATED,
+    RESULT_PUBLISHED,
+    LOTTERY_FAILED
+}

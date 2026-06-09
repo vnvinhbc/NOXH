@@ -1,10 +1,12 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { BarChart3, Bell, Building2, FileBadge2, LogOut, Search, Settings, ShieldCheck } from 'lucide-react'
+import { BarChart3, Bell, FileBadge2, LogOut, Search, Settings, ShieldCheck, Ticket } from 'lucide-react'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/stores/authStore'
+import BrandLogo from '@/components/common/BrandLogo'
 
 const navItems = [
   { to: '/admin/applications', label: 'Quan ly ho so', icon: FileBadge2 },
+  { to: '/admin/lottery-events', label: 'Quay so NOXH', icon: Ticket },
   { to: '#', label: 'KYC/Cham diem', icon: ShieldCheck, disabled: true },
   { to: '#', label: 'Ket qua', icon: BarChart3, disabled: true },
 ]
@@ -29,11 +31,9 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-[#f8f9ff] text-[#0d1c2e]">
       <aside className="fixed inset-y-0 left-0 hidden w-72 border-r border-[#c4c6cf]/40 bg-[#eff4ff] px-6 py-6 md:flex md:flex-col">
         <div className="mb-8 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#1a365d] text-white">
-            <Building2 size={22} />
-          </div>
+          <BrandLogo className="h-16 w-16 shrink-0" />
           <div>
-            <h2 className="font-bold text-[#002045]">Quan tri GovTech</h2>
+            <h2 className="font-bold text-[#002045]">V-SPACE Admin</h2>
             <p className="text-xs text-[#43474e]">Co quan nha o</p>
           </div>
         </div>
@@ -70,6 +70,7 @@ export default function AdminLayout() {
         <div className="mt-auto space-y-4">
           <button
             type="button"
+            onClick={() => navigate('/admin/lottery-events')}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-br from-[#002045] to-[#1a365d] px-4 py-3 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-md"
           >
             <Bell size={14} />
@@ -91,9 +92,7 @@ export default function AdminLayout() {
         <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-[#c4c6cf]/30 bg-[#f8f9ff]/95 px-4 backdrop-blur md:px-8">
           <div className="flex items-center gap-3 md:min-w-[20rem]">
             <Link to="/admin/applications" className="flex items-center gap-2 md:hidden">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#1a365d] text-white">
-                <Building2 size={18} />
-              </div>
+              <BrandLogo className="h-14 w-14 shrink-0" />
               <span className="font-bold text-[#002045]">Admin</span>
             </Link>
             <div className="relative hidden w-full max-w-xl md:block">
