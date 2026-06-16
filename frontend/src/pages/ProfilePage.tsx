@@ -66,9 +66,9 @@ const DOCUMENT_DEFINITIONS: DocumentDefinition[] = [
   },
   {
     key: 'INCOME_CERTIFICATE',
-    label: 'Giay xac nhan doi tuong va thu nhap',
-    note: 'Co ky ten, dong dau cua co quan',
-    description: 'Chon tep giay to hop le de bo sung vao ho so.',
+    label: 'Giay xac nhan doi tuong uu tien',
+    note: 'Minh chung doi tuong uu tien neu co',
+    description: 'Chon tep minh chung doi tuong uu tien neu ban thuoc nhom uu tien.',
     slotDefinitions: [
       { id: 'INCOME_CERTIFICATE', label: 'Tep giay to' },
     ],
@@ -129,8 +129,6 @@ export default function ProfilePage() {
     ward: '',
     currentAddress: '',
     occupation: '',
-    incomePerMonth: '',
-    householdSize: '',
     priorityCategory: '',
   })
 
@@ -212,8 +210,6 @@ export default function ProfilePage() {
       ward: user.ward || '',
       currentAddress: user.currentAddress || '',
       occupation: user.occupation || '',
-      incomePerMonth: user.incomePerMonth?.toString() || '',
-      householdSize: user.householdSize?.toString() || '',
       priorityCategory: user.priorityCategory || '',
     })
 
@@ -269,8 +265,6 @@ export default function ProfilePage() {
         ward: wardName || undefined,
         currentAddress: form.currentAddress || undefined,
         occupation: occupationValue || undefined,
-        incomePerMonth: form.incomePerMonth ? parseInt(form.incomePerMonth, 10) : undefined,
-        householdSize: form.householdSize ? parseInt(form.householdSize, 10) : undefined,
         priorityCategory: priorityValue || undefined,
       })
     },
@@ -465,8 +459,6 @@ export default function ProfilePage() {
                   { key: 'cccdNumber', label: 'So CCCD', type: 'text' },
                   { key: 'dateOfBirth', label: 'Ngay sinh', type: 'date' },
                   { key: 'gender', label: 'Gioi tinh', type: 'text' },
-                  { key: 'incomePerMonth', label: 'Thu nhap / thang', type: 'number' },
-                  { key: 'householdSize', label: 'So nhan khau', type: 'number' },
                 ].map(({ key, label, type }) => (
                   <div key={key}>
                     <label className="block text-xs font-bold text-[#44474e] uppercase mb-1">{label}</label>
@@ -637,8 +629,6 @@ export default function ProfilePage() {
                   { label: 'Ngay sinh', value: user?.dateOfBirth ? dayjs(user.dateOfBirth).format('DD/MM/YYYY') : '-' },
                   { label: 'Gioi tinh', value: user?.gender || '-' },
                   { label: 'Nghe nghiep', value: user?.occupation || '-' },
-                  { label: 'Thu nhap / thang', value: user?.incomePerMonth ? `${user.incomePerMonth.toLocaleString()} VND` : '-' },
-                  { label: 'So nhan khau', value: user?.householdSize?.toString() || '-' },
                   { label: 'Doi tuong uu tien', value: user?.priorityCategory || '-' },
                   { label: 'Tinh / Thanh', value: user?.province || '-' },
                   { label: 'Quan / Huyen', value: user?.district || '-' },

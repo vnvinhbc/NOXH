@@ -7,6 +7,12 @@ import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
 import DashboardPage from '@/pages/DashboardPage'
 import ProjectsPage from '@/pages/ProjectsPage'
 import ProfilePage from '@/pages/ProfilePage'
+import UserProgressPage from '@/pages/UserProgressPage'
+import UserPriorityScorePage from '@/pages/UserPriorityScorePage'
+import UserLotteryTicketPage from '@/pages/UserLotteryTicketPage'
+import UserLotteryWaitingRoomPage from '@/pages/UserLotteryWaitingRoomPage'
+import UserLotteryRoomPage from '@/pages/UserLotteryRoomPage'
+import UserResultsAuditPage from '@/pages/UserResultsAuditPage'
 import ProtectedRoute from '@/components/common/ProtectedRoute'
 import MainLayout from '@/components/layout/MainLayout'
 import AdminProtectedRoute from '@/admin/components/AdminProtectedRoute'
@@ -53,6 +59,12 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/progress" element={<UserProgressPage />} />
+              <Route path="/priority-score" element={<UserPriorityScorePage />} />
+              <Route path="/lottery-ticket" element={<UserLotteryTicketPage />} />
+              <Route path="/lottery-waiting-room" element={<UserLotteryWaitingRoomPage />} />
+              <Route path="/lottery-room" element={<UserLotteryRoomPage />} />
+              <Route path="/results-audit" element={<UserResultsAuditPage />} />
             </Route>
           </Route>
         </Routes>

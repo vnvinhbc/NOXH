@@ -42,11 +42,11 @@ export default function DashboardPage() {
   const isRejected = currentStatus === 'REJECTED'
   const canCompleteProfile = !currentStatus || currentStatus === 'DRAFT'
   const dashboardActions = [
-    { icon: Trophy, label: 'Xem thong tin ca nhan', path: '/profile' },
+    { icon: Trophy, label: 'Xem nhom uu tien', path: '/priority-score' },
     ...(canCompleteProfile
       ? [{ icon: UploadCloud, label: 'Bo sung giay to', path: '/profile#documents' }]
       : []),
-    { icon: CalendarDays, label: 'Xem lich boc tham', path: '/projects' },
+    { icon: CalendarDays, label: 'Xem lich boc tham', path: '/lottery-waiting-room' },
   ]
 
   const greeting = () => {
@@ -159,7 +159,7 @@ export default function DashboardPage() {
                     </div>
                   )}
                 </div>
-                <div className="absolute -right-4 -bottom-4 opacity-10 text-9xl">🏠</div>
+                <div className="absolute -right-4 -bottom-4 opacity-10 text-9xl">NOXH</div>
               </div>
 
               <div className="bg-white border border-[#e1e3e4] rounded-xl p-6 flex flex-col justify-center items-center text-center">
@@ -242,11 +242,11 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <div className="text-4xl mb-3">📋</div>
+                <div className="mb-3 text-4xl font-black text-[#c4c6cf]">0</div>
                 <p className="text-sm text-[#44474e]">Chua co hoat dong nao</p>
                 {canCompleteProfile && (
                   <Link to="/profile" className="mt-4 inline-block text-[#115cb9] text-sm font-bold hover:underline">
-                    Hoan thien ho so ngay →
+                    Hoan thien ho so ngay
                   </Link>
                 )}
               </div>

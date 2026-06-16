@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Building2, FileText, LayoutDashboard } from 'lucide-react'
+import { Building2, FileText, LayoutDashboard, Radio, SearchCheck } from 'lucide-react'
 
 export default function MobileNav() {
   const location = useLocation()
@@ -7,12 +7,14 @@ export default function MobileNav() {
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/profile', label: 'Ho so', icon: FileText },
     { path: '/projects', label: 'Du an', icon: Building2 },
+    { path: '/lottery-room', label: 'Quay', icon: Radio },
+    { path: '/results-audit', label: 'Ket qua', icon: SearchCheck },
   ]
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-100 flex justify-around py-3 z-50">
       {items.map(({ path, label, icon: Icon }) => {
-        const active = location.pathname === path
+        const active = location.pathname === path || location.pathname.startsWith(`${path}/`)
         return (
           <Link key={path} to={path} className={`flex flex-col items-center gap-1 ${active ? 'text-[#115cb9]' : 'text-slate-500'}`}>
             <Icon size={20} strokeWidth={active ? 2.5 : 1.5} />

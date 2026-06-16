@@ -241,3 +241,34 @@ export interface LotteryVerificationResponse {
   apartments: ApartmentUnitResponse[]
   results: LotteryResultResponse[]
 }
+
+export interface UserLotterySummaryResponse {
+  applicationId?: string
+  applicationCode?: string
+  applicationStatus?: string
+  priorityScore?: number
+  priorityCategory?: string
+  projectId?: string
+  projectName?: string
+  eventId?: string
+  eventName?: string
+  eventStatus?: string
+  algorithmType?: string
+  lotteryCode?: string
+  poolType?: string
+  priorityTags?: string
+  resultType?: string
+  apartmentCode?: string
+  drawOrder?: number
+  normalRandomValue?: string
+  winnerUnitHash?: string
+  unitRandomValue?: string
+  participantHash?: string
+  apartmentHash?: string
+  finalSeed?: string
+  resultHash?: string
+  lockedAt?: string
+  startedAt?: string
+  completedAt?: string
+  createdAt?: string
+}

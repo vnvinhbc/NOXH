@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -15,4 +16,6 @@ public interface LotteryResultRepository extends JpaRepository<LotteryResult, UU
     List<LotteryResult> findByEventIdOrderByLotteryCodeAsc(UUID eventId);
 
     List<LotteryResult> findByEventIdOrderByDrawOrderAsc(UUID eventId);
+
+    Optional<LotteryResult> findByParticipantId(UUID participantId);
 }

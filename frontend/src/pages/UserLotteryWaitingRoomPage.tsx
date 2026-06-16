@@ -1,0 +1,97 @@
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { Bell, FileText, ShieldCheck, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { lotteryApi } from '@/api/lottery'
+import LoadingSpinner from '@/components/common/LoadingSpinner'
+
+function getCountdown(target?: string) {
+  if (!target) return { minutes: 15, seconds: 30 }
+  const diff = Math.max(0, dayjs(target).diff(dayjs(), 'second'))
+  return { minutes: Math.floor(diff / 60), seconds: diff % 60 }
+}
+
+export default function UserLotteryWaitingRoomPage() {
+  const { data: summary, isLoading } = useQuery({
+    queryKey: ['userLotterySummary'],
+    queryFn: () => lotteryApi.getMySummary().then((res) => res.data.result),
+  })
+
+  const countdown = useMemo(() => getCountdown(summary?.startedAt), [summary?.startedAt])
+
+  if (isLoading) return <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-emerald-600">He thong dang san sang</p>
+          <h1 className="mt-2 text-5xl font-black tracking-tight text-[#001f49]">Sanh cho boc tham</h1>
+          <p className="mt-3 max-w-3xl text-base leading-relaxed text-[#44474e]">
+            {summary?.eventName || 'Phien boc tham NOXH'} cho du an {summary?.projectName || 'dang tham gia'}.
+          </p>
+        </div>
+        <div className="bg-[#edeeef] px-6 py-4">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#465f88]">Trang thai</p>
+          <p className="mt-1 font-black text-[#115cb9]">{summary?.eventStatus || 'Dang doi'}</p>
+        </div>
+      </header>
+
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.7fr)]">
+        <section className="bg-gradient-to-br from-[#001f49] to-[#003471] p-10 text-center text-white shadow-xl">
+          <p className="text-sm font-black uppercase tracking-[0.3em] text-[#acc7ff]">Thoi gian con lai</p>
+          <div className="mt-8 flex items-center justify-center gap-8">
+            <div>
+              <p className="text-8xl font-black">{String(countdown.minutes).padStart(2, '0')}</p>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#acc7ff]">Phut</p>
+            </div>
+            <span className="text-7xl font-black text-white/40">:</span>
+            <div>
+              <p className="text-8xl font-black">{String(countdown.seconds).padStart(2, '0')}</p>
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#acc7ff]">Giay</p>
+            </div>
+          </div>
+          <div className="mx-auto mt-10 inline-flex items-center gap-2 rounded-full bg-white/12 px-6 py-3 text-sm font-bold">
+            <ShieldCheck size={18} />
+            Phien lam viec duoc bao mat boi he thong chinh phu dien tu
+          </div>
+        </section>
+
+        <aside className="space-y-6">
+          <section className="bg-white p-6 shadow-sm">
+            <h2 className="mb-5 flex items-center gap-2 text-xl font-black text-[#001f49]">
+              <Bell size={20} className="text-[#115cb9]" />
+              Thong bao trang thai
+            </h2>
+            <div className="space-y-4">
+              {[
+                'He thong da chot danh sach ho so hop le cho phien nay.',
+                'Cong sanh cho truc tuyen da mo. Vui long giu ket noi on dinh.',
+              ].map((item, index) => (
+                <div key={item} className={`bg-[#f3f4f5] p-4 text-sm leading-relaxed text-[#191c1d] ${index === 0 ? 'border-l-4 border-[#115cb9]' : ''}`}>
+                  {item}
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="bg-white p-6 shadow-sm">
+            <h2 className="mb-5 flex items-center gap-2 text-xl font-black text-[#001f49]">
+              <FileText size={20} className="text-[#115cb9]" />
+              Quy tac boc tham
+            </h2>
+            <ol className="space-y-4 text-sm leading-relaxed text-[#44474e]">
+              <li>Ket qua duoc tao bang seed cong khai va hash co the verify lai.</li>
+              <li>Ban co the theo doi phong quay truc tuyen khi event bat dau.</li>
+              <li>Ket qua cuoi cung duoc cong bo kem audit hash.</li>
+            </ol>
+            <Link to="/lottery-room" className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#001f49] px-5 py-3 text-sm font-black text-white">
+              <Users size={17} />
+              Vao phong boc tham
+            </Link>
+          </section>
+        </aside>
+      </div>
+    </div>
+  )
+}
