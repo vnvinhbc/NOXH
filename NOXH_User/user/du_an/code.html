@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dự án Nhà ở Xã hội - Cổng Thông Tin Chính Phủ</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-dim": "#d9dadb",
+              "surface-tint": "#115cb9",
+              "surface-bright": "#f8f9fa",
+              "tertiary-container": "#4f2f00",
+              "primary-container": "#003471",
+              "error": "#ba1a1a",
+              "tertiary-fixed-dim": "#f1bd81",
+              "on-secondary-fixed": "#001b3d",
+              "on-primary-fixed": "#001a40",
+              "on-secondary-fixed-variant": "#2e476f",
+              "surface-container-high": "#e7e8e9",
+              "on-error": "#ffffff",
+              "tertiary": "#321c00",
+              "surface-container-highest": "#e1e3e4",
+              "on-primary-fixed-variant": "#004491",
+              "surface-container": "#edeeef",
+              "error-container": "#ffdad6",
+              "surface-container-low": "#f3f4f5",
+              "on-tertiary-container": "#c6965e",
+              "secondary": "#465f88",
+              "primary-fixed-dim": "#acc7ff",
+              "tertiary-fixed": "#ffddb9",
+              "on-secondary": "#ffffff",
+              "on-error-container": "#93000a",
+              "on-secondary-container": "#3f5881",
+              "primary": "#001f49",
+              "secondary-container": "#b6d0ff",
+              "on-background": "#191c1d",
+              "surface-container-lowest": "#ffffff",
+              "secondary-fixed-dim": "#aec7f7",
+              "on-tertiary-fixed-variant": "#623f0f",
+              "surface": "#f8f9fa",
+              "outline-variant": "#c4c6cf",
+              "on-tertiary": "#ffffff",
+              "background": "#f8f9fa",
+              "outline": "#74777f",
+              "on-surface": "#191c1d",
+              "on-surface-variant": "#44474e",
+              "inverse-on-surface": "#f0f1f2",
+              "surface-variant": "#e1e3e4",
+              "secondary-fixed": "#d6e3ff",
+              "on-primary-container": "#669eff",
+              "on-tertiary-fixed": "#2b1700",
+              "inverse-primary": "#acc7ff",
+              "inverse-surface": "#2e3132",
+              "primary-fixed": "#d7e2ff",
+              "on-primary": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      body { font-family: 'Inter', sans-serif; }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .tonal-stacking-no-border {
+        border-bottom: none !important;
+      }
+      .glass-effect {
+        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.8);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-none h-16 flex justify-between items-center px-6">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold text-blue-900 dark:text-blue-100 tracking-tight">Bốc thăm NOXH</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 font-bold py-5" href="#">Dashboard</a>
+<a class="text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors py-2 px-3 rounded-lg" href="#">Hồ sơ</a>
+<a class="text-sm text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors py-2 px-3 rounded-lg" href="#">Dự án</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600">account_circle</span>
+</button>
+</div>
+</header>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative h-[870px] flex items-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover brightness-50" data-alt="Modern sustainable social housing apartment complex with vertical gardens, solar panels, and spacious public courtyards in soft morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1SaCmR6S335gJyurOiiGKnfySLuUMhbxOkqPwvwa-MhpTbI7BXb3JxhG3N6o5uHQt9YIBFenWfro5epmAq2Eyid-IAOOTbj4vgiFMeeLBYLEBOSksuk654eObx47We1s_NukZ4pQFwfFvK5b_IVtPd2o3ParZG_aUkDUoV3A1rNsPRG9zH9-ChJNGeC_qGAoXKx7YtV-KqO510tYAArAVHRf1Hrw4XQWBZvgcYUQUq9NYkUepmdrFO9_nQuvcdCg8lUc7nW8sTA"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent"></div>
+</div>
+<div class="container mx-auto px-6 relative z-10 text-white max-w-6xl">
+<div class="max-w-2xl">
+<span class="inline-block px-4 py-1 rounded-full bg-surface-tint/20 backdrop-blur-md border border-white/20 text-sm font-medium mb-6">
+                        Chương trình quốc gia 2024
+                    </span>
+<h1 class="text-5xl md:text-6xl font-black mb-6 leading-tight tracking-tight">
+                        Dự án Nhà ở Xã hội Green Sky - Mái ấm bền vững cho người dân
+                    </h1>
+<p class="text-xl text-white/80 mb-10 leading-relaxed">
+                        Hiện thực hóa giấc mơ an cư với hạ tầng đồng bộ, không gian sống xanh và chính sách hỗ trợ tài chính ưu việt từ Chính phủ.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-surface-tint hover:bg-primary-container text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg transition-all flex items-center gap-2">
+                            Đăng ký nộp hồ sơ ngay
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="bg-white/10 backdrop-blur-md border border-white/30 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all">
+                            Xem chi tiết dự án
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Project Summary (Bento Grid) -->
+<section class="py-24 container mx-auto px-6 max-w-6xl">
+<div class="mb-12">
+<h2 class="text-3xl font-bold text-primary mb-2">Thông tin tổng quan</h2>
+<div class="w-20 h-1.5 bg-surface-tint rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<!-- Large Card -->
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-surface-tint text-4xl mb-4" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<h3 class="text-2xl font-bold text-primary mb-4">Vị trí chiến lược</h3>
+<p class="text-on-surface-variant leading-relaxed">
+                            Tọa lạc tại Khu đô thị mới Đông Anh, kết nối trực tiếp với trục Nhật Tân - Nội Bài, thuận tiện di chuyển vào trung tâm thành phố chỉ trong 15 phút.
+                        </p>
+</div>
+<div class="mt-8 pt-6 border-t border-surface-variant flex items-center justify-between">
+<span class="text-sm font-semibold uppercase tracking-wider text-surface-tint">Xem bản đồ</span>
+<span class="material-symbols-outlined text-surface-tint">chevron_right</span>
+</div>
+</div>
+<!-- Stats -->
+<div class="bg-primary text-white p-8 rounded-xl flex flex-col justify-center">
+<span class="text-4xl font-black block mb-2">1,200</span>
+<span class="text-sm opacity-80 uppercase font-medium">Tổng số căn hộ</span>
+</div>
+<div class="bg-surface-container-high p-8 rounded-xl flex flex-col justify-center">
+<span class="text-3xl font-bold text-primary block mb-2">15-18tr</span>
+<span class="text-sm text-on-surface-variant uppercase font-medium">Giá dự kiến (tr/m²)</span>
+</div>
+<!-- Timeline -->
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-xl flex items-center gap-8">
+<div class="bg-white p-4 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-error text-3xl">event</span>
+</div>
+<div>
+<h4 class="font-bold text-primary mb-1">Thời hạn nộp hồ sơ</h4>
+<p class="text-on-surface-variant text-lg">Từ 15/10/2024 đến hết 30/11/2024</p>
+<span class="text-xs font-bold text-error uppercase mt-2 block">Còn 45 ngày</span>
+</div>
+</div>
+<div class="md:col-span-2 bg-secondary text-white p-8 rounded-xl flex items-center justify-between">
+<div>
+<h4 class="text-xl font-bold mb-2">Quy mô dự án</h4>
+<p class="opacity-80">05 tòa tháp cao 25 tầng, 3 tầng hầm, tiện ích nội khu đầy đủ.</p>
+</div>
+<span class="material-symbols-outlined text-5xl opacity-20">apartment</span>
+</div>
+</div>
+</section>
+<!-- Stepper Section -->
+<section class="py-24 bg-surface-container-lowest">
+<div class="container mx-auto px-6 max-w-6xl">
+<div class="text-center mb-16">
+<h2 class="text-3xl font-black text-primary mb-4 uppercase tracking-tight">Quy trình bốc thăm &amp; xét duyệt</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Hệ thống minh bạch, công bằng, được giám sát trực tiếp bởi Sở Xây dựng và các đơn vị kiểm toán độc lập.</p>
+</div>
+<!-- Horizontal Stepper -->
+<div class="relative flex justify-between items-start">
+<!-- Step 1 -->
+<div class="flex-1 flex flex-col items-center text-center relative z-10">
+<div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold mb-4 shadow-lg ring-4 ring-white">1</div>
+<h4 class="text-sm font-bold text-primary">Đăng ký</h4>
+<p class="text-xs text-on-surface-variant mt-1">Tạo tài khoản</p>
+</div>
+<!-- Connector -->
+<div class="absolute top-6 left-0 w-full h-1 bg-surface-container-high -z-10">
+<div class="w-[14%] h-full bg-primary"></div>
+</div>
+<!-- Step 2 -->
+<div class="flex-1 flex flex-col items-center text-center relative z-10">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold mb-4">2</div>
+<h4 class="text-sm font-bold text-on-surface-variant">KYC</h4>
+<p class="text-xs text-on-surface-variant mt-1">Định danh VNeID</p>
+</div>
+<!-- Step 3 -->
+<div class="flex-1 flex flex-col items-center text-center relative z-10">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold mb-4">3</div>
+<h4 class="text-sm font-bold text-on-surface-variant">Nộp hồ sơ</h4>
+<p class="text-xs text-on-surface-variant mt-1">Tải tài liệu PDF</p>
+</div>
+<!-- Step 4 -->
+<div class="flex-1 flex flex-col items-center text-center relative z-10">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold mb-4">4</div>
+<h4 class="text-sm font-bold text-on-surface-variant">Duyệt</h4>
+<p class="text-xs text-on-surface-variant mt-1">Hội đồng thẩm định</p>
+</div>
+<!-- Step 5 -->
+<div class="flex-1 flex flex-col items-center text-center relative z-10">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold mb-4">5</div>
+<h4 class="text-sm font-bold text-on-surface-variant">Cấp mã</h4>
+<p class="text-xs text-on-surface-variant mt-1">Số thứ tự bốc</p>
+</div>
+<!-- Step 6 -->
+<div class="flex-1 flex flex-col items-center text-center relative z-10">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold mb-4">6</div>
+<h4 class="text-sm font-bold text-on-surface-variant">Bốc thăm</h4>
+<p class="text-xs text-on-surface-variant mt-1">Trực tiếp Livestream</p>
+</div>
+<!-- Step 7 -->
+<div class="flex-1 flex flex-col items-center text-center relative z-10">
+<div class="w-12 h-12 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-bold mb-4">7</div>
+<h4 class="text-sm font-bold text-on-surface-variant">Kết quả</h4>
+<p class="text-xs text-on-surface-variant mt-1">Công bố niêm yết</p>
+</div>
+</div>
+</div>
+</section>
+<!-- News & Announcements -->
+<section class="py-24 bg-surface">
+<div class="container mx-auto px-6 max-w-6xl">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="text-3xl font-bold text-primary mb-2">Tin tức &amp; Thông báo</h2>
+<p class="text-on-surface-variant">Cập nhật mới nhất từ Sở Xây dựng và Ban quản lý dự án</p>
+</div>
+<button class="text-surface-tint font-bold flex items-center gap-1 hover:underline">
+                        Xem tất cả <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- News Item 1 -->
+<article class="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="aspect-video relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Official government press conference with representatives from Department of Construction discussing housing policies" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKi0vWs7GGSZjBg7cZgxeYfXQNOHDZzR5__AQoKpxX5nhoiT3mUMohuPmKN6Q-fE3Xoy6wcNgdf90p37k-2Bb2JTJBKxWuuMWXYkW4fRCYsOTOAKjYx96WoIFbkI-mfuN0IqrMnW8-qNFqsc6cLGTtIHgR1AnWe8Trgv3y0VgVreyRKP69aHDRaRh51tujCmhEvy5tfGQKlivVN6xj6wCbMQU-vOnpjhqu9QvwcyzqECIYM__1uSdrTgHWHeEkw5j6d42W_p3O7w"/>
+<span class="absolute top-4 left-4 bg-primary text-white text-[10px] font-black uppercase px-2 py-1 rounded">Văn bản mới</span>
+</div>
+<div class="p-6">
+<time class="text-xs text-on-surface-variant font-medium">12 Tháng 10, 2024</time>
+<h3 class="text-lg font-bold text-primary mt-2 mb-3 group-hover:text-surface-tint transition-colors">
+                                Hướng dẫn chi tiết cách thức xác nhận đối tượng cư trú khi nộp hồ sơ NOXH
+                            </h3>
+<p class="text-sm text-on-surface-variant line-clamp-2">
+                                Các quy định mới về giấy tờ xác nhận tạm trú và hộ khẩu đã được đơn giản hóa thông qua hệ thống VNeID mức độ 2...
+                            </p>
+</div>
+</article>
+<!-- News Item 2 -->
+<article class="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="aspect-video relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Architectural model of a modern apartment building being examined by city planners and officials" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0LO5WrezBsOVwoYaMwfJoxGr-u45LQZgLLh__gfe6iOxh2Ak4YzVElG53SpEHx7R4WZbZLvTzzwf0aqoCzDfqzBwkiFKGkCbpv9PCJ7C7iqzcGYbCmIDbncNiCU86XiMha0NHtxFHzc9fi1MCvPLTaUDbkWOo9wmfR-mJ47YHJGkKP7AxkOpcd1dtv7swzo6xgrGJjSy2lvbKNsDlcQS9T77N3EoCSFYTeKDujn-2sPAu-Z4crH-ClIxKwiNcR6844n3d5XIzOQ"/>
+<span class="absolute top-4 left-4 bg-tertiary-container text-white text-[10px] font-black uppercase px-2 py-1 rounded">Thông báo</span>
+</div>
+<div class="p-6">
+<time class="text-xs text-on-surface-variant font-medium">10 Tháng 10, 2024</time>
+<h3 class="text-lg font-bold text-primary mt-2 mb-3 group-hover:text-surface-tint transition-colors">
+                                Danh sách các ngân hàng hỗ trợ gói vay ưu đãi lãi suất 4.8% cho dự án Green Sky
+                            </h3>
+<p class="text-sm text-on-surface-variant line-clamp-2">
+                                Ngân hàng Chính sách xã hội phối hợp cùng 4 ngân hàng thương mại công bố hạn mức cho vay lên tới 80% giá trị...
+                            </p>
+</div>
+</article>
+<!-- News Item 3 -->
+<article class="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+<div class="aspect-video relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up of a verified checkmark icon on a tablet screen representing government digital audit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkP0UX4siTnfUOvQPb3T5_FBxNOq4sVQQWUF_yIDvq3YBx8PFD0yuqObs0pbCiuvUbZRbCum2AP2-ByQDCZ2OGK5y8IAICFZPZRlsOnqwOJw_TgiIj0h2MaXCbbQ45oNbNBmwUtI-MazSlgg-0zw7DDDjsdTi04E7jREwRWns2Pl1NTPVUeeDrSl6Vdl6RYo92bMi-e6QZ1NsuZIb9Rz3hyWUayFC1n2kdLP7Dn9iJnFKO8Qpxbd-BchGnibWtrvjr_-tgBFfkpw"/>
+<span class="absolute top-4 left-4 bg-secondary text-white text-[10px] font-black uppercase px-2 py-1 rounded">Giám sát</span>
+</div>
+<div class="p-6">
+<time class="text-xs text-on-surface-variant font-medium">08 Tháng 10, 2024</time>
+<h3 class="text-lg font-bold text-primary mt-2 mb-3 group-hover:text-surface-tint transition-colors">
+                                Quy trình Audit hồ sơ: Đảm bảo 100% hồ sơ được xét duyệt công tâm
+                            </h3>
+<p class="text-sm text-on-surface-variant line-clamp-2">
+                                Sở Xây dựng triển khai hệ thống phần mềm lọc hồ sơ tự động để loại bỏ các trường hợp đã sở hữu nhà ở hoặc...
+                            </p>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-20">
+<div class="container mx-auto px-6 max-w-6xl">
+<div class="bg-primary-container rounded-3xl p-12 text-center text-white relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full opacity-10">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 100 L100 0 L100 100 Z" fill="white"></path>
+</svg>
+</div>
+<div class="relative z-10">
+<h2 class="text-4xl font-black mb-6">Bạn đã sẵn sàng để trở thành cư dân của Green Sky?</h2>
+<p class="text-xl text-blue-200 mb-10 max-w-2xl mx-auto">Đừng bỏ lỡ cơ hội sở hữu căn hộ mơ ước. Thời gian đăng ký có hạn.</p>
+<button class="bg-white text-primary hover:bg-blue-50 px-10 py-5 rounded-2xl font-black text-xl transition-all shadow-xl">
+                            Bắt đầu nộp hồ sơ ngay
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-100 dark:bg-slate-900 w-full py-8 px-6 flex flex-col md:flex-row justify-between items-center border-t border-slate-200 dark:border-slate-800">
+<div class="flex flex-col items-center md:items-start mb-6 md:mb-0">
+<span class="font-bold text-slate-800 dark:text-slate-200 text-lg mb-1 uppercase tracking-tight">Hệ thống NOXH</span>
+<p class="text-xs text-slate-700 dark:text-slate-300 max-w-xs leading-relaxed text-center md:text-left">
+                © 2024 Cổng thông tin Nhà ở Xã hội - Chính phủ điện tử. Hệ thống vận hành bởi Bộ Xây dựng.
+            </p>
+</div>
+<div class="flex flex-wrap justify-center gap-6 text-xs font-medium">
+<a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Hotline: 1900xxxx</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Điều khoản sử dụng</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Tra cứu nhanh</a>
+<a class="text-slate-500 hover:text-blue-500 transition-colors" href="#">Hướng dẫn</a>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Event Config | Sovereign Archive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#e6eeff",
+              "on-secondary-fixed-variant": "#3e4758",
+              "on-tertiary-fixed-variant": "#633f0f",
+              "error-container": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#43474e",
+              "on-primary-fixed-variant": "#2d476f",
+              "error": "#ba1a1a",
+              "on-error": "#ffffff",
+              "tertiary": "#321b00",
+              "surface-variant": "#d5e3fc",
+              "outline": "#74777f",
+              "on-tertiary-container": "#c6955e",
+              "primary-fixed": "#d6e3ff",
+              "primary-fixed-dim": "#adc7f7",
+              "surface-dim": "#ccdbf3",
+              "primary": "#002045",
+              "inverse-primary": "#adc7f7",
+              "secondary": "#555f70",
+              "inverse-on-surface": "#eaf1ff",
+              "on-primary-container": "#86a0cd",
+              "surface-tint": "#455f88",
+              "secondary-fixed-dim": "#bdc7db",
+              "secondary-fixed": "#d9e3f8",
+              "surface-container-high": "#dce9ff",
+              "surface-container-highest": "#d5e3fc",
+              "background": "#f8f9ff",
+              "on-primary": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "surface-container-lowest": "#ffffff",
+              "surface": "#f8f9ff",
+              "tertiary-fixed-dim": "#f2bc82",
+              "tertiary-fixed": "#ffddba",
+              "inverse-surface": "#233144",
+              "primary-container": "#1a365d",
+              "secondary-container": "#d9e3f8",
+              "on-secondary-container": "#5b6577",
+              "outline-variant": "#c4c6cf",
+              "on-tertiary-fixed": "#2b1700",
+              "on-secondary-fixed": "#121c2b",
+              "tertiary-container": "#4f2e00",
+              "on-tertiary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9ff",
+              "on-surface": "#0d1c2e",
+              "on-background": "#0d1c2e",
+              "on-primary-fixed": "#001b3c"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-modal {
+        background: rgba(213, 227, 252, 0.8);
+        backdrop-filter: blur(20px);
+      }
+      .primary-gradient {
+        background: linear-gradient(135deg, #002045 0%, #1A365D 100%);
+      }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-[#eff4ff] dark:bg-slate-900 py-6 font-inter text-sm font-medium tonal-shift-bg-only">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="font-black text-[#002045] dark:text-white leading-tight">GovTech Admin</h1>
+<p class="text-[10px] text-on-surface-variant tracking-widest uppercase">Lottery Authority</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+                Audit Log
+            </a>
+<a class="flex items-center gap-3 bg-[#d5e3fc] dark:bg-blue-900/30 text-[#002045] dark:text-blue-200 border-l-4 border-[#002045] dark:border-blue-500 px-4 py-3 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+                Event Config
+            </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+                Housing Stock
+            </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all active:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                System Health
+            </a>
+</nav>
+<div class="px-4 py-6">
+<button class="w-full py-3 primary-gradient text-white font-bold rounded shadow-lg flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] active:scale-95">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Lottery
+            </button>
+</div>
+<div class="mt-auto border-t border-outline-variant/15 pt-4">
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+                Security
+            </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help_center">help_center</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-64 min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-8 w-full h-16 bg-[#f8f9ff] dark:bg-slate-950 font-inter antialiased tracking-tight no-border tonal-stacking">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tighter text-[#002045] dark:text-white uppercase">Sovereign Archive</span>
+<div class="h-4 w-px bg-outline-variant/30"></div>
+<h2 class="text-on-surface-variant font-medium">Event Configuration</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<input class="bg-surface-container-lowest border-0 border-b-2 border-outline focus:ring-0 focus:border-primary transition-all w-64 px-2 py-1 text-sm" placeholder="Search archive..." type="text"/>
+<span class="material-symbols-outlined absolute right-2 top-1.5 text-on-surface-variant text-sm" data-icon="search">search</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface hover:text-primary transition-colors" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface hover:text-primary transition-colors" data-icon="history_edu">history_edu</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="Administrator profile" class="w-full h-full object-cover" data-alt="Close-up professional headshot of an administrative official in a sharp navy suit with neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHwB06Fboe-jXymWho9vcBElnlIabS0PM36r6rP4EOxQha9I8OK46LygTYUmreofkfwI4ETLxxnPAR9LhIDuIuEk1i1wZsCrNutA6JRckx6UWGHaY82QVd53CkoFbU7jq6jpTswDUM5mbuVGglESeat_ZBPknpqqXl950gA7LOM_6fv4OoWoIHaE0LkGlZqo7_sTGZ64ZDXaOJsddkzpfjqC5Gy-f3ndnv8pELukIh_3tofElfgRq8vjzZp2aC5T0vDWxzofQwA7s"/>
+</div>
+</div>
+</div>
+</header>
+<div class="p-8 max-w-6xl mx-auto">
+<!-- Progress Stepper -->
+<div class="flex items-center justify-between mb-12 px-12 relative">
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-surface-container-high -translate-y-1/2 -z-10"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 primary-gradient text-white rounded-full flex items-center justify-center font-bold shadow-md z-10">1</div>
+<span class="text-xs font-bold uppercase tracking-widest text-primary">General Info</span>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 bg-surface-container-highest text-primary border-2 border-primary rounded-full flex items-center justify-center font-bold z-10">2</div>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Resource Allocation</span>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 bg-surface-container-low text-on-surface-variant rounded-full flex items-center justify-center font-bold z-10">3</div>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/50">Algorithm &amp; Seed</span>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 bg-surface-container-low text-on-surface-variant rounded-full flex items-center justify-center font-bold z-10">4</div>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/50">Eligible Pool</span>
+</div>
+</div>
+<!-- Bento Layout Content -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- Main Form Card -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<!-- General Information Section -->
+<section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-8xl" data-icon="article">article</span>
+</div>
+<div class="mb-8">
+<h3 class="text-2xl font-bold tracking-tight text-primary">General Information</h3>
+<p class="text-on-surface-variant text-sm">Define the foundational parameters of this lottery event.</p>
+</div>
+<div class="space-y-6">
+<div class="group relative">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Event Name</label>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all font-medium py-3 px-0 text-lg" type="text" value="2024 Urban Renewal Lottery - Batch 04"/>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="group relative">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Event Date &amp; Time</label>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all py-2 px-0" type="datetime-local"/>
+</div>
+<div class="group relative">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1">Responsible Department</label>
+<select class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all py-2 px-0">
+<option>Department of Social Housing</option>
+<option>Urban Planning Division</option>
+<option>Internal Audit Bureau</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- Algorithm Section -->
+<section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-2xl font-bold tracking-tight text-primary">Lottery Algorithm &amp; Seed</h3>
+<p class="text-on-surface-variant text-sm">Ensuring immutable transparency through cryptographic entropy.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<div class="flex items-center gap-2 group">
+<label class="text-xs font-bold text-primary uppercase tracking-widest">Public Entropy Seed</label>
+<span class="material-symbols-outlined text-sm cursor-help text-on-surface-variant/60" title="Deterministic Seed: A source of randomness that can be verified by the public.">info</span>
+</div>
+<div class="flex gap-2">
+<input class="flex-1 bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 transition-all font-mono py-2 text-sm" placeholder="e.g. BTC_BLOCK_834192" type="text"/>
+<button class="bg-surface-container-high px-3 text-primary-container hover:bg-surface-variant transition-colors flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-sm">refresh</span>
+</button>
+</div>
+<p class="text-[11px] text-on-surface-variant italic">Recommended: Use financial indexes or weather data at T-minus 1 hour.</p>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<label class="text-xs font-bold text-primary uppercase tracking-widest">Hashing Algorithm</label>
+<span class="material-symbols-outlined text-sm cursor-help text-on-surface-variant/60" title="Hashing ensures the lottery outcome is deterministic and cannot be tampered with.">info</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 bg-primary-container text-white text-xs font-bold rounded">SHA-256</button>
+<button class="px-4 py-2 border border-outline-variant text-on-surface-variant text-xs font-bold rounded hover:bg-surface-container-high transition-colors">BLAKE3</button>
+<button class="px-4 py-2 border border-outline-variant text-on-surface-variant text-xs font-bold rounded hover:bg-surface-container-high transition-colors">Argon2id</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Summary Sidebar Cards -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Resource Allocation Overview -->
+<div class="bg-primary text-white p-6 rounded-xl shadow-lg relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-[120px]" data-icon="domain">domain</span>
+</div>
+<h4 class="text-sm font-bold uppercase tracking-widest mb-6 opacity-80">Allocation Overview</h4>
+<div class="space-y-4 relative z-10">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-3xl font-black">1,450</p>
+<p class="text-[10px] uppercase font-bold opacity-60 tracking-tight">Total Available Units</p>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold">12</p>
+<p class="text-[10px] uppercase font-bold opacity-60 tracking-tight">Projects Linked</p>
+</div>
+</div>
+<div class="pt-4 border-t border-white/10 space-y-2">
+<div class="flex justify-between text-xs">
+<span>Low-Income Quota</span>
+<span class="font-bold">30%</span>
+</div>
+<div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+<div class="bg-surface-variant h-full" style="width: 30%"></div>
+</div>
+<div class="flex justify-between text-xs pt-1">
+<span>Veterans / Seniors</span>
+<span class="font-bold">10%</span>
+</div>
+<div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+<div class="bg-surface-variant h-full" style="width: 10%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Eligible Pool Summary -->
+<div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/10">
+<div class="flex items-center gap-3 mb-4">
+<div class="p-2 bg-white rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+</div>
+<div>
+<h4 class="text-sm font-bold text-primary">Eligible Candidate Pool</h4>
+<p class="text-[10px] text-on-surface-variant font-medium">Post-KYC Verification Phase</p>
+</div>
+</div>
+<div class="text-center py-4 bg-white/40 rounded-lg mb-4">
+<p class="text-4xl font-black text-primary">42,891</p>
+<p class="text-xs font-bold text-on-surface-variant uppercase">Qualified Applicants</p>
+</div>
+<div class="flex items-center justify-between text-xs text-on-surface-variant font-medium px-1">
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-on-tertiary-container"></span>
+                                Verified
+                            </div>
+<span>98.2% Accuracy</span>
+</div>
+</div>
+<!-- Guidance Tip -->
+<div class="bg-tertiary-container/10 p-5 rounded-xl border border-on-tertiary-container/10 flex gap-4">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="tips_and_updates">tips_and_updates</span>
+<div>
+<p class="text-xs font-bold text-on-tertiary-container uppercase tracking-tight mb-1">Archival Pro-Tip</p>
+<p class="text-xs text-on-surface-variant leading-relaxed">Ensure the lottery is scheduled at least 24 hours in advance to allow external auditors to verify the 'Seed' source.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Footer Actions -->
+<div class="mt-12 flex items-center justify-between py-6 border-t border-outline-variant/15">
+<button class="px-6 py-2 text-on-surface-variant font-bold text-sm flex items-center gap-2 hover:bg-surface-container-high transition-colors rounded">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                    Cancel Draft
+                </button>
+<div class="flex items-center gap-4">
+<button class="px-8 py-3 border-2 border-primary text-primary font-bold text-sm rounded hover:bg-primary/5 transition-colors">
+                        Save Progress
+                    </button>
+<button class="px-10 py-3 primary-gradient text-white font-bold text-sm rounded shadow-lg flex items-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+                        Next: Allocation
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Suppressed on this task-focused config page per instructions) -->
+<!-- Modal Background Blur Example (Glassmorphism concept) -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-6">
+<div class="glass-modal max-w-md w-full p-8 rounded-2xl shadow-2xl border border-white/20">
+<h3 class="text-xl font-bold text-primary mb-4">Confirm Configuration</h3>
+<p class="text-sm text-on-surface-variant mb-6">You are about to finalize the lottery parameters. Once saved, the cryptographic hash cannot be altered.</p>
+<div class="flex gap-3">
+<button class="flex-1 py-3 bg-primary text-white font-bold rounded">Confirm</button>
+<button class="flex-1 py-3 bg-white/50 font-bold rounded">Go Back</button>
+</div>
+</div>
+</div>
+</body></html>

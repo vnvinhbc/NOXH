@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign Archive | Housing Stock Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#e6eeff",
+              "on-secondary-fixed-variant": "#3e4758",
+              "on-tertiary-fixed-variant": "#633f0f",
+              "error-container": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#43474e",
+              "on-primary-fixed-variant": "#2d476f",
+              "error": "#ba1a1a",
+              "on-error": "#ffffff",
+              "tertiary": "#321b00",
+              "surface-variant": "#d5e3fc",
+              "outline": "#74777f",
+              "on-tertiary-container": "#c6955e",
+              "primary-fixed": "#d6e3ff",
+              "primary-fixed-dim": "#adc7f7",
+              "surface-dim": "#ccdbf3",
+              "primary": "#002045",
+              "inverse-primary": "#adc7f7",
+              "secondary": "#555f70",
+              "inverse-on-surface": "#eaf1ff",
+              "on-primary-container": "#86a0cd",
+              "surface-tint": "#455f88",
+              "secondary-fixed-dim": "#bdc7db",
+              "secondary-fixed": "#d9e3f8",
+              "surface-container-high": "#dce9ff",
+              "surface-container-highest": "#d5e3fc",
+              "background": "#f8f9ff",
+              "on-primary": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "surface-container-lowest": "#ffffff",
+              "surface": "#f8f9ff",
+              "tertiary-fixed-dim": "#f2bc82",
+              "tertiary-fixed": "#ffddba",
+              "inverse-surface": "#233144",
+              "primary-container": "#1a365d",
+              "secondary-container": "#d9e3f8",
+              "on-secondary-container": "#5b6577",
+              "outline-variant": "#c4c6cf",
+              "on-tertiary-fixed": "#2b1700",
+              "on-secondary-fixed": "#121c2b",
+              "tertiary-container": "#4f2e00",
+              "on-tertiary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9ff",
+              "on-surface": "#0d1c2e",
+              "on-background": "#0d1c2e",
+              "on-primary-fixed": "#001b3c"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-stacking {
+            background: linear-gradient(135deg, #f8f9ff 0%, #eff4ff 100%);
+        }
+        .primary-gradient-btn {
+            background: linear-gradient(135deg, #002045 0%, #1A365D 100%);
+        }
+        .signature-input {
+            border: none;
+            border-bottom: 2px solid #74777f;
+            background: #ffffff;
+            transition: all 0.2s ease;
+        }
+        .signature-input:focus {
+            border-bottom-color: #002045;
+            outline: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 32, 69, 0.05);
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f8f9ff; }
+        ::-webkit-scrollbar-thumb { background: #d5e3fc; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body antialiased">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#eff4ff] dark:bg-slate-900 flex flex-col h-full py-6 z-50">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="font-black text-[#002045] dark:text-white leading-tight">GovTech Admin</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Lottery Authority</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span class="font-medium text-sm">Audit Log</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="font-medium text-sm">Event Config</span>
+</a>
+<!-- ACTIVE TAB: Housing Stock -->
+<a class="flex items-center gap-3 bg-[#d5e3fc] dark:bg-blue-900/30 text-[#002045] dark:text-blue-200 border-l-4 border-[#002045] dark:border-blue-500 px-4 py-3 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">domain</span>
+<span class="font-medium text-sm">Housing Stock</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-medium text-sm">System Health</span>
+</a>
+</nav>
+<div class="mt-auto px-4 space-y-1 border-t border-outline-variant/15 pt-6">
+<button class="w-full primary-gradient-btn text-white py-3 rounded-lg font-bold text-sm mb-4 flex items-center justify-center gap-2 shadow-lg">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                New Lottery
+            </button>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-medium text-sm">Security</span>
+</a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 px-4 py-3 hover:bg-[#d5e3fc]/50 transition-all" href="#">
+<span class="material-symbols-outlined">help_center</span>
+<span class="font-medium text-sm">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-8 w-full h-16 bg-[#f8f9ff] dark:bg-slate-950 border-b border-slate-200/15 sticky top-0 z-40">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#002045] dark:text-white uppercase">Sovereign Archive</span>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="signature-input pl-10 pr-4 py-1 text-sm w-64 bg-transparent" placeholder="Search projects or units..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="relative text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">history_edu</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant/30"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right">
+<p class="text-xs font-bold text-primary group-hover:text-primary-container">Admin User</p>
+<p class="text-[10px] text-on-surface-variant">System Registrar</p>
+</div>
+<img alt="Administrator profile" class="w-8 h-8 rounded-full border border-primary-container/20" data-alt="Close up portrait of a professional male administrator in a light blue shirt with a neutral background and professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKz9fY4HadUsPPp9RUaBCRwIBJ1NviWpcSwup9ohIugZuBfG475NfeSmzitA2YVFgWRsI39u05iKdHSsJ7mR_T62-tme_D26gg9D0ibOEDyeiIlg8wC1qSTmHY7DU0BQRlWgcapmO8QF7C_kdfz30_87v91_njdppSJKWF3qV30TnxdmyczppfGoG8cblKb_zyN119e1wJoHJfxu0LuLXV4ftBqtNcUgA6Ch_H_OXqla63EuEE0Qk7fWBD9JbuVegqhEtgCmoZLAw"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-8 space-y-8">
+<!-- Header & Summary Stats -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-1">
+<h2 class="text-3xl font-extrabold tracking-tight text-primary">Housing Stock Inventory</h2>
+<p class="text-on-surface-variant font-medium">Real-time oversight of social housing developments and availability.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-4 min-w-[180px] shadow-sm border-b-4 border-primary">
+<p class="text-[10px] uppercase font-bold tracking-widest text-on-surface-variant mb-1">Total Stock</p>
+<p class="text-2xl font-black text-primary">12,842 <span class="text-xs font-normal text-on-surface-variant">Units</span></p>
+</div>
+<div class="bg-surface-container-lowest p-4 min-w-[180px] shadow-sm border-b-4 border-tertiary-container">
+<p class="text-[10px] uppercase font-bold tracking-widest text-on-surface-variant mb-1">Vacancy Rate</p>
+<p class="text-2xl font-black text-tertiary-container">4.2% <span class="text-xs font-normal text-on-surface-variant">Avg</span></p>
+</div>
+<div class="bg-surface-container-lowest p-4 min-w-[180px] shadow-sm border-b-4 border-on-primary-container">
+<p class="text-[10px] uppercase font-bold tracking-widest text-on-surface-variant mb-1">Pipeline</p>
+<p class="text-2xl font-black text-on-primary-container">3,150 <span class="text-xs font-normal text-on-surface-variant">Active</span></p>
+</div>
+</div>
+</div>
+<!-- Filters & Views -->
+<div class="flex items-center justify-between bg-surface-container-low p-4 rounded-lg">
+<div class="flex items-center gap-6">
+<div class="flex flex-col gap-1">
+<label class="text-[10px] font-bold uppercase text-on-surface-variant">District</label>
+<select class="signature-input text-sm py-1 bg-transparent min-w-[140px]">
+<option>All Districts</option>
+<option>Central Quarter</option>
+<option>North Harbour</option>
+<option>South Meridian</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[10px] font-bold uppercase text-on-surface-variant">Status</label>
+<select class="signature-input text-sm py-1 bg-transparent min-w-[140px]">
+<option>Any Status</option>
+<option>Complete</option>
+<option>In Progress</option>
+<option>Planning</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[10px] font-bold uppercase text-on-surface-variant">Price Range</label>
+<div class="flex items-center gap-2">
+<input class="signature-input text-xs w-16 py-1 bg-transparent" placeholder="Min" type="text"/>
+<span class="text-on-surface-variant">-</span>
+<input class="signature-input text-xs w-16 py-1 bg-transparent" placeholder="Max" type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-center bg-surface-container-highest p-1 rounded-md">
+<button class="p-2 bg-surface-container-lowest shadow-sm rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">grid_view</span>
+</button>
+<button class="p-2 hover:bg-surface-container-lowest/50 rounded flex items-center justify-center transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">format_list_bulleted</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid of Projects -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Project Card 1: Large Featured -->
+<div class="lg:col-span-2 group relative overflow-hidden bg-surface-container-lowest rounded-xl shadow-sm border-l-8 border-primary transition-all hover:shadow-md">
+<div class="flex h-full">
+<div class="w-1/3 relative">
+<img alt="Riverside Social Block" class="absolute inset-0 w-full h-full object-cover" data-alt="Modern architectural rendering of a social housing complex with large glass windows and vertical wooden slats at sunset." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkHy4aYzSc910O6qUTiVqRGeCLnze40EfM_1-jDz0yfwW-qgFG0n1ZmDIEaIVuQCj1vMJ_FmZ7aLZs3-_sV8vBWqa_Fu4vkT_tdkxusj9CA1Qgm1mDkQwy4x3vJHGJjyIfgz3fQy5OcFkLtgy11nlXdQvp-pdmihJtW7MwxgHr8ZBqTNtp23ZlckzaGcHsQcIeLKcPTqUNbS39lAeRXsZoylgkTIcLQaePx8lExzWHuJsMkGpwgsfs29yNF3jwNNKX2lkJdWa8ruA"/>
+<div class="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase">Complete</div>
+</div>
+<div class="w-2/3 p-6 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-xl font-bold text-primary">Riverside Social Block</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">open_in_new</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant text-xs mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                    South Meridian District, Riverside Dr.
+                                </div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Total Units</p>
+<p class="text-lg font-black text-primary">420</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded">
+<p class="text-[10px] text-on-surface-variant uppercase font-bold">Available</p>
+<p class="text-lg font-black text-tertiary-container">12</p>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-bold uppercase text-on-surface-variant">
+<span>Occupancy Depth</span>
+<span>97%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 97%"></div>
+</div>
+<div class="pt-4 flex justify-end">
+<button class="text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+                                        Drill-down to Units <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Project Card 2: Status Focused -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-t-8 border-on-primary-container flex flex-col">
+<div class="flex justify-between mb-4">
+<span class="bg-surface-container text-on-primary-container text-[10px] font-bold px-3 py-1 rounded-full uppercase">In Progress</span>
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</div>
+<h3 class="text-lg font-bold text-primary mb-1">Emerald Heights Ph. II</h3>
+<p class="text-xs text-on-surface-variant flex items-center gap-1 mb-6">
+<span class="material-symbols-outlined text-sm">location_on</span> North Harbour
+                    </p>
+<div class="flex-1 space-y-4">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/15">
+<span class="text-xs text-on-surface-variant">Completion Target</span>
+<span class="text-xs font-bold">Oct 2024</span>
+</div>
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/15">
+<span class="text-xs text-on-surface-variant">Units Allocated</span>
+<span class="text-xs font-bold">185 / 250</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-xs text-on-surface-variant">Lottery Status</span>
+<span class="text-xs font-bold text-tertiary-container italic">Ready for Draw</span>
+</div>
+</div>
+<div class="mt-6">
+<button class="w-full py-2 bg-surface-container-high hover:bg-surface-container text-primary text-xs font-bold rounded transition-colors">
+                            Manage Inventory
+                        </button>
+</div>
+</div>
+<!-- Apartment Units Drill-down (Simulated Table) -->
+<div class="lg:col-span-3 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="px-6 py-4 bg-primary text-white flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">layers</span>
+<h4 class="font-bold">Unit Explorer: Riverside Social Block</h4>
+</div>
+<div class="flex gap-4">
+<span class="text-xs opacity-75">Showing 10 of 420 units</span>
+<button class="text-xs font-bold border border-white/30 px-3 py-1 rounded hover:bg-white/10">Export CSV</button>
+</div>
+</div>
+<table class="w-full text-left">
+<thead class="bg-surface-container-low border-b border-outline-variant/15">
+<tr>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-on-surface-variant">Unit ID</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-on-surface-variant">Floor</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-on-surface-variant">Type</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-on-surface-variant">Sq Footage</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-on-surface-variant">Base Rent</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-black text-on-surface-variant">Status</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/15">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 text-sm font-bold text-primary">RS-401</td>
+<td class="px-6 py-4 text-sm">04</td>
+<td class="px-6 py-4 text-sm">2BR / 1BA</td>
+<td class="px-6 py-4 text-sm">840 sqft</td>
+<td class="px-6 py-4 text-sm font-medium">$850/mo</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-high text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded uppercase">Occupied</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 text-sm font-bold text-primary">RS-402</td>
+<td class="px-6 py-4 text-sm">04</td>
+<td class="px-6 py-4 text-sm">Studio</td>
+<td class="px-6 py-4 text-sm">450 sqft</td>
+<td class="px-6 py-4 text-sm font-medium">$620/mo</td>
+<td class="px-6 py-4">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-bold px-2 py-0.5 rounded uppercase">Vacant</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 text-sm font-bold text-primary">RS-403</td>
+<td class="px-6 py-4 text-sm">04</td>
+<td class="px-6 py-4 text-sm">3BR / 2BA</td>
+<td class="px-6 py-4 text-sm">1,120 sqft</td>
+<td class="px-6 py-4 text-sm font-medium">$1,100/mo</td>
+<td class="px-6 py-4">
+<span class="bg-surface-container-high text-on-primary-container text-[10px] font-bold px-2 py-0.5 rounded uppercase">Occupied</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4 text-sm font-bold text-primary">RS-404</td>
+<td class="px-6 py-4 text-sm">04</td>
+<td class="px-6 py-4 text-sm">1BR / 1BA</td>
+<td class="px-6 py-4 text-sm">620 sqft</td>
+<td class="px-6 py-4 text-sm font-medium">$740/mo</td>
+<td class="px-6 py-4">
+<span class="bg-error-container text-on-error-container text-[10px] font-bold px-2 py-0.5 rounded uppercase">Maintenance</span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="px-6 py-4 flex justify-center border-t border-outline-variant/15">
+<button class="text-xs font-bold text-primary hover:bg-surface-container-high px-4 py-2 rounded transition-colors">Load more units</button>
+</div>
+</div>
+<!-- Secondary Small Project Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-outline-variant hover:border-primary transition-all">
+<div class="flex items-start justify-between mb-4">
+<div>
+<h3 class="font-bold text-primary">Willow Park Villas</h3>
+<p class="text-[10px] text-on-surface-variant">South Meridian • Planning</p>
+</div>
+<span class="material-symbols-outlined text-outline">architecture</span>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-[10px] font-bold">
+<span class="text-on-surface-variant uppercase">Proposed Units</span>
+<span>84</span>
+</div>
+<div class="h-1 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-outline" style="width: 0%"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant leading-relaxed">Infrastructure assessment complete. Environmental impact report pending approval for Q4 launch.</p>
+</div>
+</div>
+<!-- Summary Chart/Data Visualization Placeholder -->
+<div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col md:flex-row gap-8 items-center">
+<div class="w-full md:w-1/3 flex flex-col items-center justify-center space-y-2">
+<div class="relative w-32 h-32">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="109.3" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl font-black text-primary">70%</span>
+<span class="text-[8px] uppercase font-bold text-on-surface-variant">Allocated</span>
+</div>
+</div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Stock Utilization</p>
+</div>
+<div class="flex-1 grid grid-cols-2 gap-x-8 gap-y-4">
+<div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Family Units</p>
+<div class="flex items-end gap-2">
+<span class="text-lg font-black text-primary">6,420</span>
+<span class="text-[10px] text-on-primary-container mb-1">+4.2%</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Elderly Housing</p>
+<div class="flex items-end gap-2">
+<span class="text-lg font-black text-primary">2,110</span>
+<span class="text-[10px] text-error mb-1">-1.5%</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Disability Adapted</p>
+<div class="flex items-end gap-2">
+<span class="text-lg font-black text-primary">942</span>
+<span class="text-[10px] text-on-primary-container mb-1">+0.8%</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Single Occupancy</p>
+<div class="flex items-end gap-2">
+<span class="text-lg font-black text-primary">3,370</span>
+<span class="text-[10px] text-on-primary-container mb-1">+12.0%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

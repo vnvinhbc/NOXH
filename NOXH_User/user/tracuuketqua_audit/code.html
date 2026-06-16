@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kết quả &amp; Audit - Hệ thống NOXH</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed": "#d6e3ff",
+              "on-primary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "background": "#f8f9fa",
+              "tertiary-container": "#4f2f00",
+              "on-secondary": "#ffffff",
+              "tertiary": "#321c00",
+              "on-tertiary-container": "#c6965e",
+              "surface-dim": "#d9dadb",
+              "secondary": "#465f88",
+              "on-background": "#191c1d",
+              "secondary-container": "#b6d0ff",
+              "primary-fixed": "#d7e2ff",
+              "on-secondary-fixed-variant": "#2e476f",
+              "surface-container-low": "#f3f4f5",
+              "surface-container-high": "#e7e8e9",
+              "primary-fixed-dim": "#acc7ff",
+              "tertiary-fixed-dim": "#f1bd81",
+              "on-primary-container": "#669eff",
+              "error-container": "#ffdad6",
+              "on-surface-variant": "#44474e",
+              "secondary-fixed-dim": "#aec7f7",
+              "on-surface": "#191c1d",
+              "primary": "#001f49",
+              "on-tertiary-fixed-variant": "#623f0f",
+              "on-secondary-container": "#3f5881",
+              "inverse-on-surface": "#f0f1f2",
+              "surface-container-highest": "#e1e3e4",
+              "surface-bright": "#f8f9fa",
+              "surface": "#f8f9fa",
+              "surface-tint": "#115cb9",
+              "on-primary-fixed-variant": "#004491",
+              "on-error": "#ffffff",
+              "inverse-primary": "#acc7ff",
+              "error": "#ba1a1a",
+              "surface-container": "#edeeef",
+              "outline-variant": "#c4c6cf",
+              "outline": "#74777f",
+              "on-error-container": "#93000a",
+              "inverse-surface": "#2e3132",
+              "primary-container": "#003471",
+              "on-primary-fixed": "#001a40",
+              "tertiary-fixed": "#ffddb9",
+              "on-secondary-fixed": "#001b3d",
+              "on-tertiary-fixed": "#2b1700",
+              "surface-variant": "#e1e3e4"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #191c1d; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-header { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .audit-row:hover { background-color: #edeeef; }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-none flex justify-between items-center px-6 h-16 w-full max-w-full">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold text-blue-900 dark:text-blue-100 tracking-tight">Bốc thăm NOXH</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-2 rounded-lg" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-2 rounded-lg" href="#">Hồ sơ</a>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors px-3 py-2 rounded-lg" href="#">Dự án</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors"><span class="material-symbols-outlined text-on-surface-variant">notifications</span></button>
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors"><span class="material-symbols-outlined text-on-surface-variant">account_circle</span></button>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-screen flex flex-col w-64 bg-slate-50 dark:bg-slate-950 border-r dark:border-slate-800 hidden md:flex">
+<div class="p-6 flex flex-col items-center border-b border-surface-container">
+<div class="w-16 h-16 mb-3 rounded-full overflow-hidden bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl">account_balance</span>
+</div>
+<h2 class="text-lg font-black text-blue-900 dark:text-blue-50">Hệ thống NOXH</h2>
+<p class="text-xs text-slate-500 text-center">Cổng thông tin chính thống</p>
+</div>
+<nav class="flex-1 py-4">
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-sm font-medium">Hồ sơ của tôi</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="text-sm font-medium">Theo dõi tiến độ</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-r-4 border-blue-700 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span class="text-sm font-medium">Kết quả &amp; Audit</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">event_seat</span>
+<span class="text-sm font-medium">Phòng bốc thăm</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-sm font-medium">Thông báo</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-all duration-200" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-sm font-medium">Lịch sử thao tác</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-64 pt-24 px-6 pb-20 max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="mb-12">
+<h1 class="text-4xl font-extrabold text-primary mb-4 tracking-tight">Tra cứu kết quả &amp; Minh bạch Audit</h1>
+<p class="text-on-surface-variant max-w-2xl text-lg leading-relaxed">
+                Hệ thống công khai kết quả bốc thăm của tất cả các dự án Nhà ở Xã hội. Mọi lượt quay đều được ghi nhận vào Log kỹ thuật với dấu thời gian và mã hóa để đảm bảo tính công bằng tuyệt đối.
+            </p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Search Section - Large Impact -->
+<section class="lg:col-span-12 bg-white rounded-xl p-8 shadow-sm border-none surface-container-lowest">
+<div class="flex flex-col md:flex-row gap-6 items-end">
+<div class="flex-1 w-full">
+<label class="block text-sm font-bold text-primary mb-2">Tra cứu mã hồ sơ hoặc số CCCD</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-12 pr-4 py-4 rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-surface-tint text-lg" placeholder="VD: HS-2024-XXXX hoặc 001xxxxxxxx" type="text"/>
+</div>
+<p class="mt-2 text-xs text-on-surface-variant italic">Lưu ý: Vì lý do bảo mật, số CCCD sẽ được hiển thị ẩn một phần (VD: 0010****1234).</p>
+</div>
+<button class="bg-surface-tint text-white px-10 py-4 rounded-lg font-bold hover:opacity-90 transition-all h-[60px]">
+                        Tra cứu ngay
+                    </button>
+</div>
+</section>
+<!-- Results Table - Main Workspace -->
+<section class="lg:col-span-8 bg-white rounded-xl shadow-sm overflow-hidden flex flex-col surface-container-lowest">
+<div class="px-6 py-5 border-b border-surface-container flex justify-between items-center">
+<h3 class="text-xl font-bold text-primary">Danh sách trúng tuyển chính thức</h3>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Cập nhật: 14:30 - 24/05</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">Mã hồ sơ</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">Họ và tên</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">Dự án</th>
+<th class="px-6 py-4 text-xs font-bold text-on-surface-variant uppercase tracking-widest">Kết quả</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-mono text-sm text-surface-tint">HS-9921-02</td>
+<td class="px-6 py-4 font-semibold">Nguyễn Văn An</td>
+<td class="px-6 py-4 text-sm">NOXH Eco City 2</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-fixed text-on-secondary-fixed-variant">
+                                        Trúng tuyển
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-mono text-sm text-surface-tint">HS-4482-15</td>
+<td class="px-6 py-4 font-semibold">Trần Thị Thu Thảo</td>
+<td class="px-6 py-4 text-sm">Chung cư Hope Residences</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-fixed text-on-secondary-fixed-variant">
+                                        Trúng tuyển
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-mono text-sm text-surface-tint">HS-1102-09</td>
+<td class="px-6 py-4 font-semibold">Lê Hoàng Nam</td>
+<td class="px-6 py-4 text-sm">Green House Việt Hưng</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-highest text-on-surface-variant">
+                                        Dự phòng 01
+                                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-surface-container text-center">
+<button class="text-sm font-bold text-surface-tint hover:underline">Xem toàn bộ 1,240 kết quả</button>
+</div>
+</section>
+<!-- Download Reports - Asymmetric Side Card -->
+<section class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-primary text-white rounded-xl p-6 shadow-lg overflow-hidden relative">
+<div class="relative z-10">
+<h3 class="text-xl font-bold mb-2">Báo cáo tổng thuật</h3>
+<p class="text-sm text-blue-200 mb-6">Tải về báo cáo chi tiết sự kiện bốc thăm đã được xác thực bằng Chữ ký số Chính phủ.</p>
+<div class="space-y-3">
+<button class="w-full flex items-center justify-between bg-white/10 hover:bg-white/20 p-4 rounded-lg transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-container">picture_as_pdf</span>
+<span class="text-sm font-medium">Báo cáo bốc thăm_24-05.pdf</span>
+</div>
+<span class="material-symbols-outlined text-xs group-hover:translate-y-1 transition-transform">download</span>
+</button>
+<button class="w-full flex items-center justify-between bg-white/10 hover:bg-white/20 p-4 rounded-lg transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary-container">verified_user</span>
+<span class="text-sm font-medium">Chứng thư số đính kèm.sig</span>
+</div>
+<span class="material-symbols-outlined text-xs group-hover:translate-y-1 transition-transform">download</span>
+</button>
+</div>
+</div>
+<!-- Decorative background icon -->
+<span class="material-symbols-outlined absolute -right-8 -bottom-8 text-[120px] opacity-10 rotate-12">history_edu</span>
+</div>
+<div class="bg-tertiary-fixed text-on-tertiary-fixed p-6 rounded-xl border border-tertiary-container/10">
+<h4 class="font-bold flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-tertiary">info</span>
+                        Thông tin hỗ trợ
+                    </h4>
+<p class="text-xs leading-relaxed opacity-80">Nếu bạn phát hiện sai sót trong kết quả hoặc có thắc mắc về quá trình Audit, vui lòng liên hệ Ban thanh tra qua hotline: <strong>1900 68xx</strong>.</p>
+</div>
+</section>
+<!-- Technical Audit Log - Full Width Integrity Focus -->
+<section class="lg:col-span-12 bg-surface-container-low rounded-xl p-8 border border-outline-variant/30">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+<div>
+<h3 class="text-2xl font-black text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-error">security</span>
+                            Log kỹ thuật công khai
+                        </h3>
+<p class="text-on-surface-variant text-sm mt-1">Ghi lại vĩnh viễn mọi tương tác với thuật toán quay số tại thời điểm thực thi.</p>
+</div>
+<div class="flex gap-2">
+<span class="bg-white px-4 py-2 rounded-lg text-xs font-bold border border-outline-variant shadow-sm flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            Live Streaming Feed
+                        </span>
+<button class="bg-white p-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-sm">refresh</span>
+</button>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-inner overflow-hidden">
+<div class="grid grid-cols-12 bg-surface-container px-6 py-3 border-b border-outline-variant/30 text-[10px] font-bold text-outline uppercase tracking-widest">
+<div class="col-span-2">Thời gian (UTC+7)</div>
+<div class="col-span-3">Mã phiên (Session ID)</div>
+<div class="col-span-4">Hành động hệ thống</div>
+<div class="col-span-3 text-right">Mã băm SHA-256</div>
+</div>
+<div class="divide-y divide-surface-container">
+<!-- Audit Row 1 -->
+<div class="grid grid-cols-12 px-6 py-4 audit-row transition-all text-xs">
+<div class="col-span-2 text-on-surface-variant">14:22:01.042</div>
+<div class="col-span-3 font-mono text-primary font-medium">SESS_9921_BC</div>
+<div class="col-span-4 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                                Khởi tạo mảng quay số (N=4,201)
+                            </div>
+<div class="col-span-3 text-right font-mono text-[10px] text-on-surface-variant truncate">0x9f86d081884c7d659a2feaa0c55ad015...</div>
+</div>
+<!-- Audit Row 2 -->
+<div class="grid grid-cols-12 px-6 py-4 audit-row transition-all text-xs">
+<div class="col-span-2 text-on-surface-variant">14:22:05.112</div>
+<div class="col-span-3 font-mono text-primary font-medium">SESS_9921_BC</div>
+<div class="col-span-4 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                                Xác thực danh tính đại diện: GD-2024
+                            </div>
+<div class="col-span-3 text-right font-mono text-[10px] text-on-surface-variant truncate">0x5e884898da28047151d0e56f8dc62927...</div>
+</div>
+<!-- Audit Row 3 -->
+<div class="grid grid-cols-12 px-6 py-4 audit-row transition-all text-xs bg-secondary-container/10">
+<div class="col-span-2 text-on-surface-variant font-bold">14:23:10.000</div>
+<div class="col-span-3 font-mono text-primary font-medium">SESS_9921_BC</div>
+<div class="col-span-4 flex items-center gap-2 font-bold text-surface-tint">
+<span class="material-symbols-outlined text-xs">play_circle</span>
+                                THỰC THI QUAY SỐ: TRÚNG TUYỂN #01
+                            </div>
+<div class="col-span-3 text-right font-mono text-[10px] text-on-surface-variant truncate">0x76a2173be6393254e72ffa4d6df1030a...</div>
+</div>
+<!-- Audit Row 4 -->
+<div class="grid grid-cols-12 px-6 py-4 audit-row transition-all text-xs">
+<div class="col-span-2 text-on-surface-variant">14:23:15.540</div>
+<div class="col-span-3 font-mono text-primary font-medium">SESS_9921_BC</div>
+<div class="col-span-4 flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                Lưu kết quả: HS-9921-02 (Verified)
+                            </div>
+<div class="col-span-3 text-right font-mono text-[10px] text-on-surface-variant truncate">0x1d22026d3330f532a13628d002a2491b...</div>
+</div>
+</div>
+</div>
+<div class="mt-6 flex justify-between items-center text-xs text-on-surface-variant">
+<p>Hiển thị 50 lượt quay gần nhất của dự án đang chọn.</p>
+<div class="flex gap-4">
+<button class="hover:text-primary font-bold">Tải toàn bộ Audit Log (.csv)</button>
+<button class="hover:text-primary font-bold">Xem trên Blockchain Explorer</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 px-6 flex flex-col md:flex-row justify-between items-center mt-12">
+<div class="mb-4 md:mb-0">
+<span class="font-bold text-slate-800 dark:text-slate-200 block md:inline">Hệ thống NOXH</span>
+<span class="text-xs text-slate-500 md:ml-4">© 2024 Cổng thông tin Nhà ở Xã hội - Chính phủ điện tử</span>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="text-xs text-slate-500 hover:text-blue-500 transition-colors" href="#">Hotline: 1900xxxx</a>
+<a class="text-xs text-slate-500 hover:text-blue-500 transition-colors" href="#">Điều khoản sử dụng</a>
+<a class="text-xs text-slate-500 hover:text-blue-500 transition-colors" href="#">Tra cứu nhanh</a>
+<a class="text-xs text-slate-500 hover:text-blue-500 transition-colors underline text-blue-600" href="#">Hướng dẫn</a>
+</div>
+</footer>
+</body></html>

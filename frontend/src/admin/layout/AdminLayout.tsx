@@ -1,14 +1,17 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { BarChart3, Bell, FileBadge2, LogOut, Search, Settings, ShieldCheck, Ticket } from 'lucide-react'
+import { BarChart3, Bell, Building2, FileBadge2, LayoutDashboard, LogOut, ScrollText, Search, Settings, Ticket, Users } from 'lucide-react'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/stores/authStore'
 import BrandLogo from '@/components/common/BrandLogo'
 
 const navItems = [
+  { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/applications', label: 'Quan ly ho so', icon: FileBadge2 },
   { to: '/admin/lottery-events', label: 'Quay so NOXH', icon: Ticket },
-  { to: '#', label: 'KYC/Cham diem', icon: ShieldCheck, disabled: true },
-  { to: '#', label: 'Ket qua', icon: BarChart3, disabled: true },
+  { to: '/admin/results', label: 'Ket qua', icon: BarChart3 },
+  { to: '/admin/housing-stock', label: 'Kho can ho', icon: Building2 },
+  { to: '/admin/audit-log', label: 'Audit log', icon: ScrollText },
+  { to: '#', label: 'Nguoi dung', icon: Users, disabled: true },
 ]
 
 export default function AdminLayout() {
@@ -74,7 +77,7 @@ export default function AdminLayout() {
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-br from-[#002045] to-[#1a365d] px-4 py-3 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-md"
           >
             <Bell size={14} />
-            Tao dot boc tham
+            Tao dot quay
           </button>
 
           <button
@@ -99,7 +102,7 @@ export default function AdminLayout() {
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#74777f]" />
               <input
                 type="text"
-                placeholder="Tim theo ma ho so, ten nguoi nop hoac ma boc tham..."
+                placeholder="Tim ho so, event, audit log..."
                 className="h-10 w-full rounded-lg border border-[#c4c6cf]/40 bg-white pl-10 pr-4 text-sm outline-none transition-colors focus:border-[#002045]"
               />
             </div>

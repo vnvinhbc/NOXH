@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { Download, Eye, FileBadge2, Filter, Mail, MoreVertical, TrendingUp, CheckCircle2, Clock3, ShieldX } from 'lucide-react'
+import { Download, Eye, FileBadge2, Filter, Mail, TrendingUp, CheckCircle2, Clock3, ShieldX } from 'lucide-react'
 import { toast } from 'sonner'
 import { adminApplicationsApi } from '@/admin/api/adminApplications'
 import type { AdminApplicationStatus } from '@/admin/types'
@@ -164,7 +165,7 @@ export default function AdminApplicationsPage() {
             <table className="min-w-full text-left">
               <thead className="bg-[#eff4ff] text-[#43474e]">
                 <tr>
-                  {['Ma', 'Nguoi nop', 'Ngay nop', 'Trang thai', 'Diem uu tien', 'Du an', ''].map((header) => (
+                  {['Ma', 'Nguoi nop', 'Ngay nop', 'Trang thai', 'Nhom', 'Du an', ''].map((header) => (
                     <th key={header} className="border-b border-[#c4c6cf]/20 px-4 py-3 text-[11px] font-extrabold uppercase tracking-[0.24em]">
                       {header}
                     </th>
@@ -201,15 +202,24 @@ export default function AdminApplicationsPage() {
                       </span>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      <span className="inline-block rounded-full bg-[#d6e3ff] px-3 py-1 text-xs font-extrabold text-[#001b3c]">
-                        {application.priorityScore ?? 0}
+                      <span className={`inline-block rounded-full px-3 py-1 text-xs font-extrabold ${
+                        (application.priorityScore ?? 0) > 0
+                          ? 'bg-[#d6e3ff] text-[#001b3c]'
+                          : 'bg-[#eef0f3] text-[#43474e]'
+                      }`}>
+                        {(application.priorityScore ?? 0) > 0 ? 'UU TIEN' : 'THUONG'}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-sm text-[#555f70]">{application.projectName}</td>
                     <td className="px-4 py-4 text-right">
-                      <button type="button" className="text-[#555f70] hover:text-[#002045]">
-                        <MoreVertical size={16} />
-                      </button>
+                      <Link
+                        to={`/admin/applications/${application.id}`}
+                        onClick={(event) => event.stopPropagation()}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#555f70] hover:bg-[#eff4ff] hover:text-[#002045]"
+                        aria-label="Xem chi tiet ho so"
+                      >
+                        <Eye size={16} />
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -247,12 +257,14 @@ export default function AdminApplicationsPage() {
                   <p className="mt-1 font-semibold text-[#0d1c2e]">{statusLabel(selectedApplication.status)}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#43474e]">Diem uu tien</p>
-                  <p className="mt-1 font-semibold text-[#0d1c2e]">{selectedApplication.priorityScore ?? 0}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#43474e]">Nhom uu tien</p>
+                  <p className="mt-1 font-semibold text-[#0d1c2e]">
+                    {(selectedApplication.priorityScore ?? 0) > 0 ? 'PRIORITY' : 'NORMAL'}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#43474e]">So nhan khau</p>
-                  <p className="mt-1 font-semibold text-[#0d1c2e]">{selectedApplication.householdSize ?? '-'}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#43474e]">Doi tuong</p>
+                  <p className="mt-1 font-semibold text-[#0d1c2e]">{selectedApplication.priorityCategory || '-'}</p>
                 </div>
               </div>
 
@@ -311,6 +323,13 @@ export default function AdminApplicationsPage() {
               </div>
 
               <div className="space-y-3 border-t border-[#c4c6cf]/20 pt-6">
+                <Link
+                  to={`/admin/applications/${selectedApplication.id}`}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#002045]/20 bg-white px-4 py-3 text-xs font-bold uppercase tracking-[0.2em] text-[#002045]"
+                >
+                  <Eye size={14} />
+                  Xem chi tiet
+                </Link>
                 <button
                   type="button"
                   onClick={() => updateStatusMutation.mutate({ id: selectedApplication.id, status: 'VERIFIED' })}

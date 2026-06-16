@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign Archive | Real-time Lottery Control Room</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "tertiary-fixed-dim": "#f2bc82",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#ffddba",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "surface": "#f8f9ff",
+            "primary": "#002045",
+            "on-primary-container": "#86a0cd",
+            "secondary-fixed": "#d9e3f8",
+            "on-surface": "#0d1c2e",
+            "error": "#ba1a1a",
+            "on-secondary-fixed": "#121c2b",
+            "surface-tint": "#455f88",
+            "on-secondary": "#ffffff",
+            "surface-container-high": "#dce9ff",
+            "background": "#f8f9ff",
+            "inverse-surface": "#233144",
+            "secondary-fixed-dim": "#bdc7db",
+            "on-error": "#ffffff",
+            "primary-container": "#1a365d",
+            "secondary-container": "#d9e3f8",
+            "on-secondary-container": "#5b6577",
+            "surface-bright": "#f8f9ff",
+            "outline-variant": "#c4c6cf",
+            "surface-container-highest": "#d5e3fc",
+            "on-tertiary-container": "#c6955e",
+            "on-primary-fixed-variant": "#2d476f",
+            "surface-container": "#e6eeff",
+            "inverse-primary": "#adc7f7",
+            "surface-variant": "#d5e3fc",
+            "primary-fixed-dim": "#adc7f7",
+            "surface-container-low": "#eff4ff",
+            "inverse-on-surface": "#eaf1ff",
+            "on-secondary-fixed-variant": "#3e4758",
+            "surface-dim": "#ccdbf3",
+            "primary-fixed": "#d6e3ff",
+            "outline": "#74777f",
+            "secondary": "#555f70",
+            "on-surface-variant": "#43474e",
+            "on-background": "#0d1c2e",
+            "on-primary": "#ffffff",
+            "tertiary": "#321b00",
+            "tertiary-container": "#4f2e00",
+            "on-tertiary-fixed-variant": "#633f0f",
+            "on-primary-fixed": "#001b3c",
+            "on-tertiary-fixed": "#2b1700",
+            "surface-container-lowest": "#ffffff"
+          },
+          fontFamily: {
+            "headline": ["Inter"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+    .glass-panel {
+      background: rgba(213, 227, 252, 0.8);
+      backdrop-filter: blur(20px);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #74777f33;
+      border-radius: 10px;
+    }
+    .scanning-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #002045, transparent);
+      animation: scan 3s linear infinite;
+    }
+    @keyframes scan {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-background font-body text-on-surface overflow-hidden h-screen flex">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#eff4ff] dark:bg-slate-900 flex flex-col h-full py-6 z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+</div>
+<div>
+<h2 class="text-[#002045] font-bold text-sm leading-tight">GovTech Admin</h2>
+<p class="text-slate-500 text-xs">Housing Authority</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</div>
+<div class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+<span class="font-medium">Profile Management</span>
+</div>
+<div class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="font-medium">KYC/Scoring</span>
+</div>
+<div class="bg-[#d5e3fc] dark:bg-blue-900/40 text-[#002045] border-l-4 border-[#002045] font-bold shadow-sm py-3 px-6 flex items-center gap-3 transition-transform">
+<span class="material-symbols-outlined" data-icon="event_repeat" style="font-variation-settings: 'FILL' 1;">event_repeat</span>
+<span class="font-medium">Lottery Event</span>
+</div>
+<div class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="font-medium">Results</span>
+</div>
+<div class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-medium">Audit Log</span>
+</div>
+<div class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-medium">User Management</span>
+</div>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-white font-bold rounded shadow-lg flex items-center justify-center gap-2 mb-6">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+        New Lottery
+      </button>
+<div class="space-y-4 border-t border-outline-variant/15 pt-4">
+<div class="flex items-center gap-3 text-slate-500 text-xs">
+<span class="material-symbols-outlined text-sm" data-icon="cloud_done">cloud_done</span>
+          System Status
+        </div>
+<div class="flex items-center gap-3 text-error text-xs font-bold cursor-pointer">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+          Logout
+        </div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-0 bg-surface">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-8 w-full h-16 sticky top-0 z-50 bg-[#f8f9ff] dark:bg-slate-950 font-inter antialiased tracking-tight">
+<div class="flex items-center gap-4">
+<h1 class="text-xl font-bold tracking-tighter text-[#002045] dark:text-white uppercase">Sovereign Archive</h1>
+<div class="flex items-center px-3 py-1 bg-tertiary-container/10 border-b-2 border-tertiary rounded-t-sm">
+<span class="relative flex h-2 w-2 mr-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-error"></span>
+</span>
+<span class="text-[10px] font-extrabold tracking-widest text-primary">LIVE CONTROL ROOM</span>
+</div>
+</div>
+<div class="flex-1 max-w-xl mx-12">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-lowest border-0 border-b-2 border-outline focus:border-primary focus:ring-0 text-sm py-2 pl-10" placeholder="Search archive by hash or applicant ID..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-[#eff4ff] p-2 rounded-full transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-[#eff4ff] p-2 rounded-full transition-colors" data-icon="settings">settings</span>
+</div>
+<div class="h-8 w-px bg-outline-variant/30 mx-2"></div>
+<div class="flex items-center gap-3">
+<span class="text-sm font-semibold text-primary">Admin</span>
+<img class="w-8 h-8 rounded-full border border-primary/20" data-alt="professional portrait of a senior government administrator in a dark suit with a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-6t1cE6VnzuzMueEkFP691OVV_zez-l5CMY36MDstiSUTuNFfHbXMdxzOTmPJFcK5cU5QmBAK_jC5EPbCV9RADQwx4FN6Zb9fqpLzAccSnE2DxNmykjVTd-uz5I3rx-Z6v-J0mSnKeprqxk916Jlvzl929o-PYJ0omTRxNVLDpJiH5r9JWud1h70qLrr6EqMPw9sF979r9eUu42jfi5pU2p558Aux-_-_Ks9xNlP9DxhBt3PU-E4rIvgqo53pa9aMZhV_D2D_rZ4"/>
+</div>
+</div>
+</header>
+<!-- Command Center Workspace -->
+<div class="flex-1 flex gap-4 p-6 min-h-0">
+<!-- Left Panel: Lottery Configuration -->
+<section class="w-80 flex flex-col gap-4">
+<div class="bg-surface-container-low p-6 rounded-lg flex flex-col gap-6">
+<h3 class="text-xs font-black tracking-widest text-primary/60 uppercase">Configuration Protocol</h3>
+<div class="space-y-4">
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase mb-1 block">Public Entropy Seed</label>
+<div class="bg-surface-container-lowest p-3 font-mono text-[11px] break-all border-b border-outline-variant/50">
+                8f2d-4e9a-11bc-992a-ff01-de62-4410
+              </div>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase mb-1 block">Hash Algorithm</label>
+<div class="flex items-center justify-between bg-surface-container-lowest p-3 border-b border-outline-variant/50">
+<span class="text-sm font-bold text-primary uppercase">SHA-256 (Immutable)</span>
+<span class="material-symbols-outlined text-primary text-lg" data-icon="security" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+</div>
+<div>
+<label class="text-[10px] font-bold text-on-surface-variant uppercase mb-1 block">System Entropy</label>
+<div class="bg-surface-container-lowest p-3 border-b border-outline-variant/50">
+<div class="flex justify-between text-[11px] mb-2">
+<span class="text-on-surface-variant">Real-time Bitrate</span>
+<span class="text-primary font-bold">142.4 kbps</span>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[78%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg flex-1 overflow-hidden flex flex-col">
+<h3 class="text-xs font-black tracking-widest text-primary/60 uppercase mb-4">Hardware Integrity</h3>
+<div class="space-y-3 custom-scrollbar overflow-y-auto">
+<div class="flex items-center gap-3 p-3 bg-surface-container-lowest">
+<span class="material-symbols-outlined text-tertiary text-sm" data-icon="memory">memory</span>
+<div class="flex-1">
+<p class="text-[10px] font-bold leading-none mb-1">TRNG Node Alpha</p>
+<div class="h-1 w-full bg-surface-container-high rounded-full"><div class="bg-tertiary-fixed-dim h-full w-2/3"></div></div>
+</div>
+<span class="text-[10px] font-bold text-on-tertiary-container">ACTIVE</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-surface-container-lowest">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="dns">dns</span>
+<div class="flex-1">
+<p class="text-[10px] font-bold leading-none mb-1">Oracle Sync</p>
+<div class="h-1 w-full bg-surface-container-high rounded-full"><div class="bg-primary h-full w-full"></div></div>
+</div>
+<span class="text-[10px] font-bold text-primary">SYNCED</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Center Panel: Live Progress & Winners -->
+<section class="flex-1 flex flex-col gap-4 min-w-0">
+<!-- Live Progress Bar -->
+<div class="bg-surface-container-highest p-8 rounded-xl relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-end mb-6">
+<div>
+<p class="text-[10px] font-black tracking-[0.2em] text-primary/40 uppercase mb-1">Batch Progress</p>
+<h2 class="text-3xl font-extrabold tracking-tighter text-primary">Drawing Unit 04 <span class="font-normal text-on-primary-container">/ 1,200</span></h2>
+</div>
+<div class="text-right">
+<p class="text-xs font-bold text-primary">62.5% Complete</p>
+<p class="text-[10px] text-on-surface-variant">ETA: 02m 45s</p>
+</div>
+</div>
+<div class="w-full h-4 bg-primary/10 rounded-full overflow-hidden p-1 border border-primary/10">
+<div class="bg-gradient-to-r from-primary to-primary-container h-full w-[62.5%] rounded-full shadow-[0_0_15px_rgba(0,32,69,0.3)]"></div>
+</div>
+</div>
+</div>
+<!-- Scrollable Winners List -->
+<div class="flex-1 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="px-8 py-4 border-b border-outline-variant/15 flex justify-between items-center bg-surface-container-low/30">
+<h4 class="text-xs font-black tracking-widest text-primary uppercase">Confirmed Allocation Stream</h4>
+<div class="flex gap-2">
+<span class="text-[10px] px-2 py-1 bg-surface-container rounded-sm font-bold text-primary">CSV EXPORT</span>
+<span class="text-[10px] px-2 py-1 bg-surface-container rounded-sm font-bold text-primary">JSON FEED</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-lowest z-10">
+<tr class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/15">
+<th class="px-8 py-4">Rank</th>
+<th class="px-4 py-4">Applicant ID</th>
+<th class="px-4 py-4">Status</th>
+<th class="px-4 py-4">Deterministic Hash</th>
+<th class="px-8 py-4 text-right">Timestamp</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="group hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-4 text-sm font-black text-primary">#001</td>
+<td class="px-4 py-4 text-sm font-medium">APP-9920-X</td>
+<td class="px-4 py-4">
+<span class="text-[10px] font-bold px-2 py-1 bg-surface-container text-on-tertiary-container rounded">ALLOCATED</span>
+</td>
+<td class="px-4 py-4 font-mono text-[11px] text-on-surface-variant truncate max-w-xs">0x4F92...B39A021F</td>
+<td class="px-8 py-4 text-right text-[11px] text-on-surface-variant">14:22:01.002</td>
+</tr>
+<tr class="group hover:bg-surface-container-high transition-colors bg-surface-container-low/50">
+<td class="px-8 py-4 text-sm font-black text-primary">#002</td>
+<td class="px-4 py-4 text-sm font-medium">APP-1024-C</td>
+<td class="px-4 py-4">
+<span class="text-[10px] font-bold px-2 py-1 bg-surface-container text-on-tertiary-container rounded">ALLOCATED</span>
+</td>
+<td class="px-4 py-4 font-mono text-[11px] text-on-surface-variant truncate max-w-xs">0x88BC...CC31A92B</td>
+<td class="px-8 py-4 text-right text-[11px] text-on-surface-variant">14:22:01.442</td>
+</tr>
+<tr class="group hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-4 text-sm font-black text-primary">#003</td>
+<td class="px-4 py-4 text-sm font-medium">APP-5512-R</td>
+<td class="px-4 py-4">
+<span class="text-[10px] font-bold px-2 py-1 bg-surface-container text-on-tertiary-container rounded">ALLOCATED</span>
+</td>
+<td class="px-4 py-4 font-mono text-[11px] text-on-surface-variant truncate max-w-xs">0x12E9...DF023B11</td>
+<td class="px-8 py-4 text-right text-[11px] text-on-surface-variant">14:22:02.119</td>
+</tr>
+<tr class="group hover:bg-surface-container-high transition-colors bg-surface-container-low/50">
+<td class="px-8 py-4 text-sm font-black text-primary">#004</td>
+<td class="px-4 py-4 text-sm font-medium">APP-3398-B</td>
+<td class="px-4 py-4">
+<span class="text-[10px] font-bold px-2 py-1 bg-surface-container text-on-tertiary-container rounded">ALLOCATED</span>
+</td>
+<td class="px-4 py-4 font-mono text-[11px] text-on-surface-variant truncate max-w-xs">0xDE02...9923AFB4</td>
+<td class="px-8 py-4 text-right text-[11px] text-on-surface-variant">14:22:02.880</td>
+</tr>
+<tr class="group hover:bg-surface-container-high transition-colors">
+<td class="px-8 py-4 text-sm font-black text-primary">#005</td>
+<td class="px-4 py-4 text-sm font-medium">APP-2210-K</td>
+<td class="px-4 py-4">
+<span class="text-[10px] font-bold px-2 py-1 bg-surface-container text-on-tertiary-container rounded">ALLOCATED</span>
+</td>
+<td class="px-4 py-4 font-mono text-[11px] text-on-surface-variant truncate max-w-xs">0x992B...CC882190</td>
+<td class="px-8 py-4 text-right text-[11px] text-on-surface-variant">14:22:03.012</td>
+</tr>
+<!-- Dynamic scanning rows simulation -->
+<tr class="animate-pulse bg-primary/5">
+<td class="px-8 py-4 text-sm font-black text-primary/30">#---</td>
+<td class="px-4 py-4 text-sm font-medium text-primary/30">PENDING_ID</td>
+<td class="px-4 py-4">
+<span class="text-[10px] font-bold px-2 py-1 bg-primary/10 text-primary/50 rounded">COMPUTING</span>
+</td>
+<td class="px-4 py-4 font-mono text-[11px] text-primary/30">Processing Buffer...</td>
+<td class="px-8 py-4 text-right text-[11px] text-primary/30">--:--:--</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Right Panel: Live Log -->
+<section class="w-80 flex flex-col gap-4">
+<div class="flex-1 bg-primary-container text-on-primary rounded-xl overflow-hidden flex flex-col relative">
+<div class="scanning-line opacity-20"></div>
+<div class="p-6 border-b border-on-primary-container/20">
+<h3 class="text-xs font-black tracking-widest uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+              Raw Process Log
+            </h3>
+</div>
+<div class="flex-1 p-6 font-mono text-[10px] overflow-y-auto custom-scrollbar leading-relaxed space-y-2 text-on-primary-container">
+<p><span class="text-tertiary-fixed-dim">[14:22:00]</span> Initializing entropy harvest...</p>
+<p><span class="text-tertiary-fixed-dim">[14:22:01]</span> Seed injected: 8f2d...de62</p>
+<p><span class="text-tertiary-fixed-dim">[14:22:01]</span> Unit #001 mapped: Hash verified.</p>
+<p><span class="text-tertiary-fixed-dim">[14:22:01]</span> Unit #002 mapped: Hash verified.</p>
+<p><span class="text-green-400">--- SUCCESS: BATCH 01 COMMITTED ---</span></p>
+<p><span class="text-tertiary-fixed-dim">[14:22:02]</span> Fetching applicant block 02...</p>
+<p><span class="text-tertiary-fixed-dim">[14:22:02]</span> Unit #003 mapped: Hash verified.</p>
+<p><span class="text-tertiary-fixed-dim">[14:22:02]</span> Unit #004 mapped: Hash verified.</p>
+<p><span class="text-tertiary-fixed-dim">[14:22:03]</span> Unit #005 mapped: Hash verified.</p>
+<p><span class="text-white animate-pulse">_ Generating next proof...</span></p>
+<p class="opacity-40">14:22:04.11 TRACE [TRNG_H] 0xFF901</p>
+<p class="opacity-40">14:22:04.15 TRACE [SHA_W] Block_Lock_Init</p>
+<p class="opacity-40">14:22:04.22 TRACE [MEM_X] Pointer_Move_77</p>
+<p class="opacity-40">14:22:04.28 TRACE [SYNC] Node_Alpha_Confirm</p>
+</div>
+<div class="p-4 bg-primary text-[10px] font-bold text-on-primary-container flex justify-between">
+<span>UPTIME: 14:02:11</span>
+<span class="text-white">STABLE CONNECTION</span>
+</div>
+</div>
+<!-- Verification Widget -->
+<div class="bg-surface-container-high p-6 rounded-xl border border-outline-variant/30">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<h3 class="text-xs font-black tracking-widest text-primary uppercase">Public Audit</h3>
+</div>
+<p class="text-[11px] text-on-surface-variant leading-tight mb-4">
+            This lottery is being broadcast to the public ledger in real-time. Hash authenticity is verifiable via any standard SHA-256 tool.
+          </p>
+<button class="w-full py-2 bg-surface-container-lowest border-b-2 border-primary text-[10px] font-black text-primary uppercase hover:bg-white transition-colors">
+            DOWNLOAD PROOF CERTIFICATE
+          </button>
+</div>
+</section>
+</div>
+</main>
+<!-- Contextual Status Bar (Bottom) -->
+<footer class="fixed bottom-0 left-64 right-0 h-8 bg-surface-container-lowest border-t border-outline-variant/10 px-8 flex items-center justify-between text-[10px] font-bold text-on-surface-variant z-50">
+<div class="flex gap-6">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> API: OPERATIONAL</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> DATABASE: OPTIMAL</span>
+</div>
+<div class="flex gap-4">
+<span>SERVER: G-ARCH-01</span>
+<span>ENCRYPTION: AES-256-GCM</span>
+</div>
+</footer>
+</body></html>

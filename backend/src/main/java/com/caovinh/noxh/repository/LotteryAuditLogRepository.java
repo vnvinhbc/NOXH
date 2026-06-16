@@ -13,5 +13,7 @@ public interface LotteryAuditLogRepository extends JpaRepository<LotteryAuditLog
 
     Optional<LotteryAuditLog> findTopByEventIdOrderByCreatedAtDesc(UUID eventId);
 
+    List<LotteryAuditLog> findAllByOrderByCreatedAtDesc();
+
     List<LotteryAuditLog> findByEventIdOrderByCreatedAtAsc(UUID eventId);
 }

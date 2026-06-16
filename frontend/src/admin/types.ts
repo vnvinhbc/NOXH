@@ -33,3 +33,15 @@ export interface AdminApplicationResponse {
   createdAt?: string
   documents: AdminApplicationDocument[]
 }
+
+export interface AdminLotteryAuditLogResponse {
+  id: string
+  eventId: string
+  eventName: string
+  projectName: string
+  eventType: string
+  payload?: string
+  previousHash?: string
+  currentHash: string
+  createdAt: string
+}

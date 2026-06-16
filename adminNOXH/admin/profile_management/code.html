@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign Archive | Application Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed-dim": "#f2bc82",
+              "on-error-container": "#93000a",
+              "tertiary-fixed": "#ffddba",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "surface": "#f8f9ff",
+              "primary": "#002045",
+              "on-primary-container": "#86a0cd",
+              "secondary-fixed": "#d9e3f8",
+              "on-surface": "#0d1c2e",
+              "error": "#ba1a1a",
+              "on-secondary-fixed": "#121c2b",
+              "surface-tint": "#455f88",
+              "on-secondary": "#ffffff",
+              "surface-container-high": "#dce9ff",
+              "background": "#f8f9ff",
+              "inverse-surface": "#233144",
+              "secondary-fixed-dim": "#bdc7db",
+              "on-error": "#ffffff",
+              "primary-container": "#1a365d",
+              "secondary-container": "#d9e3f8",
+              "on-secondary-container": "#5b6577",
+              "surface-bright": "#f8f9ff",
+              "outline-variant": "#c4c6cf",
+              "surface-container-highest": "#d5e3fc",
+              "on-tertiary-container": "#c6955e",
+              "on-primary-fixed-variant": "#2d476f",
+              "surface-container": "#e6eeff",
+              "inverse-primary": "#adc7f7",
+              "surface-variant": "#d5e3fc",
+              "primary-fixed-dim": "#adc7f7",
+              "surface-container-low": "#eff4ff",
+              "inverse-on-surface": "#eaf1ff",
+              "on-secondary-fixed-variant": "#3e4758",
+              "surface-dim": "#ccdbf3",
+              "primary-fixed": "#d6e3ff",
+              "outline": "#74777f",
+              "secondary": "#555f70",
+              "on-surface-variant": "#43474e",
+              "on-background": "#0d1c2e",
+              "on-primary": "#ffffff",
+              "tertiary": "#321b00",
+              "tertiary-container": "#4f2e00",
+              "on-tertiary-fixed-variant": "#633f0f",
+              "on-primary-fixed": "#001b3c",
+              "on-tertiary-fixed": "#2b1700",
+              "surface-container-lowest": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift-bg { background-color: #f8f9ff; }
+        .no-border { border: none !important; }
+        .ghost-border { border-bottom: 1px solid rgba(116, 119, 127, 0.15); }
+        .primary-gradient { background: linear-gradient(135deg, #002045 0%, #1A365D 100%); }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#eff4ff] dark:bg-slate-900 flex flex-col h-full py-6 font-inter text-sm font-medium text-[#002045] dark:text-blue-300 z-40">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h2 class="font-bold text-on-surface leading-tight">GovTech Admin</h2>
+<p class="text-xs text-on-surface-variant opacity-70">Housing Authority</p>
+</div>
+</div>
+<nav class="flex-grow space-y-1">
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 scale-[0.98] active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+            </a>
+<a class="bg-[#d5e3fc] dark:bg-blue-900/40 text-[#002045] border-l-4 border-[#002045] font-bold shadow-sm py-3 px-6 flex items-center gap-3 scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="badge">badge</span> Profile Management
+            </a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 scale-[0.98] active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span> KYC/Scoring
+            </a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 scale-[0.98] active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span> Lottery Event
+            </a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 scale-[0.98] active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span> Results
+            </a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 scale-[0.98] active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span> Audit Log
+            </a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 scale-[0.98] active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span> User Management
+            </a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200 scale-[0.98] active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="domain">domain</span> Project Management
+            </a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full bg-primary py-3 rounded-lg text-white font-bold text-xs flex items-center justify-center gap-2 primary-gradient shadow-md">
+<span class="material-symbols-outlined text-sm">add_circle</span> New Lottery
+            </button>
+<div class="mt-6 space-y-1">
+<a class="text-slate-600 dark:text-slate-400 py-2 flex items-center gap-3 text-xs hover:text-primary" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="cloud_done">cloud_done</span> System Status
+                </a>
+<a class="text-slate-600 dark:text-slate-400 py-2 flex items-center gap-3 text-xs hover:text-error" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span> Logout
+                </a>
+</div>
+</div>
+</aside>
+<main class="ml-64 min-h-screen">
+<header class="flex justify-between items-center px-8 w-full sticky top-0 z-50 h-16 bg-[#f8f9ff] dark:bg-slate-950 font-inter antialiased tracking-tight no-border tonal-shift-bg">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full bg-surface-container-lowest border-none border-b-2 border-outline hover:border-primary focus:ring-0 focus:border-primary transition-all text-sm pl-10 h-10" placeholder="Search archive for ID, name or lottery code..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="text-slate-500 hover:text-[#002045] cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-500 hover:text-[#002045] cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-outline-variant opacity-30"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-sm font-bold text-[#002045]">Administrator</p>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Tier 1 Access</p>
+</div>
+<img alt="Administrator Profile" class="w-10 h-10 rounded-full object-cover border-2 border-primary-container" data-alt="professional portrait of a government official in a sharp suit with neutral background and cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY--foO9xiSYwNu4t9Q7vld_KdPmzV2Oxnmp3Cb-Ctd1OHmdRCQv2vSqAZuNq0N5Jn5tds6ubGMh7KmCRjGADVWMl31sqdd3VCLIc5ZTyiI3vSU_w4u0Ao-WL5us0PriY-lVRVCakcfKnQgwKMpzZ_wEGcM432ILg0ePrRK9qC8jz5swQMYwufmT8dvCGExT0-Z5Qp41h69cjQlFHV_pw9OWeWb1hcgoDw_xYanEeJIPTeUjJuhvph7Vj-68vCdroAOymNIPIHl5A"/>
+</div>
+</div>
+</header>
+<div class="p-8">
+<div class="mb-8">
+<nav class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
+<span class="hover:text-primary cursor-pointer">Archive</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="font-semibold text-primary">Application Management</span>
+</nav>
+<h1 class="text-3xl font-bold tracking-tight text-on-surface display-sm">Application Archive</h1>
+<p class="text-on-surface-variant max-w-2xl mt-1">Manage, verify, and score housing applications for the 2024 Urban Renewal Initiative. Data is immutable once verified.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-primary">
+<p class="text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-1">Total Candidates</p>
+<h3 class="text-2xl font-extrabold text-primary">12,482</h3>
+<div class="mt-2 flex items-center text-xs text-tertiary font-medium">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +14% from last batch
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-on-tertiary-container">
+<p class="text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-1">Pending KYC</p>
+<h3 class="text-2xl font-extrabold text-on-tertiary-container">1,094</h3>
+<div class="mt-2 flex items-center text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] mr-1">timer</span> Requires Review
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-on-error-container">
+<p class="text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-1">Verification Rejected</p>
+<h3 class="text-2xl font-extrabold text-on-error-container">248</h3>
+<div class="mt-2 flex items-center text-xs text-error font-medium">
+<span class="material-symbols-outlined text-[14px] mr-1">error_outline</span> High risk flagged
+                    </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-l-4 border-green-600">
+<p class="text-xs uppercase tracking-wider text-on-surface-variant font-bold mb-1">Lottery Ready</p>
+<h3 class="text-2xl font-extrabold text-green-700">8,910</h3>
+<div class="mt-2 flex items-center text-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] mr-1" style="font-variation-settings: 'FILL' 1;">check_circle</span> Scoring finalized
+                    </div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-md overflow-hidden">
+<div class="p-4 bg-surface-container-low flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<div class="flex bg-white rounded-lg p-1 shadow-sm border border-outline-variant/30">
+<button class="px-4 py-1.5 text-xs font-bold bg-primary text-white rounded-md shadow-sm">Active Queue</button>
+<button class="px-4 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Archive</button>
+<button class="px-4 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Flagged</button>
+</div>
+<div class="h-6 w-[1px] bg-outline-variant opacity-30"></div>
+<button class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filters
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">calendar_month</span> Date Range
+                        </button>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 text-xs font-bold text-primary border border-primary/20 hover:bg-primary/5 rounded-lg transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span> Export
+                        </button>
+<button class="px-4 py-2 text-xs font-bold bg-primary text-white primary-gradient rounded-lg shadow-md hover:opacity-90 active:scale-95 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">verified</span> Bulk Approve
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant">
+<th class="p-4 w-12 ghost-border">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+</th>
+<th class="p-4 text-[11px] font-extrabold uppercase tracking-widest ghost-border">ID</th>
+<th class="p-4 text-[11px] font-extrabold uppercase tracking-widest ghost-border">Candidate Name</th>
+<th class="p-4 text-[11px] font-extrabold uppercase tracking-widest ghost-border">Application Date</th>
+<th class="p-4 text-[11px] font-extrabold uppercase tracking-widest ghost-border">KYC Status</th>
+<th class="p-4 text-[11px] font-extrabold uppercase tracking-widest ghost-border text-center">Priority Score</th>
+<th class="p-4 text-[11px] font-extrabold uppercase tracking-widest ghost-border">Lottery Code</th>
+<th class="p-4 ghost-border"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/10">
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="p-4"><input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 font-mono text-xs text-primary font-bold">#HA-94281</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold text-[10px]">EW</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Eleanor Whitmore</p>
+<p class="text-[10px] text-on-surface-variant">e.whitmore@example.com</p>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm font-medium text-on-surface-variant">Oct 12, 2023</td>
+<td class="p-4">
+<span class="px-2.5 py-1 text-[10px] font-bold rounded bg-green-100 text-green-700 flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">check_circle</span> VERIFIED
+                                    </span>
+</td>
+<td class="p-4 text-center">
+<div class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed text-xs font-extrabold rounded-full">840</div>
+</td>
+<td class="p-4 font-mono text-xs text-on-surface-variant">L-2024-X9F2</td>
+<td class="p-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-high transition-colors group">
+<td class="p-4"><input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 font-mono text-xs text-primary font-bold">#HA-94282</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold text-[10px]">MK</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Marcus Kinsley</p>
+<p class="text-[10px] text-on-surface-variant">m.kinsley@archive.gov</p>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm font-medium text-on-surface-variant">Oct 14, 2023</td>
+<td class="p-4">
+<span class="px-2.5 py-1 text-[10px] font-bold rounded bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px]">pending</span> PENDING
+                                    </span>
+</td>
+<td class="p-4 text-center">
+<div class="inline-block px-3 py-1 bg-surface-container text-on-surface-variant text-xs font-extrabold rounded-full">620</div>
+</td>
+<td class="p-4 font-mono text-xs text-on-surface-variant">L-2024-B1W0</td>
+<td class="p-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="p-4"><input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 font-mono text-xs text-primary font-bold">#HA-94283</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold text-[10px]">SD</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Sarah D'Angelo</p>
+<p class="text-[10px] text-on-surface-variant">sarah.d@design.io</p>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm font-medium text-on-surface-variant">Oct 15, 2023</td>
+<td class="p-4">
+<span class="px-2.5 py-1 text-[10px] font-bold rounded bg-error-container text-on-error-container flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px]">cancel</span> REJECTED
+                                    </span>
+</td>
+<td class="p-4 text-center">
+<div class="inline-block px-3 py-1 bg-surface-container text-on-surface-variant text-xs font-extrabold rounded-full">145</div>
+</td>
+<td class="p-4 font-mono text-xs text-on-surface-variant italic opacity-40">NOT ELIGIBLE</td>
+<td class="p-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-high transition-colors group">
+<td class="p-4"><input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 font-mono text-xs text-primary font-bold">#HA-94284</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold text-[10px]">JH</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Julian Harts</p>
+<p class="text-[10px] text-on-surface-variant">j.harts@provider.net</p>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm font-medium text-on-surface-variant">Oct 16, 2023</td>
+<td class="p-4">
+<span class="px-2.5 py-1 text-[10px] font-bold rounded bg-green-100 text-green-700 flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">check_circle</span> VERIFIED
+                                    </span>
+</td>
+<td class="p-4 text-center">
+<div class="inline-block px-3 py-1 bg-primary-fixed text-on-primary-fixed text-xs font-extrabold rounded-full">915</div>
+</td>
+<td class="p-4 font-mono text-xs text-on-surface-variant">L-2024-Z2A1</td>
+<td class="p-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="p-4"><input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/></td>
+<td class="p-4 font-mono text-xs text-primary font-bold">#HA-94285</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary font-bold text-[10px]">LM</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Leila Monroe</p>
+<p class="text-[10px] text-on-surface-variant">monroe.l@service.com</p>
+</div>
+</div>
+</td>
+<td class="p-4 text-sm font-medium text-on-surface-variant">Oct 16, 2023</td>
+<td class="p-4">
+<span class="px-2.5 py-1 text-[10px] font-bold rounded bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center w-fit gap-1">
+<span class="material-symbols-outlined text-[12px]">pending</span> PENDING
+                                    </span>
+</td>
+<td class="p-4 text-center">
+<div class="inline-block px-3 py-1 bg-surface-container text-on-surface-variant text-xs font-extrabold rounded-full">780</div>
+</td>
+<td class="p-4 font-mono text-xs text-on-surface-variant italic opacity-40">ASSIGNING...</td>
+<td class="p-4 text-right">
+<button class="opacity-0 group-hover:opacity-100 p-2 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-container-lowest flex items-center justify-between">
+<p class="text-xs text-on-surface-variant font-medium">Showing <span class="font-bold text-on-surface">5</span> of <span class="font-bold text-on-surface">12,482</span> records</p>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded hover:bg-surface-container transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center text-xs font-bold bg-primary text-white rounded">1</button>
+<button class="w-8 h-8 flex items-center justify-center text-xs font-medium hover:bg-surface-container rounded">2</button>
+<button class="w-8 h-8 flex items-center justify-center text-xs font-medium hover:bg-surface-container rounded">3</button>
+<span class="px-2 text-on-surface-variant opacity-50">...</span>
+<button class="w-8 h-8 flex items-center justify-center text-xs font-medium hover:bg-surface-container rounded">249</button>
+</div>
+<button class="p-2 rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<div class="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 bg-surface-container-low rounded-xl p-6 flex flex-col gap-4">
+<h3 class="font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span> Scoring Trends
+                    </h3>
+<div class="flex-grow min-h-[200px] flex items-end justify-between px-4 pb-4">
+<div class="w-12 bg-primary/20 rounded-t h-[40%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">420</div>
+</div>
+<div class="w-12 bg-primary/40 rounded-t h-[65%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">680</div>
+</div>
+<div class="w-12 bg-primary/60 rounded-t h-[55%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">540</div>
+</div>
+<div class="w-12 bg-primary/80 rounded-t h-[85%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">890</div>
+</div>
+<div class="w-12 bg-primary rounded-t h-[95%] relative group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">940</div>
+</div>
+</div>
+<div class="flex justify-between px-4 border-t border-outline-variant/20 pt-2">
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Urban A</span>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Urban B</span>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Suburb X</span>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Suburb Y</span>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Industrial</span>
+</div>
+</div>
+<div class="bg-surface-container-highest/50 backdrop-blur-xl rounded-xl p-6 border border-white/20">
+<h3 class="font-bold text-primary flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified_user</span> Quick Actions
+                    </h3>
+<div class="space-y-3">
+<div class="p-4 bg-white/60 rounded-lg flex items-center justify-between group hover:bg-white transition-all cursor-pointer shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">description</span>
+<span class="text-sm font-semibold">Generate Monthly Report</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">arrow_forward</span>
+</div>
+<div class="p-4 bg-white/60 rounded-lg flex items-center justify-between group hover:bg-white transition-all cursor-pointer shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-tertiary-container">publish</span>
+<span class="text-sm font-semibold">Batch Upload CSV</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">arrow_forward</span>
+</div>
+<div class="p-4 bg-white/60 rounded-lg flex items-center justify-between group hover:bg-white transition-all cursor-pointer shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">mail</span>
+<span class="text-sm font-semibold">Notify Candidates</span>
+</div>
+<span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">arrow_forward</span>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-outline-variant/20">
+<p class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-3">Recent Logs</p>
+<div class="space-y-3">
+<div class="flex gap-3">
+<div class="w-1.5 h-1.5 bg-primary rounded-full mt-1.5"></div>
+<div>
+<p class="text-xs font-bold">Batch #204 Exported</p>
+<p class="text-[9px] text-on-surface-variant">2 minutes ago by Admin</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-1.5 h-1.5 bg-on-tertiary-container rounded-full mt-1.5"></div>
+<div>
+<p class="text-xs font-bold">KYC Rule Update</p>
+<p class="text-[9px] text-on-surface-variant">1 hour ago by System</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="ml-64 p-8 border-t border-outline-variant/10 text-on-surface-variant text-[10px] flex justify-between items-center bg-surface-container-low">
+<p>© 2024 Sovereign Archive - GovTech Infrastructure. All rights reserved.</p>
+<div class="flex gap-6 font-bold">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Audit Framework</a>
+<a class="hover:text-primary transition-colors" href="#">System Support</a>
+</div>
+</footer>
+</body></html>

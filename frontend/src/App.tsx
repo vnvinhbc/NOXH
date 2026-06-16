@@ -13,7 +13,12 @@ import AdminProtectedRoute from '@/admin/components/AdminProtectedRoute'
 import AdminLayout from '@/admin/layout/AdminLayout'
 import AdminLoginPage from '@/admin/pages/AdminLoginPage'
 import AdminApplicationsPage from '@/admin/pages/AdminApplicationsPage'
+import AdminApplicationDetailPage from '@/admin/pages/AdminApplicationDetailPage'
+import AdminAuditLogPage from '@/admin/pages/AdminAuditLogPage'
+import AdminDashboardPage from '@/admin/pages/AdminDashboardPage'
+import AdminHousingStockPage from '@/admin/pages/AdminHousingStockPage'
 import AdminLotteryEventsPage from '@/admin/pages/AdminLotteryEventsPage'
+import AdminResultsPage from '@/admin/pages/AdminResultsPage'
 import LotteryVerificationPage from '@/pages/LotteryVerificationPage'
 
 const queryClient = new QueryClient({
@@ -33,9 +38,14 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route element={<AdminProtectedRoute />}>
             <Route element={<AdminLayout />}>
-              <Route path="/admin" element={<Navigate to="/admin/applications" replace />} />
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
               <Route path="/admin/applications" element={<AdminApplicationsPage />} />
+              <Route path="/admin/applications/:id" element={<AdminApplicationDetailPage />} />
               <Route path="/admin/lottery-events" element={<AdminLotteryEventsPage />} />
+              <Route path="/admin/results" element={<AdminResultsPage />} />
+              <Route path="/admin/housing-stock" element={<AdminHousingStockPage />} />
+              <Route path="/admin/audit-log" element={<AdminAuditLogPage />} />
             </Route>
           </Route>
           <Route element={<ProtectedRoute />}>

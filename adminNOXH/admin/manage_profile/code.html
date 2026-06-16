@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Candidate Detail &amp; Priority Scoring | Sovereign Archive</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed-dim": "#f2bc82",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffddba",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f8f9ff",
+                        "primary": "#002045",
+                        "on-primary-container": "#86a0cd",
+                        "secondary-fixed": "#d9e3f8",
+                        "on-surface": "#0d1c2e",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#121c2b",
+                        "surface-tint": "#455f88",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#dce9ff",
+                        "background": "#f8f9ff",
+                        "inverse-surface": "#233144",
+                        "secondary-fixed-dim": "#bdc7db",
+                        "on-error": "#ffffff",
+                        "primary-container": "#1a365d",
+                        "secondary-container": "#d9e3f8",
+                        "on-secondary-container": "#5b6577",
+                        "surface-bright": "#f8f9ff",
+                        "outline-variant": "#c4c6cf",
+                        "surface-container-highest": "#d5e3fc",
+                        "on-tertiary-container": "#c6955e",
+                        "on-primary-fixed-variant": "#2d476f",
+                        "surface-container": "#e6eeff",
+                        "inverse-primary": "#adc7f7",
+                        "surface-variant": "#d5e3fc",
+                        "primary-fixed-dim": "#adc7f7",
+                        "surface-container-low": "#eff4ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed-variant": "#3e4758",
+                        "surface-dim": "#ccdbf3",
+                        "primary-fixed": "#d6e3ff",
+                        "outline": "#74777f",
+                        "secondary": "#555f70",
+                        "on-surface-variant": "#43474e",
+                        "on-background": "#0d1c2e",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#321b00",
+                        "tertiary-container": "#4f2e00",
+                        "on-tertiary-fixed-variant": "#633f0f",
+                        "on-primary-fixed": "#001b3c",
+                        "on-tertiary-fixed": "#2b1700",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift-bg { background-color: #f8f9ff; }
+        .tonal-stacking { background-color: #eff4ff; }
+        .glass-panel {
+            background: rgba(213, 227, 252, 0.8);
+            backdrop-filter: blur(20px);
+        }
+        .ghost-border { border-bottom: 1px solid rgba(116, 119, 127, 0.15); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-white">
+<!-- Side Navigation Shell (Shared Component) -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-[#eff4ff] dark:bg-slate-900 flex flex-col h-full py-6 z-40">
+<div class="px-6 mb-8">
+<h2 class="text-[#002045] dark:text-blue-300 font-inter text-sm font-bold uppercase tracking-widest">GovTech Admin</h2>
+<p class="text-on-surface-variant text-xs font-medium">Housing Authority</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="bg-[#d5e3fc] dark:bg-blue-900/40 text-[#002045] border-l-4 border-[#002045] font-bold shadow-sm py-3 px-6 flex items-center gap-3 scale-[0.98] active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="badge">badge</span>
+<span>Profile Management</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span>KYC/Scoring</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="event_repeat">event_repeat</span>
+<span>Lottery Event</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span>Results</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span>Audit Log</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 py-3 px-6 flex items-center gap-3 hover:bg-[#d5e3fc]/50 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>User Management</span>
+</a>
+</nav>
+<div class="px-6 mt-auto space-y-4">
+<button class="w-full bg-primary text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Lottery
+            </button>
+<div class="pt-4 border-t border-outline-variant/20">
+<a class="text-slate-600 py-2 flex items-center gap-3 text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="cloud_done">cloud_done</span>
+                    System Status
+                </a>
+<a class="text-slate-600 py-2 flex items-center gap-3 text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</aside>
+<!-- Top AppBar (Shared Component) -->
+<header class="flex justify-between items-center px-8 w-[calc(100%-16rem)] ml-64 h-16 sticky top-0 z-50 bg-[#f8f9ff] dark:bg-slate-950 no-border tonal-shift-bg">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tighter text-[#002045] dark:text-white">Sovereign Archive</span>
+<div class="h-4 w-px bg-outline-variant/30"></div>
+<span class="text-on-surface-variant font-medium text-sm">Candidate / #ADM-4829-X</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container rounded-full border-none text-sm focus:ring-2 focus:ring-primary/20 w-64" placeholder="Search archive..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-[#002045]">
+<button class="hover:bg-[#eff4ff] p-2 rounded-full transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:bg-[#eff4ff] p-2 rounded-full transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+<div class="flex items-center gap-2 ml-2">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-white text-xs font-bold">JD</div>
+<span class="text-sm font-semibold">Support</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 p-8 min-h-screen">
+<div class="max-w-7xl mx-auto">
+<!-- Page Header -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<h1 class="text-3xl font-bold tracking-tight text-primary font-headline">Eleanor Vance</h1>
+<p class="text-on-surface-variant">Applied: Oct 24, 2023 • Case ID: ARCH-9921-V</p>
+</div>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 rounded-lg border-2 border-outline-variant text-on-surface font-bold text-sm hover:bg-surface-container-low transition-colors">
+                        Request Edit
+                    </button>
+<button class="px-6 py-2.5 rounded-lg bg-gradient-to-br from-primary to-primary-container text-white font-bold text-sm shadow-lg shadow-primary/20 hover:opacity-95 transition-opacity">
+                        Approve Scoring
+                    </button>
+</div>
+</div>
+<!-- Content Grid -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Left Column: Personal details & Documents -->
+<div class="col-span-7 space-y-8">
+<!-- Profile Identity Card -->
+<section class="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-outline-variant/10">
+<h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="person">person</span>
+                            Personal Documentation
+                        </h3>
+<div class="grid grid-cols-2 gap-y-6">
+<div>
+<label class="block text-xs font-medium text-on-surface-variant mb-1">Full Legal Name</label>
+<p class="text-base font-semibold">Eleanor Beatrice Vance</p>
+</div>
+<div>
+<label class="block text-xs font-medium text-on-surface-variant mb-1">Date of Birth</label>
+<p class="text-base font-semibold">May 12, 1988 (35 yrs)</p>
+</div>
+<div>
+<label class="block text-xs font-medium text-on-surface-variant mb-1">Current Residency</label>
+<p class="text-base font-semibold">1124 Blackwood Dr, Hill House Estate</p>
+</div>
+<div>
+<label class="block text-xs font-medium text-on-surface-variant mb-1">National ID Number</label>
+<p class="text-base font-semibold">449-22-XXXX</p>
+</div>
+</div>
+<!-- ID Preview Bento -->
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="group relative aspect-video rounded-lg overflow-hidden bg-surface-container border border-outline-variant/30 cursor-pointer">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="high quality scan of a national identification card front side with visible holograms and text" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvtyqOtXfbbwHWzB1AzW2aZ0-mmkCtvSyycEJl62Zpe4jsy8IPzkyP0SAPK0dHK_GL9xilgbvHNiOchVrPB8vTWSBRlFuqsxldvrw2jLB-WA5B-S0Pp_NIwimUiqo5z5wX930lcx1I5eTizKeX1Cz36VXc5QjqITTKFE8KzxFt8b4ZCZfN_BNl_f1epMqX-dveHws9VLzKV2Nw9nQz-boTKhVOojpSFnLk1iabV0eQX2NcsMbdjY_w96arkde4I-RnQLLhZXvsPEQ"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="text-white font-bold flex items-center gap-2"><span class="material-symbols-outlined" data-icon="visibility">visibility</span> Front View</span>
+</div>
+</div>
+<div class="group relative aspect-video rounded-lg overflow-hidden bg-surface-container border border-outline-variant/30 cursor-pointer">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="high quality scan of a national identification card back side with barcode and magnetic strip details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqpxtJBvKcOKlbyoSUp74kwaIti4ERsqwFY8VRqzF68vaDSLO2Z5lnF3XxAdvKtgUyRghoTA7OKhhkHsK0q5FJ1hAh2bNzFkih7JIJnVKCw46m64cJjBgeHRwQwdvVCs0F2pJIb8Vmc7ryAYQ07kdblB-Ya9DgvFpH6gJAdC6RSl8dwvnTJRNsnQTJdYDDIbeyioOtC856B0vTfeiIEV8J7Y-cnBg4e29RaCfmm-1AcBbebCcrblFZy5GJPBnn5ZmJKe2k3R-8Q7Q"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="text-white font-bold flex items-center gap-2"><span class="material-symbols-outlined" data-icon="visibility">visibility</span> Rear View</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Document Uploads -->
+<section class="bg-surface-container-low p-8 rounded-xl border border-outline-variant/5">
+<h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6">Verified Evidence</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 hover:border-primary/20 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-on-tertiary-container/10 flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+</div>
+<div>
+<p class="font-bold text-sm">Income_Statement_FY23.pdf</p>
+<p class="text-xs text-on-surface-variant">Verified by Tax Dept • 2.4 MB</p>
+</div>
+</div>
+<button class="text-primary hover:underline text-xs font-bold">Download</button>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest rounded-lg border border-outline-variant/10 hover:border-primary/20 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-on-tertiary-container/10 flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined" data-icon="home_work">home_work</span>
+</div>
+<div>
+<p class="font-bold text-sm">Residency_Certificate.pdf</p>
+<p class="text-xs text-on-surface-variant">Electronic Seal • 1.1 MB</p>
+</div>
+</div>
+<button class="text-primary hover:underline text-xs font-bold">Download</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Scoring Engine UI -->
+<div class="col-span-5 space-y-8">
+<!-- Scoring Engine Header -->
+<section class="bg-primary text-white p-8 rounded-xl shadow-xl overflow-hidden relative">
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+<div class="relative z-10 flex justify-between items-center">
+<div>
+<p class="text-on-primary-container text-xs font-bold uppercase tracking-widest mb-1">Priority Score</p>
+<h2 class="text-5xl font-extrabold tracking-tighter">84.5<span class="text-xl font-normal opacity-60">/100</span></h2>
+</div>
+<div class="text-right">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-bold mb-2">
+<span class="w-2 h-2 rounded-full bg-green-400"></span>
+                                    SYSTEM CALCULATED
+                                </div>
+<p class="text-xs text-on-primary-container">Tier 1 Priority Selection</p>
+</div>
+</div>
+</section>
+<!-- Breakdown Table -->
+<section class="bg-surface-container p-6 rounded-xl border border-outline-variant/10">
+<h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6">Parameter Breakdown</h3>
+<div class="space-y-4">
+<!-- Household Status -->
+<div class="flex items-center justify-between pb-4 ghost-border">
+<div class="space-y-1">
+<p class="text-sm font-bold">Household Status</p>
+<p class="text-xs text-on-surface-variant">Single Parent w/ 2 Dependents</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs text-on-surface-variant">System: 35.0</span>
+<input class="w-16 h-8 text-center text-xs font-bold bg-surface-container-lowest border-2 border-primary rounded focus:ring-0" type="text" value="35.0"/>
+</div>
+</div>
+<!-- Income Level -->
+<div class="flex items-center justify-between pb-4 ghost-border">
+<div class="space-y-1">
+<p class="text-sm font-bold">Income Threshold</p>
+<p class="text-xs text-on-surface-variant">Below 40% Regional Median</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs text-on-surface-variant">System: 40.0</span>
+<input class="w-16 h-8 text-center text-xs font-bold bg-surface-container-lowest border-outline-variant/30 rounded focus:ring-0" type="text" value="40.0"/>
+</div>
+</div>
+<!-- Disability/Medical -->
+<div class="flex items-center justify-between pb-4 ghost-border">
+<div class="space-y-1">
+<p class="text-sm font-bold">Medical Necessity</p>
+<p class="text-xs text-on-surface-variant">Not applicable for this tier</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs text-on-surface-variant">System: 0.0</span>
+<input class="w-16 h-8 text-center text-xs font-bold bg-surface-container-lowest border-outline-variant/30 rounded focus:ring-0" type="text" value="0.0"/>
+</div>
+</div>
+<!-- Proximity to Work -->
+<div class="flex items-center justify-between pb-4">
+<div class="space-y-1">
+<p class="text-sm font-bold">Proximity Bonus</p>
+<p class="text-xs text-on-surface-variant">Employment within 5km radius</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs text-on-surface-variant">System: 9.5</span>
+<input class="w-16 h-8 text-center text-xs font-bold bg-surface-container-lowest border-outline-variant/30 rounded focus:ring-0" type="text" value="9.5"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Legal Note Field -->
+<section class="space-y-3">
+<label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant">Administrative &amp; Legal Notes</label>
+<textarea class="w-full h-32 bg-surface-container-lowest border-none border-b-2 border-outline rounded-lg text-sm p-4 focus:ring-0 focus:border-primary transition-colors" placeholder="Enter formal justification for any point overrides or additional context for the housing committee..."></textarea>
+<p class="text-[10px] text-on-surface-variant italic">Note: All edits to system scoring are logged and tied to your Administrator ID for the final audit.</p>
+</section>
+</div>
+</div>
+<!-- Bottom: Audit Timeline -->
+<footer class="mt-12 bg-surface-container-low rounded-xl p-8 border border-outline-variant/10">
+<h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-8 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+                    System Audit Timeline
+                </h3>
+<div class="relative">
+<div class="absolute left-4 top-0 bottom-0 w-px bg-outline-variant/30"></div>
+<div class="space-y-10">
+<div class="relative flex items-center gap-8 group">
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center z-10 border-2 border-white ring-4 ring-green-50">
+<span class="material-symbols-outlined text-green-700 text-sm" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex-1 pb-4 ghost-border">
+<div class="flex justify-between items-center mb-1">
+<p class="text-sm font-bold">Application Received</p>
+<span class="text-xs text-on-surface-variant">Oct 24, 2023 • 14:22</span>
+</div>
+<p class="text-xs text-on-surface-variant">System ingested electronic submission from Digital Portal.</p>
+</div>
+</div>
+<div class="relative flex items-center gap-8 group">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center z-10 border-2 border-white ring-4 ring-blue-50">
+<span class="material-symbols-outlined text-blue-700 text-sm" data-icon="verified">verified</span>
+</div>
+<div class="flex-1 pb-4 ghost-border">
+<div class="flex justify-between items-center mb-1">
+<p class="text-sm font-bold">KYC Automated Verification</p>
+<span class="text-xs text-on-surface-variant">Oct 24, 2023 • 14:30</span>
+</div>
+<p class="text-xs text-on-surface-variant">Cross-referenced ID: 449-22-XXXX with Federal Database. Authenticated.</p>
+</div>
+</div>
+<div class="relative flex items-center gap-8 group">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center z-10 border-2 border-white ring-4 ring-primary-container/10">
+<span class="material-symbols-outlined text-white text-sm" data-icon="edit">edit</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<p class="text-sm font-bold">Manual Review Started</p>
+<span class="text-xs text-on-surface-variant">Today • 09:12</span>
+</div>
+<p class="text-xs text-on-surface-variant">Current administrator (JD) opened the file for priority scoring validation.</p>
+</div>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

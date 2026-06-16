@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sovereign Archive | Secure Administrative Access</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container": "#e6eeff",
+              "on-secondary-fixed-variant": "#3e4758",
+              "on-tertiary-fixed-variant": "#633f0f",
+              "error-container": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#43474e",
+              "on-primary-fixed-variant": "#2d476f",
+              "error": "#ba1a1a",
+              "on-error": "#ffffff",
+              "tertiary": "#321b00",
+              "surface-variant": "#d5e3fc",
+              "outline": "#74777f",
+              "on-tertiary-container": "#c6955e",
+              "primary-fixed": "#d6e3ff",
+              "primary-fixed-dim": "#adc7f7",
+              "surface-dim": "#ccdbf3",
+              "primary": "#002045",
+              "inverse-primary": "#adc7f7",
+              "secondary": "#555f70",
+              "inverse-on-surface": "#eaf1ff",
+              "on-primary-container": "#86a0cd",
+              "surface-tint": "#455f88",
+              "secondary-fixed-dim": "#bdc7db",
+              "secondary-fixed": "#d9e3f8",
+              "surface-container-high": "#dce9ff",
+              "surface-container-highest": "#d5e3fc",
+              "background": "#f8f9ff",
+              "on-primary": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "surface-container-lowest": "#ffffff",
+              "surface": "#f8f9ff",
+              "tertiary-fixed-dim": "#f2bc82",
+              "tertiary-fixed": "#ffddba",
+              "inverse-surface": "#233144",
+              "primary-container": "#1a365d",
+              "secondary-container": "#d9e3f8",
+              "on-secondary-container": "#5b6577",
+              "outline-variant": "#c4c6cf",
+              "on-tertiary-fixed": "#2b1700",
+              "on-secondary-fixed": "#121c2b",
+              "tertiary-container": "#4f2e00",
+              "on-tertiary": "#ffffff",
+              "on-error-container": "#93000a",
+              "surface-bright": "#f8f9ff",
+              "on-surface": "#0d1c2e",
+              "on-background": "#0d1c2e",
+              "on-primary-fixed": "#001b3c"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .archival-bg {
+            background-color: #f8f9ff;
+            background-image: radial-gradient(#d5e3fc 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+        }
+        .signature-input {
+            border: none;
+            border-bottom: 2px solid #74777f;
+            background: transparent;
+            transition: border-color 0.2s ease;
+        }
+        .signature-input:focus {
+            outline: none;
+            border-bottom-color: #002045;
+            box-shadow: none;
+        }
+        .primary-gradient {
+            background: linear-gradient(135deg, #002045 0%, #1A365D 100%);
+        }
+    </style>
+</head>
+<body class="archival-bg font-body text-on-surface min-h-screen flex items-center justify-center p-6">
+<!-- Login Container -->
+<main class="w-full max-w-[480px] space-y-8">
+<!-- Brand Identity Section -->
+<header class="text-center space-y-4">
+<div class="inline-flex items-center justify-center w-20 h-20 rounded-xl bg-primary text-on-primary mb-2">
+<span class="material-symbols-outlined text-4xl" data-icon="account_balance">account_balance</span>
+</div>
+<div class="space-y-1">
+<h1 class="text-3xl font-bold tracking-tighter text-primary font-headline">Sovereign Archive</h1>
+<p class="text-on-surface-variant font-medium tracking-wide text-sm uppercase">Housing Authority Administrative Portal</p>
+</div>
+</header>
+<!-- Access Warning Banner -->
+<div class="bg-surface-container border-l-4 border-primary p-4 flex items-start gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="security_update_warning">security_update_warning</span>
+<div>
+<p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Authorization Required</p>
+<p class="text-xs text-on-surface-variant leading-relaxed">Access Granted to Authorized Personnel Only. All actions within this system are logged and audited in accordance with Federal Information Security standards.</p>
+</div>
+</div>
+<!-- Login Form Card -->
+<section class="glass-panel border border-outline-variant/15 rounded-xl p-10 shadow-2xl">
+<form class="space-y-8">
+<!-- Credential Group -->
+<div class="space-y-6">
+<div class="relative group">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 ml-1" for="username">Administrative ID</label>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-outline absolute left-0" data-icon="badge">badge</span>
+<input class="w-full pl-8 py-3 signature-input text-on-surface placeholder:text-outline/50 font-medium" id="username" name="username" placeholder="admin.ledger@gov.arch" type="text"/>
+</div>
+</div>
+<div class="relative group">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1 ml-1" for="password">Security Key</label>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-outline absolute left-0" data-icon="encrypted">encrypted</span>
+<input class="w-full pl-8 py-3 signature-input text-on-surface placeholder:text-outline/50 font-medium" id="password" name="password" placeholder="••••••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- 2FA Integration Section -->
+<div class="pt-4 border-t border-outline-variant/15">
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 text-center">Identity Verification (2FA)</label>
+<div class="flex justify-between gap-3">
+<input class="w-12 h-14 text-center text-xl font-bold rounded-lg bg-surface-container-lowest border-2 border-outline-variant/20 focus:border-primary focus:ring-0 text-primary" maxlength="1" type="text"/>
+<input class="w-12 h-14 text-center text-xl font-bold rounded-lg bg-surface-container-lowest border-2 border-outline-variant/20 focus:border-primary focus:ring-0 text-primary" maxlength="1" type="text"/>
+<input class="w-12 h-14 text-center text-xl font-bold rounded-lg bg-surface-container-lowest border-2 border-outline-variant/20 focus:border-primary focus:ring-0 text-primary" maxlength="1" type="text"/>
+<input class="w-12 h-14 text-center text-xl font-bold rounded-lg bg-surface-container-lowest border-2 border-outline-variant/20 focus:border-primary focus:ring-0 text-primary" maxlength="1" type="text"/>
+<input class="w-12 h-14 text-center text-xl font-bold rounded-lg bg-surface-container-lowest border-2 border-outline-variant/20 focus:border-primary focus:ring-0 text-primary" maxlength="1" type="text"/>
+<input class="w-12 h-14 text-center text-xl font-bold rounded-lg bg-surface-container-lowest border-2 border-outline-variant/20 focus:border-primary focus:ring-0 text-primary" maxlength="1" type="text"/>
+</div>
+<p class="text-center text-[10px] text-outline mt-3">Enter the 6-digit code from your RSA SecurID device.</p>
+</div>
+<!-- Submit Action -->
+<button class="w-full primary-gradient text-on-primary py-4 rounded-lg font-bold tracking-widest uppercase text-xs flex items-center justify-center gap-2 hover:opacity-95 transition-all active:scale-[0.98]" type="submit">
+                    Establish Secure Session
+                    <span class="material-symbols-outlined text-sm" data-icon="login">login</span>
+</button>
+</form>
+</section>
+<!-- Footer / Legal -->
+<footer class="flex flex-col items-center gap-4 pt-4">
+<div class="flex gap-6 text-[11px] font-semibold text-outline uppercase tracking-wider">
+<a class="hover:text-primary transition-colors" href="#">Privacy Shield</a>
+<span class="text-outline/30">|</span>
+<a class="hover:text-primary transition-colors" href="#">System Status</a>
+<span class="text-outline/30">|</span>
+<a class="hover:text-primary transition-colors" href="#">Contact DSO</a>
+</div>
+<div class="flex items-center gap-2 opacity-40">
+<img alt="Institutional Seal" class="w-5 h-5 grayscale" data-alt="Official government circular seal with traditional architectural motifs and eagle silhouette in a muted grayscale tone." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwIspeIAhFd0COPmtskYy0s6LriRv7Gg_sZ_YN5CGg8UIEDc4tCvGiwrckPnavIaRZSANSCAuK_HmWTsVlbVnZjSLpFgmOwyx_F0mFvPpn6V2YAY76ih995HZhs53Qp6XK2tsgMsUjv8hit9Uq5r86YNF-O6Q09uSU--2r0mxEdB7s2zJfMYMHzyE6HZ89Daqu5dRvmmJKDMppOdIAp6LKaO7lWjH06s0leJU9C9S2SsKaEJ2ZkujD6BAT8GrNbrIvVPdcIUQ5R9c"/>
+<span class="text-[10px] font-medium text-on-surface-variant">CIVIC LEDGER v4.2.0 • IMMUTABLE STATE ARCHIVE</span>
+</div>
+</footer>
+</main>
+<!-- Decorative Architectural Watermark -->
+<div class="fixed bottom-0 right-0 p-12 pointer-events-none opacity-[0.03] select-none">
+<span class="material-symbols-outlined text-[32rem]" data-icon="domain">domain</span>
+</div>
+</body></html>

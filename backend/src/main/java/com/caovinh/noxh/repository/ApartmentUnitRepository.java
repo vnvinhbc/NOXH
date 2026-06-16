@@ -13,5 +13,7 @@ public interface ApartmentUnitRepository extends JpaRepository<ApartmentUnit, UU
 
     List<ApartmentUnit> findByProjectIdAndStatusOrderByApartmentCodeAsc(UUID projectId, ApartmentUnitStatus status);
 
+    List<ApartmentUnit> findByProjectIdOrderByApartmentCodeAsc(UUID projectId);
+
     List<ApartmentUnit> findByLockedEventIdOrderByApartmentCodeAsc(UUID eventId);
 }

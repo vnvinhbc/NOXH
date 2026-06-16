@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from
-  const redirectTo = from?.startsWith('/admin') ? from : '/admin/applications'
+  const redirectTo = from?.startsWith('/admin') ? from : '/admin/dashboard'
 
   useEffect(() => {
     if (isAuthenticated && user?.role === 'ADMIN') {
