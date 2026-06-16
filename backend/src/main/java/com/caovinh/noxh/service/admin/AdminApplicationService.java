@@ -12,6 +12,7 @@ import com.caovinh.noxh.exception.AppException;
 import com.caovinh.noxh.exception.ErrorCode;
 import com.caovinh.noxh.repository.ApplicationRepository;
 import com.caovinh.noxh.repository.NotificationRepository;
+import com.caovinh.noxh.service.PriorityScoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Sort;
@@ -29,6 +30,7 @@ public class AdminApplicationService {
 
     ApplicationRepository applicationRepository;
     NotificationRepository notificationRepository;
+    PriorityScoringService priorityScoringService;
 
     @Transactional(readOnly = true)
     public List<AdminApplicationResponse> getApplications(AdminApplicationStatus status) {
@@ -55,6 +57,9 @@ public class AdminApplicationService {
         }
 
         application.setStatus(nextStatus);
+        application.setPriorityScore(nextStatus == ApplicationStatus.APPROVED
+                ? priorityScoringService.calculateScore(application)
+                : 0);
         application.setRejectReason(nextStatus == ApplicationStatus.REJECTED ? reason : null);
         Application savedApplication = applicationRepository.save(application);
         createStatusNotification(savedApplication);

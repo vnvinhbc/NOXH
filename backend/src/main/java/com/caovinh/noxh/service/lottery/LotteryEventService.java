@@ -9,6 +9,7 @@ import com.caovinh.noxh.entity.*;
 import com.caovinh.noxh.exception.AppException;
 import com.caovinh.noxh.exception.ErrorCode;
 import com.caovinh.noxh.repository.*;
+import com.caovinh.noxh.service.PriorityScoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class LotteryEventService {
     LotteryDrawService lotteryDrawService;
     LotteryAuditService lotteryAuditService;
     LotteryRealtimeService lotteryRealtimeService;
+    PriorityScoringService priorityScoringService;
     SecureRandom secureRandom = new SecureRandom();
 
     @Transactional(readOnly = true)
@@ -81,6 +83,8 @@ public class LotteryEventService {
         if (applications.isEmpty()) {
             throw new AppException(ErrorCode.LOTTERY_PARTICIPANTS_EMPTY);
         }
+        applications.forEach(application -> application.setPriorityScore(priorityScoringService.calculateScore(application)));
+        applicationRepository.saveAll(applications);
 
         List<ApartmentUnit> apartments = apartmentUnitRepository.findByProjectIdAndStatusOrderByApartmentCodeAsc(
                 event.getProject().getId(), ApartmentUnitStatus.AVAILABLE);
@@ -276,7 +280,9 @@ public class LotteryEventService {
 
     private LotteryParticipant buildParticipant(LotteryEvent event, Application application) {
         String priorityTags = resolvePriorityTags(application);
-        LotteryPoolType poolType = priorityTags.isBlank() ? LotteryPoolType.NORMAL : LotteryPoolType.PRIORITY;
+        LotteryPoolType poolType = application.getPriorityScore() != null && application.getPriorityScore() > 0
+                ? LotteryPoolType.PRIORITY
+                : LotteryPoolType.NORMAL;
         String lotteryCode = "HA-" + application.getId().toString().substring(0, 8).toUpperCase();
         application.setLotteryNumber(lotteryCode);
         return LotteryParticipant.builder()
@@ -284,12 +290,12 @@ public class LotteryEventService {
                 .application(application)
                 .lotteryCode(lotteryCode)
                 .poolType(poolType)
-                .priorityTags(priorityTags.isBlank() ? null : priorityTags)
+                .priorityTags(poolType == LotteryPoolType.PRIORITY && !priorityTags.isBlank() ? priorityTags : null)
                 .build();
     }
 
     private boolean isPriorityApplication(Application application) {
-        return !resolvePriorityTags(application).isBlank();
+        return application.getPriorityScore() != null && application.getPriorityScore() > 0;
     }
 
     private String resolvePriorityTags(Application application) {

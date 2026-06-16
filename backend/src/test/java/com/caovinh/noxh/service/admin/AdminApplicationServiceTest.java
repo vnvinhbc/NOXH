@@ -12,11 +12,13 @@ import com.caovinh.noxh.exception.AppException;
 import com.caovinh.noxh.exception.ErrorCode;
 import com.caovinh.noxh.repository.ApplicationRepository;
 import com.caovinh.noxh.repository.NotificationRepository;
+import com.caovinh.noxh.service.PriorityScoringService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
@@ -38,6 +40,9 @@ class AdminApplicationServiceTest {
 
     @Mock
     NotificationRepository notificationRepository;
+
+    @Spy
+    PriorityScoringService priorityScoringService = new PriorityScoringService();
 
     @InjectMocks
     AdminApplicationService adminApplicationService;
@@ -84,6 +89,9 @@ class AdminApplicationServiceTest {
                 .user(User.builder().id(UUID.randomUUID()).fullName("Admin").email("admin@example.com").build())
                 .project(Project.builder().id(UUID.randomUUID()).name("Green Sky").build())
                 .status(ApplicationStatus.SUBMITTED)
+                .priorityCategory("Nguoi co cong voi cach mang")
+                .incomePerMonth(5_000_000L)
+                .householdSize(4)
                 .build();
 
         when(applicationRepository.findById(application.getId())).thenReturn(Optional.of(application));
@@ -94,7 +102,9 @@ class AdminApplicationServiceTest {
                 AdminApplicationStatusRequest.builder().status(AdminApplicationStatus.VERIFIED).build());
 
         assertThat(application.getStatus()).isEqualTo(ApplicationStatus.APPROVED);
+        assertThat(application.getPriorityScore()).isEqualTo(100);
         assertThat(result.getStatus()).isEqualTo("VERIFIED");
+        assertThat(result.getPriorityScore()).isEqualTo(100);
     }
 
     @Test
