@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -19,4 +20,7 @@ public class CreateLotteryEventRequest {
 
     @NotBlank
     String name;
+
+    @NotNull
+    LocalDateTime scheduledStartAt;
 }

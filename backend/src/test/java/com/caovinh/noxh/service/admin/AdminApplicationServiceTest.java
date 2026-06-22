@@ -20,7 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -73,13 +73,79 @@ class AdminApplicationServiceTest {
                 .priorityScore(200)
                 .build();
 
-        when(applicationRepository.findAll(any(Sort.class))).thenReturn(List.of(submitted, approved));
+        when(applicationRepository.findAdminApplicationsByStatuses(any(), any())).thenReturn(List.of(submitted));
 
         List<AdminApplicationResponse> result = adminApplicationService.getApplications(AdminApplicationStatus.PENDING);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getStatus()).isEqualTo("PENDING");
         assertThat(result.get(0).getUserFullName()).isEqualTo("Nguyen Van A");
+        verify(applicationRepository).findAdminApplicationsByStatuses(
+                List.of(ApplicationStatus.SUBMITTED, ApplicationStatus.UNDER_REVIEW),
+                PageRequest.of(0, 250));
+    }
+
+    @Test
+    void getOverview_usesLightweightCountsAndRecentRows() {
+        User user = User.builder()
+                .id(UUID.randomUUID())
+                .fullName("Nguyen Van A")
+                .email("a@example.com")
+                .build();
+        Project project = Project.builder()
+                .id(UUID.randomUUID())
+                .name("Lottery Test")
+                .build();
+        Application recent = Application.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .project(project)
+                .status(ApplicationStatus.APPROVED)
+                .priorityScore(100)
+                .build();
+
+        when(applicationRepository.countByStatusIn(List.of(
+                ApplicationStatus.SUBMITTED,
+                ApplicationStatus.UNDER_REVIEW,
+                ApplicationStatus.APPROVED,
+                ApplicationStatus.REJECTED))).thenReturn(200L);
+        when(applicationRepository.countByStatusIn(List.of(
+                ApplicationStatus.SUBMITTED,
+                ApplicationStatus.UNDER_REVIEW))).thenReturn(5L);
+        when(applicationRepository.countByStatus(ApplicationStatus.APPROVED)).thenReturn(180L);
+        when(applicationRepository.countByStatus(ApplicationStatus.REJECTED)).thenReturn(15L);
+        when(applicationRepository.findAdminApplicationsByStatuses(
+                List.of(ApplicationStatus.SUBMITTED, ApplicationStatus.UNDER_REVIEW, ApplicationStatus.APPROVED, ApplicationStatus.REJECTED),
+                PageRequest.of(0, 7))).thenReturn(List.of(recent));
+
+        var result = adminApplicationService.getOverview();
+
+        assertThat(result.getTotalApplications()).isEqualTo(200L);
+        assertThat(result.getPendingApplications()).isEqualTo(5L);
+        assertThat(result.getApprovedApplications()).isEqualTo(180L);
+        assertThat(result.getRejectedApplications()).isEqualTo(15L);
+        assertThat(result.getRecentApplications()).hasSize(1);
+        assertThat(result.getRecentApplications().get(0).getStatus()).isEqualTo("VERIFIED");
+    }
+
+    @Test
+    void getApplication_returnsDetail() {
+        UUID applicationId = UUID.randomUUID();
+        Application application = Application.builder()
+                .id(applicationId)
+                .user(User.builder().id(UUID.randomUUID()).fullName("Nguyen Van A").email("a@example.com").build())
+                .project(Project.builder().id(UUID.randomUUID()).name("Lottery Test").build())
+                .status(ApplicationStatus.APPROVED)
+                .priorityScore(100)
+                .build();
+
+        when(applicationRepository.findAdminApplicationById(applicationId)).thenReturn(Optional.of(application));
+
+        AdminApplicationResponse result = adminApplicationService.getApplication(applicationId);
+
+        assertThat(result.getId()).isEqualTo(applicationId.toString());
+        assertThat(result.getUserFullName()).isEqualTo("Nguyen Van A");
+        assertThat(result.getStatus()).isEqualTo("VERIFIED");
     }
 
     @Test

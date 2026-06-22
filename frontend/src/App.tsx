@@ -28,7 +28,7 @@ import AdminResultsPage from '@/admin/pages/AdminResultsPage'
 import LotteryVerificationPage from '@/pages/LotteryVerificationPage'
 
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: 1, staleTime: 1000 * 60 * 5 } },
+  defaultOptions: { queries: { retry: 1, staleTime: 1000 * 60 * 5, gcTime: 1000 * 60 * 30 } },
 })
 
 function App() {

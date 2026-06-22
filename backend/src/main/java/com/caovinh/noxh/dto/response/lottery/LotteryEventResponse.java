@@ -27,6 +27,7 @@ public class LotteryEventResponse {
     Long ethBlockNumber;
     String ethBlockHash;
     String seedSourceNote;
+    LocalDateTime scheduledStartAt;
     LocalDateTime clickedTimestamp;
     String finalSeed;
     String sortedNormalHash;

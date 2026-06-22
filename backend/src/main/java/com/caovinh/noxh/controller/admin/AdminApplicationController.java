@@ -2,6 +2,7 @@ package com.caovinh.noxh.controller.admin;
 
 import com.caovinh.noxh.dto.request.admin.AdminApplicationStatusRequest;
 import com.caovinh.noxh.dto.response.ApiResponse;
+import com.caovinh.noxh.dto.response.admin.AdminApplicationOverviewResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationStatus;
 import com.caovinh.noxh.service.admin.AdminApplicationService;
@@ -25,9 +26,24 @@ public class AdminApplicationController {
 
     @GetMapping
     ApiResponse<List<AdminApplicationResponse>> getApplications(
-            @RequestParam(value = "status", required = false) AdminApplicationStatus status) {
+            @RequestParam(value = "status", required = false) AdminApplicationStatus status,
+            @RequestParam(value = "limit", defaultValue = "250") int limit) {
         return ApiResponse.<List<AdminApplicationResponse>>builder()
-                .result(adminApplicationService.getApplications(status))
+                .result(adminApplicationService.getApplications(status, limit))
+                .build();
+    }
+
+    @GetMapping("/overview")
+    ApiResponse<AdminApplicationOverviewResponse> getOverview() {
+        return ApiResponse.<AdminApplicationOverviewResponse>builder()
+                .result(adminApplicationService.getOverview())
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<AdminApplicationResponse> getApplication(@PathVariable UUID id) {
+        return ApiResponse.<AdminApplicationResponse>builder()
+                .result(adminApplicationService.getApplication(id))
                 .build();
     }
 

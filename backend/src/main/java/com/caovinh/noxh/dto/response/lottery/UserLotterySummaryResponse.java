@@ -37,6 +37,7 @@ public class UserLotterySummaryResponse {
     String apartmentHash;
     String finalSeed;
     String resultHash;
+    LocalDateTime scheduledStartAt;
     LocalDateTime lockedAt;
     LocalDateTime startedAt;
     LocalDateTime completedAt;

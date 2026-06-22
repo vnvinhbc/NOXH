@@ -1,6 +1,7 @@
 package com.caovinh.noxh.service.admin;
 
 import com.caovinh.noxh.constant.lottery.ApartmentUnitStatus;
+import com.caovinh.noxh.dto.response.admin.AdminHousingStockOverviewResponse;
 import com.caovinh.noxh.dto.response.lottery.ApartmentUnitResponse;
 import com.caovinh.noxh.entity.ApartmentUnit;
 import com.caovinh.noxh.repository.ApartmentUnitRepository;
@@ -18,6 +19,14 @@ import java.util.UUID;
 public class AdminHousingStockService {
 
     ApartmentUnitRepository apartmentUnitRepository;
+
+    @Transactional(readOnly = true)
+    public AdminHousingStockOverviewResponse getOverview(UUID projectId) {
+        return AdminHousingStockOverviewResponse.builder()
+                .totalUnits(apartmentUnitRepository.countByProjectId(projectId))
+                .availableUnits(apartmentUnitRepository.countByProjectIdAndStatus(projectId, ApartmentUnitStatus.AVAILABLE))
+                .build();
+    }
 
     @Transactional(readOnly = true)
     public List<ApartmentUnitResponse> getUnits(UUID projectId, ApartmentUnitStatus status) {

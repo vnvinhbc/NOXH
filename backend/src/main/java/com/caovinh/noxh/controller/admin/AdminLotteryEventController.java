@@ -53,6 +53,12 @@ public class AdminLotteryEventController {
                 .build();
     }
 
+    @DeleteMapping("/{eventId}")
+    ApiResponse<Void> deleteEvent(@PathVariable UUID eventId) {
+        lotteryEventService.deleteEvent(eventId);
+        return ApiResponse.<Void>builder().build();
+    }
+
     @GetMapping("/apartment-units")
     ApiResponse<List<ApartmentUnitResponse>> getAvailableApartments(@RequestParam UUID projectId) {
         return ApiResponse.<List<ApartmentUnitResponse>>builder()

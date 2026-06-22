@@ -3,6 +3,7 @@ package com.caovinh.noxh.service.admin;
 import com.caovinh.noxh.constant.ApplicationStatus;
 import com.caovinh.noxh.dto.request.admin.AdminApplicationStatusRequest;
 import com.caovinh.noxh.dto.response.ApplicationDocumentResponse;
+import com.caovinh.noxh.dto.response.admin.AdminApplicationOverviewResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationStatus;
 import com.caovinh.noxh.entity.Application;
@@ -15,7 +16,7 @@ import com.caovinh.noxh.repository.NotificationRepository;
 import com.caovinh.noxh.service.PriorityScoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,20 +29,57 @@ import java.util.UUID;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AdminApplicationService {
 
+    static final int DEFAULT_APPLICATION_LIMIT = 250;
+    static final int MAX_APPLICATION_LIMIT = 500;
+
     ApplicationRepository applicationRepository;
     NotificationRepository notificationRepository;
     PriorityScoringService priorityScoringService;
 
     @Transactional(readOnly = true)
     public List<AdminApplicationResponse> getApplications(AdminApplicationStatus status) {
-        return applicationRepository.findAll(Sort.by(
-                        Sort.Order.desc("submittedAt"),
-                        Sort.Order.desc("createdAt")))
+        return getApplications(status, DEFAULT_APPLICATION_LIMIT);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminApplicationResponse> getApplications(AdminApplicationStatus status, int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, MAX_APPLICATION_LIMIT));
+        return applicationRepository.findAdminApplicationsByStatuses(
+                        statusesFor(status),
+                        PageRequest.of(0, safeLimit))
                 .stream()
-                .filter(application -> mapStatus(application.getStatus()) != null)
-                .filter(application -> status == null || mapStatus(application.getStatus()) == status)
-                .map(this::toResponse)
+                .map(application -> toResponse(application, false))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public AdminApplicationOverviewResponse getOverview() {
+        List<ApplicationStatus> adminStatuses = statusesFor(null);
+        long total = applicationRepository.countByStatusIn(adminStatuses);
+        long pending = applicationRepository.countByStatusIn(statusesFor(AdminApplicationStatus.PENDING));
+        long approved = applicationRepository.countByStatus(ApplicationStatus.APPROVED);
+        long rejected = applicationRepository.countByStatus(ApplicationStatus.REJECTED);
+        List<AdminApplicationResponse> recent = applicationRepository.findAdminApplicationsByStatuses(
+                        adminStatuses,
+                PageRequest.of(0, 7))
+                .stream()
+                .map(application -> toResponse(application, false))
+                .toList();
+
+        return AdminApplicationOverviewResponse.builder()
+                .totalApplications(total)
+                .pendingApplications(pending)
+                .approvedApplications(approved)
+                .rejectedApplications(rejected)
+                .recentApplications(recent)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public AdminApplicationResponse getApplication(UUID applicationId) {
+        Application application = applicationRepository.findAdminApplicationById(applicationId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICATION_NOT_FOUND));
+        return toResponse(application, true);
     }
 
     @Transactional
@@ -63,13 +101,17 @@ public class AdminApplicationService {
         application.setRejectReason(nextStatus == ApplicationStatus.REJECTED ? reason : null);
         Application savedApplication = applicationRepository.save(application);
         createStatusNotification(savedApplication);
-        return toResponse(savedApplication);
+        return toResponse(savedApplication, true);
     }
 
     private AdminApplicationResponse toResponse(Application application) {
+        return toResponse(application, true);
+    }
+
+    private AdminApplicationResponse toResponse(Application application, boolean includeDocuments) {
         List<ApplicationDocumentResponse> documents = application.getDocuments() == null
                 ? List.of()
-                : application.getDocuments().stream()
+                : includeDocuments ? application.getDocuments().stream()
                 .sorted(Comparator.comparing(ApplicationDocument::getUploadedAt))
                 .map(document -> ApplicationDocumentResponse.builder()
                         .id(document.getId().toString())
@@ -79,7 +121,7 @@ public class AdminApplicationService {
                         .status(document.getStatus())
                         .uploadedAt(document.getUploadedAt())
                         .build())
-                .toList();
+                .toList() : List.of();
 
         return AdminApplicationResponse.builder()
                 .id(application.getId().toString())
@@ -148,6 +190,21 @@ public class AdminApplicationService {
             case PENDING -> ApplicationStatus.UNDER_REVIEW;
             case VERIFIED -> ApplicationStatus.APPROVED;
             case REJECTED -> ApplicationStatus.REJECTED;
+        };
+    }
+
+    private List<ApplicationStatus> statusesFor(AdminApplicationStatus status) {
+        if (status == null) {
+            return List.of(
+                    ApplicationStatus.SUBMITTED,
+                    ApplicationStatus.UNDER_REVIEW,
+                    ApplicationStatus.APPROVED,
+                    ApplicationStatus.REJECTED);
+        }
+        return switch (status) {
+            case PENDING -> List.of(ApplicationStatus.SUBMITTED, ApplicationStatus.UNDER_REVIEW);
+            case VERIFIED -> List.of(ApplicationStatus.APPROVED);
+            case REJECTED -> List.of(ApplicationStatus.REJECTED);
         };
     }
 }

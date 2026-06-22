@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { LockKeyhole, ShieldAlert, BadgeIcon, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
@@ -16,6 +17,7 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
   const otpRefs = useRef<Array<HTMLInputElement | null>>([])
   const setAuth = useAuthStore((s) => s.setAuth)
+  const queryClient = useQueryClient()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
@@ -64,6 +66,7 @@ export default function AdminLoginPage() {
     try {
       const response = await adminAuthApi.login({ identifier, password, otp: otpValue })
       const auth = response.data.result!
+      queryClient.clear()
       setAuth(auth.accessToken, auth)
       toast.success('Da thiet lap phien quan tri')
       navigate(redirectTo, { replace: true })

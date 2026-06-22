@@ -6,6 +6,11 @@ import { lotteryApi } from '@/api/lottery'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 function buildWsUrl() {
+  const configuredWsUrl = import.meta.env.VITE_WS_URL
+  if (configuredWsUrl) return configuredWsUrl
+  const apiTarget = import.meta.env.VITE_API_PROXY_TARGET
+  if (apiTarget) return `${apiTarget.replace(/^http/, 'ws').replace(/\/$/, '')}/ws`
+  if (window.location.hostname === 'localhost' && window.location.port === '3000') return 'ws://localhost:8080/ws'
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
   return `${protocol}://${window.location.host}/ws`
 }
@@ -54,11 +59,13 @@ export default function UserLotteryRoomPage() {
   const { data: summary, isLoading } = useQuery({
     queryKey: ['userLotterySummary'],
     queryFn: () => lotteryApi.getMySummary().then((res) => res.data.result),
+    refetchInterval: 3000,
   })
   const { data: verification } = useQuery({
     queryKey: ['lotteryVerification', summary?.eventId],
     queryFn: () => lotteryApi.getVerification(summary?.eventId || '').then((res) => res.data.result),
     enabled: Boolean(summary?.eventId),
+    refetchInterval: summary?.eventStatus === 'COMPLETED' ? false : 3000,
   })
   const socketEvents = useLotterySocket(summary?.eventId)
 
@@ -69,6 +76,9 @@ export default function UserLotteryRoomPage() {
       .sort((a, b) => (a.drawOrder || 999999) - (b.drawOrder || 999999))
       .slice(0, 6)
   }, [verification?.results])
+  const isRoomActive = ['DRAWING', 'COMPLETED'].includes(summary?.eventStatus || '')
+  const currentDrawCode = isRoomActive ? liveResults[0]?.lotteryCode : undefined
+  const displayCode = currentDrawCode || (isRoomActive ? '?????' : '-----')
 
   if (isLoading) return <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>
 
@@ -95,9 +105,11 @@ export default function UserLotteryRoomPage() {
               <span className="rounded-lg bg-black/15 px-4 py-2">Station: LIVE_SERVER_04</span>
               <span className="rounded-lg bg-black/15 px-4 py-2">Latency: 14ms</span>
             </div>
-            <p className="text-sm font-black uppercase tracking-[0.4em] text-[#acc7ff]">Ma so dang boc tham</p>
+            <p className="text-sm font-black uppercase tracking-[0.4em] text-[#acc7ff]">
+              {isRoomActive ? 'Ma so dang boc tham' : 'Chua bat dau boc tham'}
+            </p>
             <div className="mt-8 grid grid-cols-5 gap-4">
-              {(summary?.lotteryCode || 'NOXH?').slice(0, 5).padEnd(5, '?').split('').map((char, index) => (
+              {displayCode.slice(0, 5).padEnd(5, '?').split('').map((char, index) => (
                 <div key={`${char}-${index}`} className="flex aspect-[0.75] items-center justify-center rounded-2xl bg-white text-5xl font-black text-[#001f49] shadow-lg">
                   {char}
                 </div>
@@ -107,7 +119,7 @@ export default function UserLotteryRoomPage() {
               <div className="h-full w-2/3 bg-[#115cb9]" />
             </div>
             <p className="mt-8 font-mono text-sm text-[#acc7ff]">
-              Blockchain Verify Seed: {shortHash(summary?.finalSeed)}
+              {isRoomActive ? `Blockchain Verify Seed: ${shortHash(summary?.finalSeed)}` : 'Admin chua nhap seed va bat dau quay'}
             </p>
           </div>
 

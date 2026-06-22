@@ -24,16 +24,27 @@ export default function AdminDashboardPage() {
   })
 
   const summary = useMemo(() => {
-    const applications = data?.applications || []
+    const applicationOverview = data?.applicationOverview
+    const recentApplications = applicationOverview?.recentApplications || []
     const events = data?.events || []
     const projects = data?.projects || []
-    const pending = applications.filter((item) => item.status === 'PENDING').length
-    const approved = applications.filter((item) => item.status === 'VERIFIED').length
-    const rejected = applications.filter((item) => item.status === 'REJECTED').length
+    const focusProject = projects.find((project) => project.id === data?.focusProjectId)
     const completedEvents = events.filter((item) => item.status === 'COMPLETED').length
-    const totalUnits = projects.reduce((sum, project) => sum + (project.totalUnits || 0), 0)
-    const availableUnits = projects.reduce((sum, project) => sum + (project.availableUnits || 0), 0)
-    return { applications, events, projects, pending, approved, rejected, completedEvents, totalUnits, availableUnits }
+    const totalUnits = data?.housingOverview?.totalUnits || 0
+    const availableUnits = data?.housingOverview?.availableUnits || 0
+    return {
+      recentApplications,
+      events,
+      projects,
+      focusProject,
+      totalApplications: applicationOverview?.totalApplications || 0,
+      pending: applicationOverview?.pendingApplications || 0,
+      approved: applicationOverview?.approvedApplications || 0,
+      rejected: applicationOverview?.rejectedApplications || 0,
+      completedEvents,
+      totalUnits,
+      availableUnits,
+    }
   }, [data])
 
   if (isLoading) {
@@ -41,10 +52,15 @@ export default function AdminDashboardPage() {
   }
 
   const stats = [
-    { label: 'Tong ho so', value: summary.applications.length, detail: 'Ho so trong hang quan tri', icon: FileBadge2 },
+    { label: 'Tong ho so', value: summary.totalApplications, detail: 'Ho so trong hang quan tri', icon: FileBadge2 },
     { label: 'Cho duyet', value: summary.pending, detail: 'Can xu ly trong queue', icon: Clock3 },
     { label: 'Da duyet', value: summary.approved, detail: 'Du dieu kien tham gia', icon: CheckCircle2 },
-    { label: 'Can ho kha dung', value: summary.availableUnits, detail: `${numberFormat(summary.totalUnits)} tong can`, icon: Database },
+    {
+      label: 'Can ho kha dung',
+      value: summary.availableUnits,
+      detail: `${numberFormat(summary.totalUnits)} can thuc te${summary.focusProject ? ` - ${summary.focusProject.name}` : ''}`,
+      icon: Database,
+    },
   ]
 
   return (
@@ -98,7 +114,7 @@ export default function AdminDashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/20">
-                {summary.applications.slice(0, 7).map((application) => (
+                {summary.recentApplications.map((application) => (
                   <tr key={application.id} className="hover:bg-[#eff4ff]/50">
                     <td className="px-5 py-4 font-mono text-xs font-bold text-[#002045]">{application.applicationCode}</td>
                     <td className="px-5 py-4 text-sm font-bold text-[#0d1c2e]">{application.userFullName}</td>

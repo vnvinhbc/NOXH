@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useQueryClient } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -21,6 +22,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -42,6 +44,7 @@ export default function LoginPage() {
     try {
       const res = await authApi.login(data)
       const auth = res.data.result!
+      queryClient.clear()
       setAuth(auth.accessToken, auth)
       toast.success('Đăng nhập thành công!')
       navigate(redirectTo, { replace: true })

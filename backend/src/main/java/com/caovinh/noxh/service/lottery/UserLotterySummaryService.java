@@ -58,6 +58,7 @@ public class UserLotterySummaryService {
                 .apartmentHash(event.getApartmentHash())
                 .finalSeed(event.getFinalSeed())
                 .resultHash(event.getResultHash())
+                .scheduledStartAt(event.getScheduledStartAt())
                 .lockedAt(event.getLockedAt())
                 .startedAt(event.getStartedAt())
                 .completedAt(event.getCompletedAt())

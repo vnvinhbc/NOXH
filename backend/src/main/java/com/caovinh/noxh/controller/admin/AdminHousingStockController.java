@@ -2,6 +2,7 @@ package com.caovinh.noxh.controller.admin;
 
 import com.caovinh.noxh.constant.lottery.ApartmentUnitStatus;
 import com.caovinh.noxh.dto.response.ApiResponse;
+import com.caovinh.noxh.dto.response.admin.AdminHousingStockOverviewResponse;
 import com.caovinh.noxh.dto.response.lottery.ApartmentUnitResponse;
 import com.caovinh.noxh.service.admin.AdminHousingStockService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,13 @@ import java.util.UUID;
 public class AdminHousingStockController {
 
     AdminHousingStockService adminHousingStockService;
+
+    @GetMapping("/overview")
+    ApiResponse<AdminHousingStockOverviewResponse> getOverview(@RequestParam UUID projectId) {
+        return ApiResponse.<AdminHousingStockOverviewResponse>builder()
+                .result(adminHousingStockService.getOverview(projectId))
+                .build();
+    }
 
     @GetMapping
     ApiResponse<List<ApartmentUnitResponse>> getUnits(

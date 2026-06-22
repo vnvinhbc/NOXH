@@ -177,6 +177,7 @@ export interface LotteryEventResponse {
   ethBlockNumber?: number
   ethBlockHash?: string
   seedSourceNote?: string
+  scheduledStartAt?: string
   clickedTimestamp?: string
   finalSeed?: string
   sortedNormalHash?: string
@@ -267,6 +268,7 @@ export interface UserLotterySummaryResponse {
   apartmentHash?: string
   finalSeed?: string
   resultHash?: string
+  scheduledStartAt?: string
   lockedAt?: string
   startedAt?: string
   completedAt?: string

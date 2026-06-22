@@ -35,7 +35,6 @@ public class LotteryEventService {
     ProjectRepository projectRepository;
     ApplicationRepository applicationRepository;
     ApartmentUnitRepository apartmentUnitRepository;
-    ApplicationPriorityTagRepository applicationPriorityTagRepository;
     LotteryParticipantRepository lotteryParticipantRepository;
     LotteryJobRepository lotteryJobRepository;
     LotteryResultRepository lotteryResultRepository;
@@ -64,6 +63,7 @@ public class LotteryEventService {
                 .status(LotteryEventStatus.SEED_COMMITTED)
                 .privateSalt(privateSalt)
                 .commitmentHash(lotteryHashService.sha256("NOXH:v1:COMMITMENT|" + privateSalt))
+                .scheduledStartAt(request.getScheduledStartAt())
                 .build();
         LotteryEvent saved = lotteryEventRepository.save(event);
         lotteryAuditService.log(saved, LotteryAuditEventType.LOTTERY_CREATED, "projectId=" + project.getId());
@@ -204,6 +204,36 @@ public class LotteryEventService {
         }
     }
 
+    @Transactional
+    public void deleteEvent(UUID eventId) {
+        LotteryEvent event = findEventForUpdate(eventId);
+        if (event.getStatus() == LotteryEventStatus.DRAWING || lotteryResultRepository.existsByEventId(eventId)) {
+            throw new AppException(ErrorCode.LOTTERY_EVENT_INVALID_STATUS);
+        }
+
+        List<ApartmentUnit> lockedApartments = apartmentUnitRepository.findByLockedEventIdOrderByApartmentCodeAsc(eventId);
+        lockedApartments.forEach(apartment -> {
+            apartment.setStatus(ApartmentUnitStatus.AVAILABLE);
+            apartment.setLockedEvent(null);
+        });
+        apartmentUnitRepository.saveAll(lockedApartments);
+
+        List<Application> lockedApplications = lotteryParticipantRepository.findByEventIdOrderByLotteryCodeAsc(eventId)
+                .stream()
+                .map(LotteryParticipant::getApplication)
+                .collect(Collectors.toMap(Application::getId, Function.identity(), (left, right) -> left))
+                .values()
+                .stream()
+                .peek(application -> {
+                    application.setLotteryNumber(null);
+                    application.setLotteryResult(null);
+                })
+                .toList();
+        applicationRepository.saveAll(lockedApplications);
+
+        lotteryEventRepository.delete(event);
+    }
+
     @Transactional(readOnly = true)
     public LotteryVerificationResponse getVerification(UUID eventId) {
         LotteryEvent event = findEvent(eventId);
@@ -279,10 +309,12 @@ public class LotteryEventService {
     }
 
     private LotteryParticipant buildParticipant(LotteryEvent event, Application application) {
-        String priorityTags = resolvePriorityTags(application);
         LotteryPoolType poolType = application.getPriorityScore() != null && application.getPriorityScore() > 0
                 ? LotteryPoolType.PRIORITY
                 : LotteryPoolType.NORMAL;
+        String priorityTags = poolType == LotteryPoolType.PRIORITY && application.getPriorityCategory() != null
+                ? application.getPriorityCategory().trim()
+                : "";
         String lotteryCode = "HA-" + application.getId().toString().substring(0, 8).toUpperCase();
         application.setLotteryNumber(lotteryCode);
         return LotteryParticipant.builder()
@@ -296,18 +328,6 @@ public class LotteryEventService {
 
     private boolean isPriorityApplication(Application application) {
         return application.getPriorityScore() != null && application.getPriorityScore() > 0;
-    }
-
-    private String resolvePriorityTags(Application application) {
-        List<String> tagCodes = applicationPriorityTagRepository.findByApplicationId(application.getId()).stream()
-                .map(applicationPriorityTag -> applicationPriorityTag.getPriorityTag().getCode())
-                .sorted()
-                .toList();
-        if (!tagCodes.isEmpty()) {
-            return String.join(",", tagCodes);
-        }
-        String legacyPriority = application.getPriorityCategory();
-        return legacyPriority == null || legacyPriority.isBlank() ? "" : legacyPriority.trim();
     }
 
     private void applyManualSeed(LotteryEvent event, StartLotteryRequest request) {
@@ -381,9 +401,9 @@ public class LotteryEventService {
 
     private LotteryEventResponse toEventResponse(LotteryEvent event) {
         UUID eventId = event.getId();
-        long participantCount = eventId == null ? 0 : lotteryParticipantRepository.findByEventIdOrderByLotteryCodeAsc(eventId).size();
-        long apartmentCount = eventId == null ? 0 : apartmentUnitRepository.findByLockedEventIdOrderByApartmentCodeAsc(eventId).size();
-        long resultCount = eventId == null ? 0 : lotteryResultRepository.findByEventIdOrderByLotteryCodeAsc(eventId).size();
+        long participantCount = eventId == null ? 0 : lotteryParticipantRepository.countByEventId(eventId);
+        long apartmentCount = eventId == null ? 0 : apartmentUnitRepository.countByLockedEventId(eventId);
+        long resultCount = eventId == null ? 0 : lotteryResultRepository.countByEventId(eventId);
         return LotteryEventResponse.builder()
                 .id(event.getId().toString())
                 .projectId(event.getProject().getId().toString())
@@ -400,6 +420,7 @@ public class LotteryEventService {
                 .ethBlockNumber(event.getEthBlockNumber())
                 .ethBlockHash(event.getEthBlockHash())
                 .seedSourceNote(event.getSeedSourceNote())
+                .scheduledStartAt(event.getScheduledStartAt())
                 .clickedTimestamp(event.getClickedTimestamp())
                 .finalSeed(event.getFinalSeed())
                 .sortedNormalHash(event.getSortedNormalHash())

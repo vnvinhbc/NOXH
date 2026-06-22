@@ -67,6 +67,9 @@ public class LotteryEvent {
     @Column(name = "seed_source_note", columnDefinition = "TEXT")
     String seedSourceNote;
 
+    @Column(name = "scheduled_start_at")
+    LocalDateTime scheduledStartAt;
+
     @Column(name = "clicked_timestamp")
     LocalDateTime clickedTimestamp;
 

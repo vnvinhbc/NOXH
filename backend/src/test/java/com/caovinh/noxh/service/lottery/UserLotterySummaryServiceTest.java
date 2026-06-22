@@ -72,6 +72,7 @@ class UserLotterySummaryServiceTest {
                 .apartmentHash("apartment-hash")
                 .finalSeed("final-seed")
                 .resultHash("result-hash")
+                .scheduledStartAt(LocalDateTime.of(2026, 6, 16, 8, 0))
                 .startedAt(LocalDateTime.of(2026, 6, 16, 8, 30))
                 .completedAt(LocalDateTime.of(2026, 6, 16, 8, 45))
                 .build();
@@ -112,6 +113,7 @@ class UserLotterySummaryServiceTest {
         assertThat(response.getResultType()).isEqualTo("GUARANTEED");
         assertThat(response.getApartmentCode()).isEqualTo("A-1204");
         assertThat(response.getResultHash()).isEqualTo("result-hash");
+        assertThat(response.getScheduledStartAt()).isEqualTo(LocalDateTime.of(2026, 6, 16, 8, 0));
     }
 
     @Test

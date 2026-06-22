@@ -34,6 +34,19 @@ export interface AdminApplicationResponse {
   documents: AdminApplicationDocument[]
 }
 
+export interface AdminApplicationOverviewResponse {
+  totalApplications: number
+  pendingApplications: number
+  approvedApplications: number
+  rejectedApplications: number
+  recentApplications: AdminApplicationResponse[]
+}
+
+export interface AdminHousingStockOverviewResponse {
+  totalUnits: number
+  availableUnits: number
+}
+
 export interface AdminLotteryAuditLogResponse {
   id: string
   eventId: string

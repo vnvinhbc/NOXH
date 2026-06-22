@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { Download, Eye, FileBadge2, Filter, Mail, TrendingUp, CheckCircle2, Clock3, ShieldX } from 'lucide-react'
@@ -49,15 +49,27 @@ export default function AdminApplicationsPage() {
   } | null>(null)
   const queryClient = useQueryClient()
 
-  const { data: applications = [], isLoading } = useQuery({
+  const { data: applications = [], isLoading, isFetching } = useQuery({
     queryKey: ['adminApplications', activeTab],
     queryFn: () => adminApplicationsApi.getAll(activeTab === 'ALL' ? undefined : activeTab).then((res) => res.data.result || []),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   })
 
-  const selectedApplication = useMemo(
+  const selectedListApplication = useMemo(
     () => applications.find((application) => application.id === selectedId) || applications[0] || null,
     [applications, selectedId]
   )
+  const selectedApplicationId = selectedListApplication?.id
+  const { data: selectedDetail, isFetching: isFetchingSelectedDetail } = useQuery({
+    queryKey: ['adminApplicationDetail', selectedApplicationId],
+    queryFn: () => adminApplicationsApi.getById(selectedApplicationId!).then((res) => res.data.result || null),
+    enabled: Boolean(selectedApplicationId),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+  })
+  const selectedApplication = selectedDetail || selectedListApplication
 
   useEffect(() => {
     setReviewReason(selectedApplication?.rejectReason || '')
@@ -68,6 +80,7 @@ export default function AdminApplicationsPage() {
       adminApplicationsApi.updateStatus(id, status, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminApplications'] })
+      queryClient.invalidateQueries({ queryKey: ['adminApplicationDetail'] })
       toast.success('Da cap nhat trang thai ho so')
     },
     onError: (error: unknown) => {
@@ -83,7 +96,16 @@ export default function AdminApplicationsPage() {
     return { total: applications.length, pending, verified, rejected }
   }, [applications])
 
-  if (isLoading) {
+  const prefetchDetail = (applicationId: string) => {
+    queryClient.prefetchQuery({
+      queryKey: ['adminApplicationDetail', applicationId],
+      queryFn: () => adminApplicationsApi.getById(applicationId).then((res) => res.data.result || null),
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    })
+  }
+
+  if (isLoading && applications.length === 0) {
     return <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>
   }
 
@@ -154,6 +176,11 @@ export default function AdminApplicationsPage() {
             </div>
 
             <div className="flex items-center gap-2">
+              {isFetching && (
+                <span className="rounded-full bg-white px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#465f88]">
+                  Dang cap nhat
+                </span>
+              )}
               <button type="button" className="flex items-center gap-2 rounded-lg border border-[#002045]/15 px-4 py-2 text-xs font-bold text-[#002045] hover:bg-[#eff4ff]">
                 <Download size={14} />
                 Xuat file
@@ -180,6 +207,7 @@ export default function AdminApplicationsPage() {
                       selectedApplication?.id === application.id ? 'bg-[#eff4ff]/40' : ''
                     }`}
                     onClick={() => setSelectedId(application.id)}
+                    onMouseEnter={() => prefetchDetail(application.id)}
                   >
                     <td className="px-4 py-4 font-mono text-xs font-bold text-[#002045]">{application.applicationCode}</td>
                     <td className="px-4 py-4">
@@ -238,6 +266,11 @@ export default function AdminApplicationsPage() {
         <aside className="rounded-xl border border-[#c4c6cf]/20 bg-[#dce9ff]/40 p-6">
           {selectedApplication ? (
             <div className="space-y-6">
+              {isFetchingSelectedDetail && (
+                <div className="rounded-lg bg-white px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#465f88] shadow-sm">
+                  Dang tai chi tiet...
+                </div>
+              )}
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#43474e]">Ho so dang chon</p>
                 <h2 className="mt-2 text-2xl font-bold text-[#002045]">{selectedApplication.userFullName}</h2>

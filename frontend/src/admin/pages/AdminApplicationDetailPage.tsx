@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -31,12 +31,13 @@ export default function AdminApplicationDetailPage() {
   const [previewFile, setPreviewFile] = useState<{ title: string; fileUrl: string; fileName?: string } | null>(null)
   const queryClient = useQueryClient()
 
-  const { data: applications = [], isLoading } = useQuery({
-    queryKey: ['adminApplications'],
-    queryFn: () => adminApplicationsApi.getAll().then((res) => res.data.result || []),
+  const { data: application, isLoading } = useQuery({
+    queryKey: ['adminApplicationDetail', id],
+    queryFn: () => adminApplicationsApi.getById(id!).then((res) => res.data.result || null),
+    enabled: Boolean(id),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   })
-
-  const application = useMemo(() => applications.find((item) => item.id === id), [applications, id])
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ status, reason }: { status: AdminApplicationStatus; reason?: string }) => {
@@ -45,6 +46,7 @@ export default function AdminApplicationDetailPage() {
     },
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ['adminApplications'] })
+      queryClient.invalidateQueries({ queryKey: ['adminApplicationDetail', id] })
       setReviewReason(res.data.result?.rejectReason || '')
       toast.success('Da cap nhat trang thai ho so')
     },

@@ -57,6 +57,7 @@ export default function Navbar() {
     try {
       await authApi.logout()
     } finally {
+      queryClient.clear()
       logout()
       navigate('/login')
       toast.success('Da dang xuat')

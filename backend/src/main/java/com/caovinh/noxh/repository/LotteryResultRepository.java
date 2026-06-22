@@ -13,6 +13,8 @@ public interface LotteryResultRepository extends JpaRepository<LotteryResult, UU
 
     boolean existsByEventId(UUID eventId);
 
+    long countByEventId(UUID eventId);
+
     List<LotteryResult> findByEventIdOrderByLotteryCodeAsc(UUID eventId);
 
     List<LotteryResult> findByEventIdOrderByDrawOrderAsc(UUID eventId);

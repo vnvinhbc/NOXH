@@ -66,4 +66,16 @@ class AdminHousingStockServiceTest {
 
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void getOverview_countsActualApartmentUnitsForProject() {
+        UUID projectId = UUID.randomUUID();
+        when(apartmentUnitRepository.countByProjectId(projectId)).thenReturn(80L);
+        when(apartmentUnitRepository.countByProjectIdAndStatus(projectId, ApartmentUnitStatus.AVAILABLE)).thenReturn(80L);
+
+        var result = adminHousingStockService.getOverview(projectId);
+
+        assertThat(result.getTotalUnits()).isEqualTo(80L);
+        assertThat(result.getAvailableUnits()).isEqualTo(80L);
+    }
 }

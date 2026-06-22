@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { BarChart3, Bell, Building2, FileBadge2, LayoutDashboard, LogOut, ScrollText, Search, Settings, Ticket, Users } from 'lucide-react'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/stores/authStore'
@@ -18,6 +19,7 @@ export default function AdminLayout() {
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const handleLogout = async () => {
     try {
@@ -25,6 +27,7 @@ export default function AdminLayout() {
     } catch {
       // session cleanup still needs to happen locally
     } finally {
+      queryClient.clear()
       logout()
       navigate('/admin/login', { replace: true })
     }

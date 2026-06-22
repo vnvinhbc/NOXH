@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
-import { AlertTriangle, Building2, CheckCircle2, Copy, Hash, Lock, Play, Plus, Radio, Ticket } from 'lucide-react'
+import { AlertTriangle, Building2, CheckCircle2, Copy, Hash, Lock, Play, Plus, Radio, Ticket, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { adminLotteryApi } from '@/admin/api/adminLottery'
 import { projectApi } from '@/api/project'
@@ -29,6 +29,11 @@ function shortHash(value?: string) {
 }
 
 function buildWsUrl() {
+  const configuredWsUrl = import.meta.env.VITE_WS_URL
+  if (configuredWsUrl) return configuredWsUrl
+  const apiTarget = import.meta.env.VITE_API_PROXY_TARGET
+  if (apiTarget) return `${apiTarget.replace(/^http/, 'ws').replace(/\/$/, '')}/ws`
+  if (window.location.hostname === 'localhost' && window.location.port === '3000') return 'ws://localhost:8080/ws'
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
   return `${protocol}://${window.location.host}/ws`
 }
@@ -72,6 +77,7 @@ export default function AdminLotteryEventsPage() {
   const queryClient = useQueryClient()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [eventName, setEventName] = useState('Dot quay NOXH')
+  const [scheduledStartAt, setScheduledStartAt] = useState(dayjs().add(15, 'minute').add(30, 'second').format('YYYY-MM-DDTHH:mm'))
   const [projectId, setProjectId] = useState('')
   const [seedEvent, setSeedEvent] = useState<LotteryEventResponse | null>(null)
   const [seedForm, setSeedForm] = useState({
@@ -103,10 +109,13 @@ export default function AdminLotteryEventsPage() {
     if (!projectId && projects[0]?.id) setProjectId(projects[0].id)
   }, [projectId, projects])
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['adminLotteryEvents'] })
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['adminLotteryEvents'] })
+    queryClient.invalidateQueries({ queryKey: ['adminDashboardOverview'] })
+  }
 
   const createMutation = useMutation({
-    mutationFn: () => adminLotteryApi.createEvent({ projectId, name: eventName }),
+    mutationFn: () => adminLotteryApi.createEvent({ projectId, name: eventName, scheduledStartAt }),
     onSuccess: (res) => {
       setSelectedId(res.data.result?.id || null)
       refresh()
@@ -143,6 +152,19 @@ export default function AdminLotteryEventsPage() {
     },
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: (eventId: string) => adminLotteryApi.deleteEvent(eventId),
+    onSuccess: (_, eventId) => {
+      if (selectedId === eventId) setSelectedId(null)
+      refresh()
+      toast.success('Da xoa event')
+    },
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
+      toast.error(message || 'Khong the xoa event nay')
+    },
+  })
+
   if (isLoading) {
     return <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>
   }
@@ -161,7 +183,7 @@ export default function AdminLotteryEventsPage() {
         </p>
       </div>
 
-      <section className="mb-8 grid gap-4 rounded-xl bg-white p-5 shadow-sm md:grid-cols-[1fr_1fr_auto]">
+      <section className="mb-8 grid gap-4 rounded-xl bg-white p-5 shadow-sm md:grid-cols-[1fr_1fr_1fr_auto]">
         <label className="text-xs font-bold uppercase tracking-[0.2em] text-[#43474e]">
           Ten dot quay
           <input
@@ -182,10 +204,19 @@ export default function AdminLotteryEventsPage() {
             ))}
           </select>
         </label>
+        <label className="text-xs font-bold uppercase tracking-[0.2em] text-[#43474e]">
+          Gio quay du kien
+          <input
+            type="datetime-local"
+            value={scheduledStartAt}
+            onChange={(event) => setScheduledStartAt(event.target.value)}
+            className="mt-2 h-11 w-full rounded-lg border border-[#c4c6cf]/40 px-3 text-sm font-medium normal-case tracking-normal outline-none focus:border-[#002045]"
+          />
+        </label>
         <button
           type="button"
           onClick={() => createMutation.mutate()}
-          disabled={!projectId || !eventName.trim() || createMutation.isPending}
+          disabled={!projectId || !eventName.trim() || !scheduledStartAt || createMutation.isPending}
           className="flex h-11 items-center justify-center gap-2 self-end rounded-lg bg-[#002045] px-5 text-xs font-bold uppercase tracking-[0.18em] text-white disabled:opacity-60"
         >
           <Plus size={15} />
@@ -217,6 +248,9 @@ export default function AdminLotteryEventsPage() {
                   <p className="mt-1 flex items-center gap-2 text-sm text-[#555f70]">
                     <Building2 size={14} />
                     {event.projectName}
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-[#465f88]">
+                    Gio quay: {event.scheduledStartAt ? dayjs(event.scheduledStartAt).format('DD/MM/YYYY HH:mm') : '-'}
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center md:min-w-[20rem]">
@@ -303,6 +337,19 @@ export default function AdminLotteryEventsPage() {
                     Xem verification
                   </a>
                 )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Xoa event nay? Neu event da lock, can ho se duoc tra ve AVAILABLE.')) {
+                      deleteMutation.mutate(selectedEvent.id)
+                    }
+                  }}
+                  disabled={selectedEvent.status === 'DRAWING' || selectedEvent.resultCount > 0 || deleteMutation.isPending}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#93000a]/20 bg-[#ffdad6] px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#93000a] disabled:opacity-50"
+                >
+                  <Trash2 size={14} />
+                  Xoa event
+                </button>
               </div>
 
               <div className="rounded-xl bg-white p-4">

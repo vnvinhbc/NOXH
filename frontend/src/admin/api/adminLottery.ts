@@ -4,8 +4,11 @@ import type { ApiResponse, ApartmentUnitResponse, LotteryEventResponse } from '@
 export const adminLotteryApi = {
   getEvents: () => api.get<ApiResponse<LotteryEventResponse[]>>('/admin/lottery-events'),
 
-  createEvent: (data: { projectId: string; name: string }) =>
+  createEvent: (data: { projectId: string; name: string; scheduledStartAt: string }) =>
     api.post<ApiResponse<LotteryEventResponse>>('/admin/lottery-events', data),
+
+  deleteEvent: (eventId: string) =>
+    api.delete<ApiResponse<void>>(`/admin/lottery-events/${eventId}`),
 
   lockEvent: (eventId: string) =>
     api.post<ApiResponse<LotteryEventResponse>>(`/admin/lottery-events/${eventId}/lock`),

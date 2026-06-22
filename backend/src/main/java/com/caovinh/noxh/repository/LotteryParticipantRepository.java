@@ -13,5 +13,7 @@ public interface LotteryParticipantRepository extends JpaRepository<LotteryParti
 
     List<LotteryParticipant> findByEventIdOrderByLotteryCodeAsc(UUID eventId);
 
+    long countByEventId(UUID eventId);
+
     Optional<LotteryParticipant> findTopByApplicationIdOrderByCreatedAtDesc(UUID applicationId);
 }

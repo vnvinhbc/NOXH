@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Bell, FileText, ShieldCheck, Users } from 'lucide-react'
@@ -7,18 +7,31 @@ import { lotteryApi } from '@/api/lottery'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 function getCountdown(target?: string) {
-  if (!target) return { minutes: 15, seconds: 30 }
+  if (!target) return { minutes: 0, seconds: 0 }
   const diff = Math.max(0, dayjs(target).diff(dayjs(), 'second'))
-  return { minutes: Math.floor(diff / 60), seconds: diff % 60 }
+  return { totalSeconds: diff, minutes: Math.floor(diff / 60), seconds: diff % 60 }
 }
 
 export default function UserLotteryWaitingRoomPage() {
+  const [, setTick] = useState(0)
   const { data: summary, isLoading } = useQuery({
     queryKey: ['userLotterySummary'],
     queryFn: () => lotteryApi.getMySummary().then((res) => res.data.result),
+    refetchInterval: 1000 * 15,
   })
 
-  const countdown = useMemo(() => getCountdown(summary?.startedAt), [summary?.startedAt])
+  useEffect(() => {
+    const timer = window.setInterval(() => setTick((current) => current + 1), 1000)
+    return () => window.clearInterval(timer)
+  }, [])
+
+  const countdownTarget = useMemo(() => {
+    if (summary?.scheduledStartAt) return summary.scheduledStartAt
+    if (summary?.lockedAt) return dayjs(summary.lockedAt).add(15, 'minute').add(30, 'second').format()
+    return undefined
+  }, [summary?.lockedAt, summary?.scheduledStartAt])
+  const countdown = getCountdown(countdownTarget)
+  const canEnterRoom = ['DRAWING', 'COMPLETED'].includes(summary?.eventStatus || '')
 
   if (isLoading) return <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>
 
@@ -40,7 +53,7 @@ export default function UserLotteryWaitingRoomPage() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.7fr)]">
         <section className="bg-gradient-to-br from-[#001f49] to-[#003471] p-10 text-center text-white shadow-xl">
-          <p className="text-sm font-black uppercase tracking-[0.3em] text-[#acc7ff]">Thoi gian con lai</p>
+          <p className="text-sm font-black uppercase tracking-[0.3em] text-[#acc7ff]">Thoi gian den gio quay</p>
           <div className="mt-8 flex items-center justify-center gap-8">
             <div>
               <p className="text-8xl font-black">{String(countdown.minutes).padStart(2, '0')}</p>
@@ -54,7 +67,9 @@ export default function UserLotteryWaitingRoomPage() {
           </div>
           <div className="mx-auto mt-10 inline-flex items-center gap-2 rounded-full bg-white/12 px-6 py-3 text-sm font-bold">
             <ShieldCheck size={18} />
-            Phien lam viec duoc bao mat boi he thong chinh phu dien tu
+            {countdownTarget
+              ? `Gio quay du kien: ${dayjs(countdownTarget).format('DD/MM/YYYY HH:mm:ss')}`
+              : 'Chua co gio quay du kien'}
           </div>
         </section>
 
@@ -85,9 +100,14 @@ export default function UserLotteryWaitingRoomPage() {
               <li>Ban co the theo doi phong quay truc tuyen khi event bat dau.</li>
               <li>Ket qua cuoi cung duoc cong bo kem audit hash.</li>
             </ol>
-            <Link to="/lottery-room" className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#001f49] px-5 py-3 text-sm font-black text-white">
+            <Link
+              to="/lottery-room"
+              className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-black text-white ${
+                canEnterRoom ? 'bg-[#001f49]' : 'bg-[#74777f] pointer-events-none'
+              }`}
+            >
               <Users size={17} />
-              Vao phong boc tham
+              {canEnterRoom ? 'Vao phong boc tham' : 'Cho den gio quay'}
             </Link>
           </section>
         </aside>
