@@ -42,6 +42,16 @@ export interface AdminApplicationOverviewResponse {
   recentApplications: AdminApplicationResponse[]
 }
 
+export interface AdminApplicationPageResponse {
+  items: AdminApplicationResponse[]
+  page: number
+  limit: number
+  totalElements: number
+  totalPages: number
+  first: boolean
+  last: boolean
+}
+
 export interface AdminHousingStockOverviewResponse {
   totalUnits: number
   availableUnits: number

@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Activity, Archive, CheckCircle2, Clock3, Database, FileBadge2, ShieldCheck, Ticket } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { adminApplicationsApi } from '@/admin/api/adminApplications'
 import { adminDashboardApi } from '@/admin/api/adminDashboard'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
@@ -18,10 +19,23 @@ function statusTone(status: string) {
 }
 
 export default function AdminDashboardPage() {
+  const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['adminDashboardOverview'],
     queryFn: adminDashboardApi.getOverview,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+    refetchOnWindowFocus: false,
   })
+
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ['adminApplications', 'ALL', 0, 25],
+      queryFn: () => adminApplicationsApi.getAll(undefined, 0, 25).then((res) => res.data.result),
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    })
+  }, [queryClient])
 
   const summary = useMemo(() => {
     const applicationOverview = data?.applicationOverview

@@ -2,9 +2,11 @@ package com.caovinh.noxh.repository;
 
 import com.caovinh.noxh.entity.Application;
 import com.caovinh.noxh.constant.ApplicationStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -36,11 +38,24 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
     Optional<Application> findAdminApplicationById(UUID id);
 
     @EntityGraph(attributePaths = {"user", "project"})
-    List<Application> findDistinctByStatusInOrderBySubmittedAtDescCreatedAtDesc(
+    Page<Application> findDistinctByStatusInOrderBySubmittedAtDescCreatedAtDesc(
             List<ApplicationStatus> statuses,
             Pageable pageable);
 
-    default List<Application> findAdminApplicationsByStatuses(List<ApplicationStatus> statuses, Pageable pageable) {
+    default Page<Application> findAdminApplicationsByStatuses(List<ApplicationStatus> statuses, Pageable pageable) {
         return findDistinctByStatusInOrderBySubmittedAtDescCreatedAtDesc(statuses, pageable);
     }
+
+    @Modifying(flushAutomatically = true)
+    @Query("""
+            update Application application
+            set application.lotteryNumber = null,
+                application.lotteryResult = null
+            where application.id in (
+                select participant.application.id
+                from LotteryParticipant participant
+                where participant.event.id = :eventId
+            )
+            """)
+    int clearLotteryFieldsForEvent(UUID eventId);
 }

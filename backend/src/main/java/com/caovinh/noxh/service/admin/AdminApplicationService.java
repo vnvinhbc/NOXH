@@ -4,6 +4,7 @@ import com.caovinh.noxh.constant.ApplicationStatus;
 import com.caovinh.noxh.dto.request.admin.AdminApplicationStatusRequest;
 import com.caovinh.noxh.dto.response.ApplicationDocumentResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationOverviewResponse;
+import com.caovinh.noxh.dto.response.admin.AdminApplicationPageResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationStatus;
 import com.caovinh.noxh.entity.Application;
@@ -16,6 +17,7 @@ import com.caovinh.noxh.repository.NotificationRepository;
 import com.caovinh.noxh.service.PriorityScoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,7 @@ public class AdminApplicationService {
 
     static final int DEFAULT_APPLICATION_LIMIT = 250;
     static final int MAX_APPLICATION_LIMIT = 500;
+    static final int DEFAULT_PAGE_LIMIT = 25;
 
     ApplicationRepository applicationRepository;
     NotificationRepository notificationRepository;
@@ -47,9 +50,32 @@ public class AdminApplicationService {
         return applicationRepository.findAdminApplicationsByStatuses(
                         statusesFor(status),
                         PageRequest.of(0, safeLimit))
+                .getContent()
                 .stream()
                 .map(application -> toResponse(application, false))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public AdminApplicationPageResponse getApplicationsPage(AdminApplicationStatus status, int page, int limit) {
+        int safePage = Math.max(0, page);
+        int safeLimit = Math.max(1, Math.min(limit <= 0 ? DEFAULT_PAGE_LIMIT : limit, MAX_APPLICATION_LIMIT));
+        Page<Application> applications = applicationRepository.findAdminApplicationsByStatuses(
+                statusesFor(status),
+                PageRequest.of(safePage, safeLimit));
+        List<AdminApplicationResponse> items = applications.getContent().stream()
+                .map(application -> toResponse(application, false))
+                .toList();
+
+        return AdminApplicationPageResponse.builder()
+                .items(items)
+                .page(applications.getNumber())
+                .limit(applications.getSize())
+                .totalElements(applications.getTotalElements())
+                .totalPages(applications.getTotalPages())
+                .first(applications.isFirst())
+                .last(applications.isLast())
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -62,6 +88,7 @@ public class AdminApplicationService {
         List<AdminApplicationResponse> recent = applicationRepository.findAdminApplicationsByStatuses(
                         adminStatuses,
                 PageRequest.of(0, 7))
+                .getContent()
                 .stream()
                 .map(application -> toResponse(application, false))
                 .toList();

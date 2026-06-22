@@ -2,6 +2,7 @@ package com.caovinh.noxh.service.admin;
 
 import com.caovinh.noxh.constant.ApplicationStatus;
 import com.caovinh.noxh.dto.request.admin.AdminApplicationStatusRequest;
+import com.caovinh.noxh.dto.response.admin.AdminApplicationPageResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationStatus;
 import com.caovinh.noxh.entity.Application;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -73,7 +75,8 @@ class AdminApplicationServiceTest {
                 .priorityScore(200)
                 .build();
 
-        when(applicationRepository.findAdminApplicationsByStatuses(any(), any())).thenReturn(List.of(submitted));
+        when(applicationRepository.findAdminApplicationsByStatuses(any(), any()))
+                .thenReturn(new PageImpl<>(List.of(submitted)));
 
         List<AdminApplicationResponse> result = adminApplicationService.getApplications(AdminApplicationStatus.PENDING);
 
@@ -83,6 +86,41 @@ class AdminApplicationServiceTest {
         verify(applicationRepository).findAdminApplicationsByStatuses(
                 List.of(ApplicationStatus.SUBMITTED, ApplicationStatus.UNDER_REVIEW),
                 PageRequest.of(0, 250));
+    }
+
+    @Test
+    void getApplicationsPage_returnsPaginationMetadata() {
+        User user = User.builder()
+                .id(UUID.randomUUID())
+                .fullName("Nguyen Van A")
+                .email("a@example.com")
+                .build();
+        Project project = Project.builder()
+                .id(UUID.randomUUID())
+                .name("Green Sky")
+                .build();
+        Application approved = Application.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .project(project)
+                .status(ApplicationStatus.APPROVED)
+                .priorityScore(100)
+                .build();
+        PageRequest pageRequest = PageRequest.of(2, 25);
+
+        when(applicationRepository.findAdminApplicationsByStatuses(
+                List.of(ApplicationStatus.APPROVED),
+                pageRequest)).thenReturn(new PageImpl<>(List.of(approved), pageRequest, 76));
+
+        AdminApplicationPageResponse result = adminApplicationService.getApplicationsPage(AdminApplicationStatus.VERIFIED, 2, 25);
+
+        assertThat(result.getItems()).hasSize(1);
+        assertThat(result.getPage()).isEqualTo(2);
+        assertThat(result.getLimit()).isEqualTo(25);
+        assertThat(result.getTotalElements()).isEqualTo(76);
+        assertThat(result.getTotalPages()).isEqualTo(4);
+        assertThat(result.isFirst()).isFalse();
+        assertThat(result.isLast()).isFalse();
     }
 
     @Test
@@ -116,7 +154,7 @@ class AdminApplicationServiceTest {
         when(applicationRepository.countByStatus(ApplicationStatus.REJECTED)).thenReturn(15L);
         when(applicationRepository.findAdminApplicationsByStatuses(
                 List.of(ApplicationStatus.SUBMITTED, ApplicationStatus.UNDER_REVIEW, ApplicationStatus.APPROVED, ApplicationStatus.REJECTED),
-                PageRequest.of(0, 7))).thenReturn(List.of(recent));
+                PageRequest.of(0, 7))).thenReturn(new PageImpl<>(List.of(recent), PageRequest.of(0, 7), 1));
 
         var result = adminApplicationService.getOverview();
 

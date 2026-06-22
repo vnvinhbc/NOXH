@@ -6,5 +6,6 @@ public enum LotteryEventStatus {
     LOCKED,
     DRAWING,
     COMPLETED,
-    FAILED
+    FAILED,
+    CANCELLED
 }

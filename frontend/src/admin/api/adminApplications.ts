@@ -1,11 +1,16 @@
 import api from '@/api/axios'
 import type { ApiResponse } from '@/types'
-import type { AdminApplicationOverviewResponse, AdminApplicationResponse, AdminApplicationStatus } from '@/admin/types'
+import type {
+  AdminApplicationOverviewResponse,
+  AdminApplicationPageResponse,
+  AdminApplicationResponse,
+  AdminApplicationStatus,
+} from '@/admin/types'
 
 export const adminApplicationsApi = {
-  getAll: (status?: AdminApplicationStatus, limit = 250) =>
-    api.get<ApiResponse<AdminApplicationResponse[]>>('/admin/applications', {
-      params: { ...(status ? { status } : {}), limit },
+  getAll: (status?: AdminApplicationStatus, page = 0, limit = 25) =>
+    api.get<ApiResponse<AdminApplicationPageResponse>>('/admin/applications', {
+      params: { ...(status ? { status } : {}), page, limit },
     }),
 
   getOverview: () =>

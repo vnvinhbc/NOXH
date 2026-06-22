@@ -8,7 +8,7 @@ export const adminLotteryApi = {
     api.post<ApiResponse<LotteryEventResponse>>('/admin/lottery-events', data),
 
   deleteEvent: (eventId: string) =>
-    api.delete<ApiResponse<void>>(`/admin/lottery-events/${eventId}`),
+    api.delete<ApiResponse<LotteryEventResponse>>(`/admin/lottery-events/${eventId}`),
 
   lockEvent: (eventId: string) =>
     api.post<ApiResponse<LotteryEventResponse>>(`/admin/lottery-events/${eventId}/lock`),

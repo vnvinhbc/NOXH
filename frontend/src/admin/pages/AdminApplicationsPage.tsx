@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { Download, Eye, FileBadge2, Filter, Mail, TrendingUp, CheckCircle2, Clock3, ShieldX } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Eye, FileBadge2, Filter, Mail, TrendingUp, CheckCircle2, Clock3, ShieldX } from 'lucide-react'
 import { toast } from 'sonner'
 import { adminApplicationsApi } from '@/admin/api/adminApplications'
 import type { AdminApplicationStatus } from '@/admin/types'
@@ -15,6 +15,8 @@ const tabs: { key: AdminApplicationStatus | 'ALL'; label: string }[] = [
   { key: 'VERIFIED', label: 'Da duyet' },
   { key: 'REJECTED', label: 'Tu choi' },
 ]
+
+const pageSizeOptions = [10, 25, 50, 100]
 
 function statusPill(status: AdminApplicationStatus) {
   switch (status) {
@@ -40,6 +42,8 @@ function statusLabel(status: AdminApplicationStatus) {
 
 export default function AdminApplicationsPage() {
   const [activeTab, setActiveTab] = useState<AdminApplicationStatus | 'ALL'>('ALL')
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(25)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [reviewReason, setReviewReason] = useState('')
   const [previewFile, setPreviewFile] = useState<{
@@ -48,14 +52,27 @@ export default function AdminApplicationsPage() {
     fileName?: string
   } | null>(null)
   const queryClient = useQueryClient()
+  const statusParam = activeTab === 'ALL' ? undefined : activeTab
 
-  const { data: applications = [], isLoading, isFetching } = useQuery({
-    queryKey: ['adminApplications', activeTab],
-    queryFn: () => adminApplicationsApi.getAll(activeTab === 'ALL' ? undefined : activeTab).then((res) => res.data.result || []),
+  const { data: overview } = useQuery({
+    queryKey: ['adminApplicationsOverview'],
+    queryFn: () => adminApplicationsApi.getOverview().then((res) => res.data.result || null),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+  })
+
+  const { data: applicationsPage, isLoading, isFetching } = useQuery({
+    queryKey: ['adminApplications', activeTab, page, pageSize],
+    queryFn: () => adminApplicationsApi.getAll(statusParam, page, pageSize).then((res) => res.data.result),
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
   })
+  const applications = applicationsPage?.items || []
+  const totalElements = applicationsPage?.totalElements || 0
+  const totalPages = applicationsPage?.totalPages || 0
+  const pageStart = totalElements === 0 ? 0 : page * pageSize + 1
+  const pageEnd = Math.min((page + 1) * pageSize, totalElements)
 
   const selectedListApplication = useMemo(
     () => applications.find((application) => application.id === selectedId) || applications[0] || null,
@@ -72,14 +89,36 @@ export default function AdminApplicationsPage() {
   const selectedApplication = selectedDetail || selectedListApplication
 
   useEffect(() => {
+    setPage(0)
+    setSelectedId(null)
+  }, [activeTab, pageSize])
+
+  useEffect(() => {
     setReviewReason(selectedApplication?.rejectReason || '')
   }, [selectedApplication])
+
+  useEffect(() => {
+    if (applicationsPage && applicationsPage.totalPages > 0 && page >= applicationsPage.totalPages) {
+      setPage(applicationsPage.totalPages - 1)
+    }
+  }, [applicationsPage, page])
+
+  useEffect(() => {
+    if (!applicationsPage || applicationsPage.last) return
+    queryClient.prefetchQuery({
+      queryKey: ['adminApplications', activeTab, page + 1, pageSize],
+      queryFn: () => adminApplicationsApi.getAll(statusParam, page + 1, pageSize).then((res) => res.data.result),
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    })
+  }, [activeTab, applicationsPage, page, pageSize, queryClient, statusParam])
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status, reason }: { id: string; status: AdminApplicationStatus; reason?: string }) =>
       adminApplicationsApi.updateStatus(id, status, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminApplications'] })
+      queryClient.invalidateQueries({ queryKey: ['adminApplicationsOverview'] })
       queryClient.invalidateQueries({ queryKey: ['adminApplicationDetail'] })
       toast.success('Da cap nhat trang thai ho so')
     },
@@ -90,11 +129,11 @@ export default function AdminApplicationsPage() {
   })
 
   const stats = useMemo(() => {
-    const pending = applications.filter((application) => application.status === 'PENDING').length
-    const verified = applications.filter((application) => application.status === 'VERIFIED').length
-    const rejected = applications.filter((application) => application.status === 'REJECTED').length
-    return { total: applications.length, pending, verified, rejected }
-  }, [applications])
+    const pending = overview?.pendingApplications || 0
+    const verified = overview?.approvedApplications || 0
+    const rejected = overview?.rejectedApplications || 0
+    return { total: overview?.totalApplications || totalElements, pending, verified, rejected }
+  }, [overview, totalElements])
 
   const prefetchDetail = (applicationId: string) => {
     queryClient.prefetchQuery({
@@ -133,7 +172,7 @@ export default function AdminApplicationsPage() {
 
       <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
         {[
-          { label: 'Tong ho so', value: stats.total, tone: 'border-[#002045]', detail: 'Trong hang cho hien tai', icon: TrendingUp },
+          { label: 'Tong ho so', value: stats.total, tone: 'border-[#002045]', detail: 'Tong so trong he thong', icon: TrendingUp },
           { label: 'Cho duyet', value: stats.pending, tone: 'border-[#c6955e]', detail: 'Can admin xem xet', icon: Clock3 },
           { label: 'Da duyet', value: stats.verified, tone: 'border-green-600', detail: 'Da chap thuan', icon: CheckCircle2 },
           { label: 'Tu choi', value: stats.rejected, tone: 'border-[#93000a]', detail: 'Can theo doi lai', icon: ShieldX },
@@ -181,6 +220,18 @@ export default function AdminApplicationsPage() {
                   Dang cap nhat
                 </span>
               )}
+              <label className="flex items-center gap-2 rounded-lg border border-[#002045]/15 bg-white px-3 py-2 text-xs font-bold text-[#002045]">
+                <span>Limit</span>
+                <select
+                  value={pageSize}
+                  onChange={(event) => setPageSize(Number(event.target.value))}
+                  className="bg-transparent text-xs font-bold outline-none"
+                >
+                  {pageSizeOptions.map((size) => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+              </label>
               <button type="button" className="flex items-center gap-2 rounded-lg border border-[#002045]/15 px-4 py-2 text-xs font-bold text-[#002045] hover:bg-[#eff4ff]">
                 <Download size={14} />
                 Xuat file
@@ -260,6 +311,35 @@ export default function AdminApplicationsPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#c4c6cf]/20 bg-white px-4 py-3">
+            <p className="text-xs font-semibold text-[#555f70]">
+              Hien thi {pageStart.toLocaleString('vi-VN')}-{pageEnd.toLocaleString('vi-VN')} / {totalElements.toLocaleString('vi-VN')} ho so
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setPage((current) => Math.max(0, current - 1))}
+                disabled={page === 0 || isFetching}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#002045]/15 text-[#002045] disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Trang truoc"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="min-w-28 text-center text-xs font-bold uppercase tracking-[0.16em] text-[#43474e]">
+                Page {totalPages === 0 ? 0 : page + 1} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage((current) => current + 1)}
+                disabled={totalPages === 0 || page >= totalPages - 1 || isFetching}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#002045]/15 text-[#002045] disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Trang sau"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         </section>
 

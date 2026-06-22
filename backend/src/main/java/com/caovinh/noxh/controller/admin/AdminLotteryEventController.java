@@ -54,9 +54,10 @@ public class AdminLotteryEventController {
     }
 
     @DeleteMapping("/{eventId}")
-    ApiResponse<Void> deleteEvent(@PathVariable UUID eventId) {
-        lotteryEventService.deleteEvent(eventId);
-        return ApiResponse.<Void>builder().build();
+    ApiResponse<LotteryEventResponse> cancelEvent(@PathVariable UUID eventId) {
+        return ApiResponse.<LotteryEventResponse>builder()
+                .result(lotteryEventService.cancelEvent(eventId))
+                .build();
     }
 
     @GetMapping("/apartment-units")

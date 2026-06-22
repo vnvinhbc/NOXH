@@ -18,6 +18,8 @@ function statusTone(status: string) {
       return 'bg-[#ffddba] text-[#633f0f]'
     case 'FAILED':
       return 'bg-[#ffdad6] text-[#93000a]'
+    case 'CANCELLED':
+      return 'bg-[#eef0f3] text-[#555f70]'
     default:
       return 'bg-[#eef0f3] text-[#43474e]'
   }
@@ -154,14 +156,42 @@ export default function AdminLotteryEventsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: (eventId: string) => adminLotteryApi.deleteEvent(eventId),
-    onSuccess: (_, eventId) => {
-      if (selectedId === eventId) setSelectedId(null)
-      refresh()
-      toast.success('Da xoa event')
+    onMutate: async (eventId) => {
+      await queryClient.cancelQueries({ queryKey: ['adminLotteryEvents'] })
+      const previousEvents = queryClient.getQueryData<LotteryEventResponse[]>(['adminLotteryEvents'])
+      queryClient.setQueryData<LotteryEventResponse[]>(['adminLotteryEvents'], (current = []) =>
+        current.map((event) =>
+          event.id === eventId
+            ? {
+                ...event,
+                status: 'CANCELLED',
+                participantCount: 0,
+                apartmentCount: 0,
+                resultCount: 0,
+                failedReason: undefined,
+              }
+            : event
+        )
+      )
+      return { previousEvents }
     },
-    onError: (error: unknown) => {
+    onSuccess: (res, eventId) => {
+      const cancelledEvent = res.data.result
+      queryClient.setQueryData<LotteryEventResponse[]>(['adminLotteryEvents'], (current = []) =>
+        current.map((event) => (event.id === eventId && cancelledEvent ? cancelledEvent : event))
+      )
+      queryClient.invalidateQueries({ queryKey: ['adminDashboardOverview'] })
+      toast.success('Da huy event va giai phong du lieu lock')
+    },
+    onError: (error: unknown, _eventId, context) => {
+      if (context?.previousEvents) {
+        queryClient.setQueryData(['adminLotteryEvents'], context.previousEvents)
+      }
       const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
-      toast.error(message || 'Khong the xoa event nay')
+      toast.error(message || 'Khong the huy event nay')
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminLotteryEvents'] })
     },
   })
 
@@ -340,15 +370,19 @@ export default function AdminLotteryEventsPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.confirm('Xoa event nay? Neu event da lock, can ho se duoc tra ve AVAILABLE.')) {
+                    if (window.confirm('Huy event nay? Neu event da lock, can ho va ho so se duoc tra ve trang thai tu do.')) {
                       deleteMutation.mutate(selectedEvent.id)
                     }
                   }}
-                  disabled={selectedEvent.status === 'DRAWING' || selectedEvent.resultCount > 0 || deleteMutation.isPending}
+                  disabled={
+                    !['SEED_COMMITTED', 'LOCKED', 'FAILED'].includes(selectedEvent.status) ||
+                    selectedEvent.resultCount > 0 ||
+                    deleteMutation.isPending
+                  }
                   className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#93000a]/20 bg-[#ffdad6] px-4 py-3 text-xs font-bold uppercase tracking-[0.18em] text-[#93000a] disabled:opacity-50"
                 >
                   <Trash2 size={14} />
-                  Xoa event
+                  Huy event
                 </button>
               </div>
 

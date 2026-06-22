@@ -3,6 +3,8 @@ package com.caovinh.noxh.repository;
 import com.caovinh.noxh.constant.lottery.ApartmentUnitStatus;
 import com.caovinh.noxh.entity.ApartmentUnit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,4 +24,13 @@ public interface ApartmentUnitRepository extends JpaRepository<ApartmentUnit, UU
     long countByProjectId(UUID projectId);
 
     long countByProjectIdAndStatus(UUID projectId, ApartmentUnitStatus status);
+
+    @Modifying(flushAutomatically = true)
+    @Query("""
+            update ApartmentUnit apartment
+            set apartment.status = com.caovinh.noxh.constant.lottery.ApartmentUnitStatus.AVAILABLE,
+                apartment.lockedEvent = null
+            where apartment.lockedEvent.id = :eventId
+            """)
+    int releaseLockedApartments(UUID eventId);
 }

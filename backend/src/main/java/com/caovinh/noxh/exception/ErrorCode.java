@@ -43,6 +43,7 @@ public enum ErrorCode {
     LOTTERY_APARTMENTS_NOT_ENOUGH_FOR_PRIORITY(1035, "Available apartments are not enough for priority pool", HttpStatus.BAD_REQUEST),
     LOTTERY_JOB_ALREADY_EXISTS(1036, "Lottery job already exists for this event", HttpStatus.BAD_REQUEST),
     LOTTERY_RESULT_ALREADY_EXISTS(1037, "Lottery result already exists for this event", HttpStatus.BAD_REQUEST),
+    LOTTERY_APPLICATION_ALREADY_PARTICIPATED(1038, "Some applications are already locked or already participated in another lottery event", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

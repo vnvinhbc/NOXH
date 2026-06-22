@@ -3,6 +3,7 @@ package com.caovinh.noxh.controller.admin;
 import com.caovinh.noxh.dto.request.admin.AdminApplicationStatusRequest;
 import com.caovinh.noxh.dto.response.ApiResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationOverviewResponse;
+import com.caovinh.noxh.dto.response.admin.AdminApplicationPageResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationResponse;
 import com.caovinh.noxh.dto.response.admin.AdminApplicationStatus;
 import com.caovinh.noxh.service.admin.AdminApplicationService;
@@ -12,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,11 +25,12 @@ public class AdminApplicationController {
     AdminApplicationService adminApplicationService;
 
     @GetMapping
-    ApiResponse<List<AdminApplicationResponse>> getApplications(
+    ApiResponse<AdminApplicationPageResponse> getApplications(
             @RequestParam(value = "status", required = false) AdminApplicationStatus status,
-            @RequestParam(value = "limit", defaultValue = "250") int limit) {
-        return ApiResponse.<List<AdminApplicationResponse>>builder()
-                .result(adminApplicationService.getApplications(status, limit))
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "limit", defaultValue = "25") int limit) {
+        return ApiResponse.<AdminApplicationPageResponse>builder()
+                .result(adminApplicationService.getApplicationsPage(status, page, limit))
                 .build();
     }
 

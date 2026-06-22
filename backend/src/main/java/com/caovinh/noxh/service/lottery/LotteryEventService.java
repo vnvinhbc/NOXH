@@ -12,6 +12,7 @@ import com.caovinh.noxh.repository.*;
 import com.caovinh.noxh.service.PriorityScoringService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class LotteryEventService {
 
     LotteryEventRepository lotteryEventRepository;
@@ -73,6 +75,8 @@ public class LotteryEventService {
 
     @Transactional
     public LotteryEventResponse lockEvent(UUID eventId) {
+        long startedNanos = System.nanoTime();
+        long phaseNanos = startedNanos;
         LotteryEvent event = findEventForUpdate(eventId);
         if (event.getStatus() != LotteryEventStatus.SEED_COMMITTED) {
             throw new AppException(ErrorCode.LOTTERY_EVENT_INVALID_STATUS);
@@ -80,14 +84,17 @@ public class LotteryEventService {
 
         List<Application> applications = applicationRepository.findByProjectIdAndStatusOrderByCreatedAtAsc(
                 event.getProject().getId(), ApplicationStatus.APPROVED);
+        phaseNanos = logLockPhase(eventId, "load-applications", phaseNanos);
         if (applications.isEmpty()) {
             throw new AppException(ErrorCode.LOTTERY_PARTICIPANTS_EMPTY);
         }
         applications.forEach(application -> application.setPriorityScore(priorityScoringService.calculateScore(application)));
-        applicationRepository.saveAll(applications);
+        ensureApplicationsCanJoinLottery(applications);
+        phaseNanos = logLockPhase(eventId, "score-and-validate-applications", phaseNanos);
 
         List<ApartmentUnit> apartments = apartmentUnitRepository.findByProjectIdAndStatusOrderByApartmentCodeAsc(
                 event.getProject().getId(), ApartmentUnitStatus.AVAILABLE);
+        phaseNanos = logLockPhase(eventId, "load-apartments", phaseNanos);
         if (apartments.isEmpty()) {
             throw new AppException(ErrorCode.LOTTERY_APARTMENTS_EMPTY);
         }
@@ -101,12 +108,13 @@ public class LotteryEventService {
                 .map(application -> buildParticipant(event, application))
                 .toList();
         lotteryParticipantRepository.saveAll(participants);
+        phaseNanos = logLockPhase(eventId, "save-participants", phaseNanos);
 
         apartments.forEach(apartment -> {
             apartment.setStatus(ApartmentUnitStatus.LOCKED);
             apartment.setLockedEvent(event);
         });
-        apartmentUnitRepository.saveAll(apartments);
+        phaseNanos = logLockPhase(eventId, "lock-apartments", phaseNanos);
 
         event.setParticipantHash(lotteryHashService.hashRows("NOXH:v1:PARTICIPANTS", participants.stream()
                 .map(LotteryParticipant::getLotteryCode)
@@ -124,6 +132,10 @@ public class LotteryEventService {
                 "count=" + participants.size() + ",hash=" + saved.getParticipantHash());
         lotteryAuditService.log(saved, LotteryAuditEventType.APARTMENTS_LOCKED,
                 "count=" + apartments.size() + ",hash=" + saved.getApartmentHash());
+        lotteryEventRepository.flush();
+        phaseNanos = logLockPhase(eventId, "flush-lock-changes", phaseNanos);
+        log.info("Lottery lock completed eventId={} applications={} apartments={} participants={} totalMs={}",
+                eventId, applications.size(), apartments.size(), participants.size(), elapsedMillis(startedNanos));
         return toEventResponse(saved);
     }
 
@@ -205,33 +217,41 @@ public class LotteryEventService {
     }
 
     @Transactional
-    public void deleteEvent(UUID eventId) {
+    public LotteryEventResponse cancelEvent(UUID eventId) {
+        long startedNanos = System.nanoTime();
+        long phaseNanos = startedNanos;
         LotteryEvent event = findEventForUpdate(eventId);
-        if (event.getStatus() == LotteryEventStatus.DRAWING || lotteryResultRepository.existsByEventId(eventId)) {
+        if (!canCancel(event) || lotteryResultRepository.existsByEventId(eventId)) {
             throw new AppException(ErrorCode.LOTTERY_EVENT_INVALID_STATUS);
         }
+        phaseNanos = logCancelPhase(eventId, "load-event-and-validate", phaseNanos);
 
-        List<ApartmentUnit> lockedApartments = apartmentUnitRepository.findByLockedEventIdOrderByApartmentCodeAsc(eventId);
-        lockedApartments.forEach(apartment -> {
-            apartment.setStatus(ApartmentUnitStatus.AVAILABLE);
-            apartment.setLockedEvent(null);
-        });
-        apartmentUnitRepository.saveAll(lockedApartments);
+        long participantCount = lotteryParticipantRepository.countByEventId(eventId);
+        long apartmentCount = apartmentUnitRepository.countByLockedEventId(eventId);
+        phaseNanos = logCancelPhase(eventId, "count-locked-data", phaseNanos);
 
-        List<Application> lockedApplications = lotteryParticipantRepository.findByEventIdOrderByLotteryCodeAsc(eventId)
-                .stream()
-                .map(LotteryParticipant::getApplication)
-                .collect(Collectors.toMap(Application::getId, Function.identity(), (left, right) -> left))
-                .values()
-                .stream()
-                .peek(application -> {
-                    application.setLotteryNumber(null);
-                    application.setLotteryResult(null);
-                })
-                .toList();
-        applicationRepository.saveAll(lockedApplications);
+        int releasedApartments = apartmentUnitRepository.releaseLockedApartments(eventId);
+        phaseNanos = logCancelPhase(eventId, "release-apartments", phaseNanos);
 
-        lotteryEventRepository.delete(event);
+        int releasedParticipants = applicationRepository.clearLotteryFieldsForEvent(eventId);
+        phaseNanos = logCancelPhase(eventId, "clear-application-lottery-fields", phaseNanos);
+
+        lotteryJobRepository.deleteByLotteryEventId(eventId);
+        phaseNanos = logCancelPhase(eventId, "delete-jobs", phaseNanos);
+
+        lotteryParticipantRepository.deleteByEventId(eventId);
+        phaseNanos = logCancelPhase(eventId, "delete-participants", phaseNanos);
+
+        event.setStatus(LotteryEventStatus.CANCELLED);
+        event.setFailedReason(null);
+        LotteryEvent saved = lotteryEventRepository.save(event);
+        lotteryAuditService.log(saved, LotteryAuditEventType.LOTTERY_CANCELLED,
+                "releasedParticipants=" + releasedParticipants + ",releasedApartments=" + releasedApartments);
+        lotteryEventRepository.flush();
+        phaseNanos = logCancelPhase(eventId, "flush-cancel-changes", phaseNanos);
+        log.info("Lottery cancel completed eventId={} participants={} apartments={} totalMs={}",
+                eventId, participantCount, apartmentCount, elapsedMillis(startedNanos));
+        return toEventResponse(saved);
     }
 
     @Transactional(readOnly = true)
@@ -328,6 +348,46 @@ public class LotteryEventService {
 
     private boolean isPriorityApplication(Application application) {
         return application.getPriorityScore() != null && application.getPriorityScore() > 0;
+    }
+
+    private void ensureApplicationsCanJoinLottery(List<Application> applications) {
+        List<UUID> applicationIds = applications.stream()
+                .map(Application::getId)
+                .toList();
+        List<LotteryParticipant> blockingParticipations = lotteryParticipantRepository.findBlockingParticipations(
+                applicationIds,
+                List.of(LotteryEventStatus.LOCKED, LotteryEventStatus.DRAWING),
+                List.of(LotteryResultType.GUARANTEED, LotteryResultType.SELECTED, LotteryResultType.NOT_SELECTED)
+        );
+        if (!blockingParticipations.isEmpty()) {
+            throw new AppException(ErrorCode.LOTTERY_APPLICATION_ALREADY_PARTICIPATED);
+        }
+    }
+
+    private boolean canCancel(LotteryEvent event) {
+        return event.getStatus() == LotteryEventStatus.SEED_COMMITTED
+                || event.getStatus() == LotteryEventStatus.LOCKED
+                || event.getStatus() == LotteryEventStatus.FAILED;
+    }
+
+    private long logLockPhase(UUID eventId, String phase, long phaseStartedNanos) {
+        long now = System.nanoTime();
+        log.info("Lottery lock phase eventId={} phase={} elapsedMs={}", eventId, phase, elapsedMillis(phaseStartedNanos, now));
+        return now;
+    }
+
+    private long logCancelPhase(UUID eventId, String phase, long phaseStartedNanos) {
+        long now = System.nanoTime();
+        log.info("Lottery cancel phase eventId={} phase={} elapsedMs={}", eventId, phase, elapsedMillis(phaseStartedNanos, now));
+        return now;
+    }
+
+    private long elapsedMillis(long startedNanos) {
+        return elapsedMillis(startedNanos, System.nanoTime());
+    }
+
+    private long elapsedMillis(long startedNanos, long finishedNanos) {
+        return (finishedNanos - startedNanos) / 1_000_000;
     }
 
     private void applyManualSeed(LotteryEvent event, StartLotteryRequest request) {
