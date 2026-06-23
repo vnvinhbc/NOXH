@@ -10,7 +10,6 @@ import ProfilePage from '@/pages/ProfilePage'
 import UserProgressPage from '@/pages/UserProgressPage'
 import UserPriorityScorePage from '@/pages/UserPriorityScorePage'
 import UserLotteryTicketPage from '@/pages/UserLotteryTicketPage'
-import UserLotteryWaitingRoomPage from '@/pages/UserLotteryWaitingRoomPage'
 import UserLotteryRoomPage from '@/pages/UserLotteryRoomPage'
 import UserResultsAuditPage from '@/pages/UserResultsAuditPage'
 import ProtectedRoute from '@/components/common/ProtectedRoute'
@@ -62,7 +61,7 @@ function App() {
               <Route path="/progress" element={<UserProgressPage />} />
               <Route path="/priority-score" element={<UserPriorityScorePage />} />
               <Route path="/lottery-ticket" element={<UserLotteryTicketPage />} />
-              <Route path="/lottery-waiting-room" element={<UserLotteryWaitingRoomPage />} />
+              <Route path="/lottery-waiting-room" element={<Navigate to="/lottery-room" replace />} />
               <Route path="/lottery-room" element={<UserLotteryRoomPage />} />
               <Route path="/results-audit" element={<UserResultsAuditPage />} />
             </Route>

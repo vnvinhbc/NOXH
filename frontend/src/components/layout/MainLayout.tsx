@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { Bell, CalendarClock, FileText, History, LayoutDashboard, Medal, Radio, SearchCheck, Ticket, TrendingUp } from 'lucide-react'
+import { Bell, FileText, History, LayoutDashboard, Medal, Radio, SearchCheck, Ticket, TrendingUp } from 'lucide-react'
 import Navbar from './Navbar'
 import MobileNav from './MobileNav'
 import BrandLogo from '@/components/common/BrandLogo'
@@ -10,7 +10,6 @@ const sidebarItems = [
   { path: '/progress', label: 'Theo doi tien do', icon: TrendingUp },
   { path: '/priority-score', label: 'Diem uu tien', icon: Medal },
   { path: '/lottery-ticket', label: 'Ma boc tham', icon: Ticket },
-  { path: '/lottery-waiting-room', label: 'Sanh cho boc tham', icon: CalendarClock },
   { path: '/lottery-room', label: 'Phong boc tham', icon: Radio },
   { path: '/results-audit', label: 'Ket qua & Audit', icon: SearchCheck },
   { path: '/notifications', label: 'Thong bao', icon: Bell, disabled: true },

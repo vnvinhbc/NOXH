@@ -89,8 +89,8 @@ export default function UserLotteryTicketPage() {
               <Download size={18} />
               Tai giay xac nhan
             </button>
-            <Link to="/lottery-waiting-room" className="flex w-full items-center justify-center rounded-xl bg-[#edeeef] px-6 py-4 text-sm font-black text-[#001f49]">
-              Xem lich boc tham
+            <Link to="/lottery-room" className="flex w-full items-center justify-center rounded-xl bg-[#edeeef] px-6 py-4 text-sm font-black text-[#001f49]">
+              Vao phong boc tham
             </Link>
           </aside>
         </div>

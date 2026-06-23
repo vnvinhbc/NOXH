@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class LotteryResultResponse {
     String eventId;
     String participantId;
+    String maskedDisplayName;
     String lotteryCode;
     String poolType;
     String resultType;

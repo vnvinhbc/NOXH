@@ -2,8 +2,9 @@ package com.caovinh.noxh.service.lottery;
 
 import com.caovinh.noxh.constant.lottery.LotteryAuditEventType;
 import com.caovinh.noxh.constant.lottery.LotteryEventStatus;
-import com.caovinh.noxh.entity.LotteryEvent;
-import com.caovinh.noxh.entity.Project;
+import com.caovinh.noxh.constant.lottery.LotteryPoolType;
+import com.caovinh.noxh.constant.lottery.LotteryResultType;
+import com.caovinh.noxh.entity.*;
 import com.caovinh.noxh.repository.*;
 import com.caovinh.noxh.service.PriorityScoringService;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,5 +81,49 @@ class LotteryEventServiceTest {
         verify(lotteryAuditService).log(event, LotteryAuditEventType.LOTTERY_CANCELLED,
                 "releasedParticipants=200,releasedApartments=80");
         verify(lotteryParticipantRepository, never()).findByEventIdOrderByLotteryCodeAsc(eventId);
+    }
+
+    @Test
+    void getResults_returnsMaskedDisplayName() {
+        UUID eventId = UUID.randomUUID();
+        LotteryEvent event = LotteryEvent.builder()
+                .id(eventId)
+                .name("Dot quay test")
+                .project(Project.builder().id(UUID.randomUUID()).name("NOXH Test").build())
+                .status(LotteryEventStatus.COMPLETED)
+                .build();
+        User user = User.builder()
+                .id(UUID.randomUUID())
+                .fullName("Nguyen Van An")
+                .email("a@example.com")
+                .build();
+        Application application = Application.builder()
+                .id(UUID.randomUUID())
+                .user(user)
+                .project(event.getProject())
+                .build();
+        LotteryParticipant participant = LotteryParticipant.builder()
+                .id(UUID.randomUUID())
+                .event(event)
+                .application(application)
+                .lotteryCode("HA-1029")
+                .poolType(LotteryPoolType.NORMAL)
+                .build();
+        LotteryResult result = LotteryResult.builder()
+                .event(event)
+                .participant(participant)
+                .lotteryCode("HA-1029")
+                .poolType(LotteryPoolType.NORMAL)
+                .resultType(LotteryResultType.SELECTED)
+                .apartmentCode("GS-B-0102")
+                .drawOrder(1)
+                .build();
+
+        when(lotteryResultRepository.findByEventIdOrderByLotteryCodeAsc(eventId)).thenReturn(List.of(result));
+
+        var response = lotteryEventService.getResults(eventId);
+
+        assertThat(response).hasSize(1);
+        assertThat(response.get(0).getMaskedDisplayName()).isEqualTo("Nguyen V. A");
     }
 }

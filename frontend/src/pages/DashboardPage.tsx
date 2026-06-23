@@ -46,7 +46,7 @@ export default function DashboardPage() {
     ...(canCompleteProfile
       ? [{ icon: UploadCloud, label: 'Bo sung giay to', path: '/profile#documents' }]
       : []),
-    { icon: CalendarDays, label: 'Xem lich boc tham', path: '/lottery-waiting-room' },
+    { icon: CalendarDays, label: 'Vao phong boc tham', path: '/lottery-room' },
   ]
 
   const greeting = () => {

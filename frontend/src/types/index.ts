@@ -206,6 +206,7 @@ export interface LotteryParticipantResponse {
 export interface LotteryResultResponse {
   eventId: string
   participantId: string
+  maskedDisplayName?: string
   lotteryCode: string
   poolType: string
   resultType: string

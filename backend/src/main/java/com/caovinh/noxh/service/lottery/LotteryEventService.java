@@ -530,6 +530,7 @@ public class LotteryEventService {
         return LotteryResultResponse.builder()
                 .eventId(result.getEvent().getId().toString())
                 .participantId(result.getParticipant().getId().toString())
+                .maskedDisplayName(maskDisplayName(result.getParticipant().getApplication().getUser().getFullName()))
                 .lotteryCode(result.getLotteryCode())
                 .poolType(result.getPoolType().name())
                 .resultType(result.getResultType().name())
@@ -541,5 +542,19 @@ public class LotteryEventService {
                 .drawOrder(result.getDrawOrder())
                 .createdAt(result.getCreatedAt())
                 .build();
+    }
+
+    private String maskDisplayName(String fullName) {
+        if (fullName == null || fullName.isBlank()) {
+            return "Nguoi tham gia";
+        }
+        List<String> parts = List.of(fullName.trim().split("\\s+"));
+        if (parts.size() == 1) {
+            return parts.get(0);
+        }
+        return parts.get(0) + " " + parts.stream()
+                .skip(1)
+                .map(part -> part.substring(0, 1).toUpperCase())
+                .collect(Collectors.joining(". "));
     }
 }
