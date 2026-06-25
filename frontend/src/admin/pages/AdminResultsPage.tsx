@@ -7,6 +7,7 @@ import type { ApiResponse, LotteryResultResponse } from '@/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import DataPagination from '@/components/common/DataPagination'
 import { clampPage, getPageItems } from '@/components/common/pagination'
+import { getRowNumber } from '@/components/common/rowNumber'
 
 function shortHash(value?: string) {
   if (!value) return '-'
@@ -104,14 +105,15 @@ export default function AdminResultsPage() {
             <table className="min-w-full text-left">
               <thead className="bg-[#f8f9ff] text-[#43474e]">
                 <tr>
-                  {['Thu tu', 'Ma boc tham', 'Pool', 'Ket qua', 'Can ho', 'Normal hash', 'Winner hash'].map((header) => (
+                  {['STT', 'Thu tu', 'Ma boc tham', 'Pool', 'Ket qua', 'Can ho', 'Normal hash', 'Winner hash'].map((header) => (
                     <th key={header} className="px-5 py-3 text-[11px] font-extrabold uppercase tracking-[0.2em]">{header}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/20">
-                {paginatedResults.map((result) => (
+                {paginatedResults.map((result, index) => (
                   <tr key={`${result.eventId}-${result.lotteryCode}`} className="hover:bg-[#eff4ff]/50">
+                    <td className="px-5 py-4 text-xs font-bold text-[#465f88]">{getRowNumber(safePage, pageSize, index)}</td>
                     <td className="px-5 py-4 font-mono text-xs font-bold text-[#002045]">{result.drawOrder ?? '-'}</td>
                     <td className="px-5 py-4 font-mono text-xs font-bold text-[#002045]">{result.lotteryCode}</td>
                     <td className="px-5 py-4 text-sm text-[#555f70]">{result.poolType}</td>
@@ -123,7 +125,7 @@ export default function AdminResultsPage() {
                 ))}
                 {filteredResults.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-5 py-16 text-center text-sm text-[#555f70]">
+                    <td colSpan={8} className="px-5 py-16 text-center text-sm text-[#555f70]">
                       Chua co ket qua cho event dang chon.
                     </td>
                   </tr>

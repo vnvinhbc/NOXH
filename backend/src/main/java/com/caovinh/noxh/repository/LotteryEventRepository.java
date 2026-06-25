@@ -16,6 +16,8 @@ public interface LotteryEventRepository extends JpaRepository<LotteryEvent, UUID
 
     List<LotteryEvent> findAllByOrderByCreatedAtDesc();
 
+    boolean existsByProjectId(UUID projectId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select event from LotteryEvent event where event.id = :eventId")
     Optional<LotteryEvent> findByIdForUpdate(UUID eventId);

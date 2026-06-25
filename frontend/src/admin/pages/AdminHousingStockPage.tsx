@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Building2, Download, Filter, Grid2X2, List, Search } from 'lucide-react'
 import { projectApi } from '@/api/project'
@@ -6,6 +6,7 @@ import { adminHousingStockApi } from '@/admin/api/adminHousingStock'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import DataPagination from '@/components/common/DataPagination'
 import { clampPage, getPageItems } from '@/components/common/pagination'
+import { getRowNumber } from '@/components/common/rowNumber'
 
 const statusOptions = ['ALL', 'AVAILABLE', 'LOCKED', 'ASSIGNED', 'UNAVAILABLE']
 
@@ -34,14 +35,12 @@ export default function AdminHousingStockPage() {
     queryFn: () => projectApi.getAll().then((res) => res.data.result || []),
   })
 
-  useEffect(() => {
-    if (!projectId && projects[0]?.id) setProjectId(projects[0].id)
-  }, [projectId, projects])
+  const effectiveProjectId = projectId || projects[0]?.id || ''
 
   const { data: units = [], isLoading: loadingUnits } = useQuery({
-    queryKey: ['adminHousingStock', projectId, status],
-    queryFn: () => adminHousingStockApi.getUnits(projectId, status).then((res) => res.data.result || []),
-    enabled: Boolean(projectId),
+    queryKey: ['adminHousingStock', effectiveProjectId, status],
+    queryFn: () => adminHousingStockApi.getUnits(effectiveProjectId, status).then((res) => res.data.result || []),
+    enabled: Boolean(effectiveProjectId),
   })
 
   const filteredUnits = useMemo(() => {
@@ -60,7 +59,7 @@ export default function AdminHousingStockPage() {
     [filteredUnits, safePage, pageSize]
   )
 
-  const selectedProject = projects.find((project) => project.id === projectId)
+  const selectedProject = projects.find((project) => project.id === effectiveProjectId)
   const available = units.filter((unit) => unit.status === 'AVAILABLE').length
   const assigned = units.filter((unit) => unit.status === 'ASSIGNED').length
   const locked = units.filter((unit) => unit.status === 'LOCKED').length
@@ -85,7 +84,7 @@ export default function AdminHousingStockPage() {
       <section className="mb-6 grid gap-4 bg-white p-5 shadow-sm lg:grid-cols-[minmax(240px,0.7fr)_minmax(180px,0.35fr)_minmax(260px,1fr)_auto]">
         <label className="text-xs font-bold uppercase tracking-[0.2em] text-[#43474e]">
           Du an
-          <select value={projectId} onChange={(event) => { setProjectId(event.target.value); setPage(0) }} className="mt-2 h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white px-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]">
+          <select value={effectiveProjectId} onChange={(event) => { setProjectId(event.target.value); setPage(0) }} className="mt-2 h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white px-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]">
             {projects.map((project) => (
               <option key={project.id} value={project.id}>{project.name}</option>
             ))}
@@ -175,14 +174,15 @@ export default function AdminHousingStockPage() {
             <table className="min-w-full text-left">
               <thead className="bg-[#f8f9ff] text-[#43474e]">
                 <tr>
-                  {['Ma can', 'Toa/Block', 'Tang', 'Can', 'Dien tich', 'Phong ngu', 'Gia du kien', 'Trang thai'].map((header) => (
+                  {['STT', 'Ma can', 'Toa/Block', 'Tang', 'Can', 'Dien tich', 'Phong ngu', 'Gia du kien', 'Trang thai'].map((header) => (
                     <th key={header} className="px-5 py-3 text-[11px] font-extrabold uppercase tracking-[0.2em]">{header}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/20">
-                {paginatedUnits.map((unit) => (
+                {paginatedUnits.map((unit, index) => (
                   <tr key={unit.id} className="hover:bg-[#eff4ff]/50">
+                    <td className="px-5 py-4 text-xs font-bold text-[#465f88]">{getRowNumber(safePage, pageSize, index)}</td>
                     <td className="px-5 py-4 font-mono text-xs font-bold text-[#002045]">{unit.apartmentCode}</td>
                     <td className="px-5 py-4 text-sm text-[#555f70]">{[unit.building, unit.blockName].filter(Boolean).join(' / ') || '-'}</td>
                     <td className="px-5 py-4 text-sm text-[#555f70]">{unit.floor ?? '-'}</td>
@@ -195,7 +195,7 @@ export default function AdminHousingStockPage() {
                 ))}
                 {filteredUnits.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-5 py-16 text-center text-sm text-[#555f70]">
+                    <td colSpan={9} className="px-5 py-16 text-center text-sm text-[#555f70]">
                       Khong co can ho phu hop.
                     </td>
                   </tr>

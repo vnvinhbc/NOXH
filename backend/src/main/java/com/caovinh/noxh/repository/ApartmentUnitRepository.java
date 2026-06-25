@@ -25,6 +25,8 @@ public interface ApartmentUnitRepository extends JpaRepository<ApartmentUnit, UU
 
     long countByProjectIdAndStatus(UUID projectId, ApartmentUnitStatus status);
 
+    boolean existsByProjectIdAndApartmentCodeIgnoreCase(UUID projectId, String apartmentCode);
+
     @Modifying(flushAutomatically = true)
     @Query("""
             update ApartmentUnit apartment

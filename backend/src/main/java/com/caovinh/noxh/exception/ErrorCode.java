@@ -44,6 +44,12 @@ public enum ErrorCode {
     LOTTERY_JOB_ALREADY_EXISTS(1036, "Lottery job already exists for this event", HttpStatus.BAD_REQUEST),
     LOTTERY_RESULT_ALREADY_EXISTS(1037, "Lottery result already exists for this event", HttpStatus.BAD_REQUEST),
     LOTTERY_APPLICATION_ALREADY_PARTICIPATED(1038, "Some applications are already locked or already participated in another lottery event", HttpStatus.BAD_REQUEST),
+    PROJECT_BUSINESS_ACTIVE(1039, "Project already has applications or lottery events and cannot be modified", HttpStatus.CONFLICT),
+    APARTMENT_UNIT_NOT_FOUND(1040, "Apartment unit not found", HttpStatus.NOT_FOUND),
+    APARTMENT_UNIT_LOCKED(1041, "Locked or assigned apartment unit cannot be modified", HttpStatus.CONFLICT),
+    APARTMENT_CODE_EXISTED(1042, "Apartment code already exists in this project", HttpStatus.CONFLICT),
+    APARTMENT_IMPORT_INVALID(1043, "Apartment import file is invalid", HttpStatus.BAD_REQUEST),
+    UNSUPPORTED_IMPORT_FILE(1044, "Only CSV and XLSX files are supported", HttpStatus.BAD_REQUEST),
     ;
 
     final int code;

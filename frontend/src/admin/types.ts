@@ -68,3 +68,92 @@ export interface AdminLotteryAuditLogResponse {
   currentHash: string
   createdAt: string
 }
+
+export interface AdminProjectResponse {
+  id: string
+  name: string
+  description?: string
+  location?: string
+  province?: string
+  totalUnits: number
+  availableUnits: number
+  pricePerSqm?: number
+  minArea?: number
+  maxArea?: number
+  registrationStart?: string
+  registrationEnd?: string
+  lotteryDate?: string
+  status: 'OPEN' | 'CLOSED' | 'COMPLETED'
+  imageUrl?: string
+  businessActive: boolean
+  createdAt: string
+}
+
+export interface AdminProjectRequest {
+  name: string
+  description?: string
+  location?: string
+  province?: string
+  pricePerSqm?: number
+  registrationStart?: string
+  registrationEnd?: string
+  lotteryDate?: string
+  status: 'OPEN' | 'CLOSED' | 'COMPLETED'
+}
+
+export interface AdminApartmentRequest {
+  apartmentCode: string
+  building?: string
+  blockName?: string
+  floor?: number
+  unitNumber?: string
+  areaSqm: number
+  bedroomCount?: number
+  direction?: string
+  pricePerSqm: number
+  totalPrice?: number
+  status: 'AVAILABLE' | 'UNAVAILABLE'
+}
+
+export interface AdminApartmentImportError {
+  row: number
+  field: string
+  message: string
+}
+
+export interface AdminApartmentImportResponse {
+  success: boolean
+  importedCount: number
+  fileUrl?: string
+  fileName?: string
+  errors: AdminApartmentImportError[]
+}
+
+export interface AdminApartmentImportPreviewRow {
+  row: number
+  apartmentCode: string
+  building?: string
+  blockName?: string
+  floor?: number
+  unitNumber?: string
+  areaSqm: number
+  bedroomCount?: number
+  direction?: string
+  pricePerSqm: number
+  totalPrice: number
+  status: string
+}
+
+export interface AdminApartmentImportPreviewResponse {
+  valid: boolean
+  rows: AdminApartmentImportPreviewRow[]
+  errors: AdminApartmentImportError[]
+}
+
+export interface AdminApartmentImportHistoryResponse {
+  id: string
+  originalFileName: string
+  fileUrl: string
+  importedCount: number
+  createdAt: string
+}

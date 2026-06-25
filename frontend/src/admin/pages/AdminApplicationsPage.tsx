@@ -9,6 +9,7 @@ import type { AdminApplicationStatus } from '@/admin/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import FilePreviewDialog from '@/components/common/FilePreviewDialog'
 import DataPagination from '@/components/common/DataPagination'
+import { getRowNumber } from '@/components/common/rowNumber'
 
 const tabs: { key: AdminApplicationStatus | 'ALL'; label: string }[] = [
   { key: 'ALL', label: 'Hang cho hien tai' },
@@ -67,7 +68,7 @@ export default function AdminApplicationsPage() {
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
   })
-  const applications = applicationsPage?.items || []
+  const applications = useMemo(() => applicationsPage?.items || [], [applicationsPage?.items])
   const totalElements = applicationsPage?.totalElements || 0
 
   const selectedListApplication = useMemo(
@@ -83,16 +84,6 @@ export default function AdminApplicationsPage() {
     gcTime: 1000 * 60 * 30,
   })
   const selectedApplication = selectedDetail || selectedListApplication
-
-  useEffect(() => {
-    setReviewReason(selectedApplication?.rejectReason || '')
-  }, [selectedApplication])
-
-  useEffect(() => {
-    if (applicationsPage && applicationsPage.totalPages > 0 && page >= applicationsPage.totalPages) {
-      setPage(applicationsPage.totalPages - 1)
-    }
-  }, [applicationsPage, page])
 
   useEffect(() => {
     if (!applicationsPage || applicationsPage.last) return
@@ -226,7 +217,7 @@ export default function AdminApplicationsPage() {
             <table className="min-w-full text-left">
               <thead className="bg-[#eff4ff] text-[#43474e]">
                 <tr>
-                  {['Ma', 'Nguoi nop', 'Ngay nop', 'Trang thai', 'Nhom', 'Du an', ''].map((header) => (
+                  {['STT', 'Ma', 'Nguoi nop', 'Ngay nop', 'Trang thai', 'Nhom', 'Du an', ''].map((header) => (
                     <th key={header} className="border-b border-[#c4c6cf]/20 px-4 py-3 text-[11px] font-extrabold uppercase tracking-[0.24em]">
                       {header}
                     </th>
@@ -234,15 +225,19 @@ export default function AdminApplicationsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/15">
-                {applications.map((application) => (
+                {applications.map((application, index) => (
                   <tr
                     key={application.id}
                     className={`cursor-pointer transition-colors hover:bg-[#eff4ff]/60 ${
                       selectedApplication?.id === application.id ? 'bg-[#eff4ff]/40' : ''
                     }`}
-                    onClick={() => setSelectedId(application.id)}
+                    onClick={() => {
+                      setSelectedId(application.id)
+                      setReviewReason(application.rejectReason || '')
+                    }}
                     onMouseEnter={() => prefetchDetail(application.id)}
                   >
+                    <td className="px-4 py-4 text-xs font-bold text-[#465f88]">{getRowNumber(page, pageSize, index)}</td>
                     <td className="px-4 py-4 font-mono text-xs font-bold text-[#002045]">{application.applicationCode}</td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
@@ -287,7 +282,7 @@ export default function AdminApplicationsPage() {
                 ))}
                 {applications.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-16 text-center text-sm text-[#555f70]">
+                    <td colSpan={8} className="px-4 py-16 text-center text-sm text-[#555f70]">
                       Khong co ho so nao trong hang cho nay.
                     </td>
                   </tr>

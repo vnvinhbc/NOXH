@@ -7,6 +7,7 @@ import { adminLotteryApi } from '@/admin/api/adminLottery'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import DataPagination from '@/components/common/DataPagination'
 import { clampPage, getPageItems } from '@/components/common/pagination'
+import { getRowNumber } from '@/components/common/rowNumber'
 
 function shortHash(value?: string) {
   if (!value) return '-'
@@ -93,14 +94,15 @@ export default function AdminAuditLogPage() {
             <table className="min-w-full text-left">
               <thead className="bg-[#f8f9ff] text-[#43474e]">
                 <tr>
-                  {['Timestamp', 'Event', 'Project', 'Type', 'Payload', 'Previous hash', 'Current hash', ''].map((header) => (
+                  {['STT', 'Timestamp', 'Event', 'Project', 'Type', 'Payload', 'Previous hash', 'Current hash', ''].map((header) => (
                     <th key={header} className="px-5 py-3 text-[11px] font-extrabold uppercase tracking-[0.2em]">{header}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/20">
-                {paginatedLogs.map((log) => (
+                {paginatedLogs.map((log, index) => (
                   <tr key={log.id} className="hover:bg-[#eff4ff]/50">
+                    <td className="px-5 py-4 text-xs font-bold text-[#465f88]">{getRowNumber(safePage, pageSize, index)}</td>
                     <td className="px-5 py-4 text-sm text-[#555f70]">{dayjs(log.createdAt).format('DD/MM/YYYY HH:mm:ss')}</td>
                     <td className="px-5 py-4 text-sm font-bold text-[#0d1c2e]">{log.eventName}</td>
                     <td className="px-5 py-4 text-sm text-[#555f70]">{log.projectName}</td>
@@ -117,7 +119,7 @@ export default function AdminAuditLogPage() {
                 ))}
                 {filteredLogs.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="px-5 py-16 text-center text-sm text-[#555f70]">
+                    <td colSpan={9} className="px-5 py-16 text-center text-sm text-[#555f70]">
                       Chua co audit log phu hop.
                     </td>
                   </tr>

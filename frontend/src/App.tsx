@@ -24,6 +24,7 @@ import AdminDashboardPage from '@/admin/pages/AdminDashboardPage'
 import AdminHousingStockPage from '@/admin/pages/AdminHousingStockPage'
 import AdminLotteryEventsPage from '@/admin/pages/AdminLotteryEventsPage'
 import AdminResultsPage from '@/admin/pages/AdminResultsPage'
+import AdminProjectsPage from '@/admin/pages/AdminProjectsPage'
 import LotteryVerificationPage from '@/pages/LotteryVerificationPage'
 
 const queryClient = new QueryClient({
@@ -47,6 +48,7 @@ function App() {
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
               <Route path="/admin/applications" element={<AdminApplicationsPage />} />
               <Route path="/admin/applications/:id" element={<AdminApplicationDetailPage />} />
+              <Route path="/admin/projects" element={<AdminProjectsPage />} />
               <Route path="/admin/lottery-events" element={<AdminLotteryEventsPage />} />
               <Route path="/admin/results" element={<AdminResultsPage />} />
               <Route path="/admin/housing-stock" element={<AdminHousingStockPage />} />

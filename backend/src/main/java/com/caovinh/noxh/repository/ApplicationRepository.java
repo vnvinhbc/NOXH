@@ -29,6 +29,8 @@ public interface ApplicationRepository extends JpaRepository<Application, UUID> 
 
     boolean existsByUserIdAndProjectId(UUID userId, UUID projectId);
 
+    boolean existsByProjectId(UUID projectId);
+
     long countByStatus(ApplicationStatus status);
 
     long countByStatusIn(List<ApplicationStatus> statuses);

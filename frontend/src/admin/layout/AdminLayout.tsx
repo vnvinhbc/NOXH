@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
-import { BarChart3, Bell, Building2, FileBadge2, LayoutDashboard, LogOut, ScrollText, Search, Settings, Ticket, Users } from 'lucide-react'
+import { BarChart3, Bell, Building2, Database, FileBadge2, LayoutDashboard, LogOut, ScrollText, Search, Settings, Ticket, Users } from 'lucide-react'
 import { authApi } from '@/api/auth'
 import { useAuthStore } from '@/stores/authStore'
 import BrandLogo from '@/components/common/BrandLogo'
@@ -10,6 +10,7 @@ import OverlaySidebar from '@/components/layout/OverlaySidebar'
 const navItems = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/applications', label: 'Quan ly ho so', icon: FileBadge2 },
+  { to: '/admin/projects', label: 'Du lieu du an', icon: Database },
   { to: '/admin/lottery-events', label: 'Quay so NOXH', icon: Ticket },
   { to: '/admin/results', label: 'Ket qua', icon: BarChart3 },
   { to: '/admin/housing-stock', label: 'Kho can ho', icon: Building2 },

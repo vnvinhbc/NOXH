@@ -1,11 +1,13 @@
-import { useEffect, useMemo } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { Activity, Archive, CheckCircle2, Clock3, Database, FileBadge2, ShieldCheck, Ticket } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { adminApplicationsApi } from '@/admin/api/adminApplications'
 import { adminDashboardApi } from '@/admin/api/adminDashboard'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import DataPagination from '@/components/common/DataPagination'
+import { getRowNumber } from '@/components/common/rowNumber'
 
 function numberFormat(value: number) {
   return value.toLocaleString('vi-VN')
@@ -19,7 +21,8 @@ function statusTone(status: string) {
 }
 
 export default function AdminDashboardPage() {
-  const queryClient = useQueryClient()
+  const [applicationPage, setApplicationPage] = useState(0)
+  const [applicationPageSize, setApplicationPageSize] = useState(5)
   const { data, isLoading } = useQuery({
     queryKey: ['adminDashboardOverview'],
     queryFn: adminDashboardApi.getOverview,
@@ -27,19 +30,15 @@ export default function AdminDashboardPage() {
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
   })
-
-  useEffect(() => {
-    queryClient.prefetchQuery({
-      queryKey: ['adminApplications', 'ALL', 0, 10],
-      queryFn: () => adminApplicationsApi.getAll(undefined, 0, 10).then((res) => res.data.result),
-      staleTime: 1000 * 60 * 5,
-      gcTime: 1000 * 60 * 30,
-    })
-  }, [queryClient])
+  const { data: applicationsPage, isFetching: fetchingApplications } = useQuery({
+    queryKey: ['adminApplications', 'ALL', applicationPage, applicationPageSize],
+    queryFn: () => adminApplicationsApi.getAll(undefined, applicationPage, applicationPageSize).then((res) => res.data.result),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5,
+  })
 
   const summary = useMemo(() => {
     const applicationOverview = data?.applicationOverview
-    const recentApplications = applicationOverview?.recentApplications || []
     const events = data?.events || []
     const projects = data?.projects || []
     const focusProject = projects.find((project) => project.id === data?.focusProjectId)
@@ -47,7 +46,6 @@ export default function AdminDashboardPage() {
     const totalUnits = data?.housingOverview?.totalUnits || 0
     const availableUnits = data?.housingOverview?.availableUnits || 0
     return {
-      recentApplications,
       events,
       projects,
       focusProject,
@@ -122,14 +120,15 @@ export default function AdminDashboardPage() {
             <table className="min-w-full text-left">
               <thead className="bg-[#f8f9ff] text-[#43474e]">
                 <tr>
-                  {['Ma ho so', 'Nguoi nop', 'Du an', 'Trang thai', 'Ngay nop'].map((header) => (
+                {['STT', 'Ma ho so', 'Nguoi nop', 'Du an', 'Trang thai', 'Ngay nop'].map((header) => (
                     <th key={header} className="px-5 py-3 text-[11px] font-extrabold uppercase tracking-[0.2em]">{header}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/20">
-                {summary.recentApplications.map((application) => (
+                {(applicationsPage?.items || []).map((application, index) => (
                   <tr key={application.id} className="hover:bg-[#eff4ff]/50">
+                    <td className="px-5 py-4 text-xs font-bold text-[#465f88]">{getRowNumber(applicationPage, applicationPageSize, index)}</td>
                     <td className="px-5 py-4 font-mono text-xs font-bold text-[#002045]">{application.applicationCode}</td>
                     <td className="px-5 py-4 text-sm font-bold text-[#0d1c2e]">{application.userFullName}</td>
                     <td className="px-5 py-4 text-sm text-[#555f70]">{application.projectName}</td>
@@ -140,6 +139,18 @@ export default function AdminDashboardPage() {
               </tbody>
             </table>
           </div>
+          <DataPagination
+            page={applicationPage}
+            pageSize={applicationPageSize}
+            totalItems={applicationsPage?.totalElements || 0}
+            onPageChange={setApplicationPage}
+            onPageSizeChange={(size) => {
+              setApplicationPageSize(size)
+              setApplicationPage(0)
+            }}
+            itemLabel="ho so"
+            disabled={fetchingApplications}
+          />
         </section>
 
         <aside className="space-y-6">
