@@ -30,8 +30,8 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     queryClient.prefetchQuery({
-      queryKey: ['adminApplications', 'ALL', 0, 25],
-      queryFn: () => adminApplicationsApi.getAll(undefined, 0, 25).then((res) => res.data.result),
+      queryKey: ['adminApplications', 'ALL', 0, 10],
+      queryFn: () => adminApplicationsApi.getAll(undefined, 0, 10).then((res) => res.data.result),
       staleTime: 1000 * 60 * 5,
       gcTime: 1000 * 60 * 30,
     })

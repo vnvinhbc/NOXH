@@ -8,6 +8,9 @@ import { Eye, EyeOff, Badge, Lock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { authApi } from '@/api/auth'
+import { applicationApi } from '@/api/application'
+import { lotteryApi } from '@/api/lottery'
+import { preloadUserProgress } from '@/api/sessionPreload'
 import { useAuthStore } from '@/stores/authStore'
 import BrandLogo from '@/components/common/BrandLogo'
 
@@ -30,10 +33,10 @@ export default function LoginPage() {
   const redirectTo = from?.startsWith('/') && from !== '/login' ? from : '/dashboard'
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !loading) {
       navigate(redirectTo, { replace: true })
     }
-  }, [isAuthenticated, navigate, redirectTo])
+  }, [isAuthenticated, loading, navigate, redirectTo])
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -46,6 +49,11 @@ export default function LoginPage() {
       const auth = res.data.result!
       queryClient.clear()
       setAuth(auth.accessToken, auth)
+      await preloadUserProgress(
+        (queryKey, loader) => queryClient.prefetchQuery({ queryKey, queryFn: loader }),
+        () => applicationApi.getDashboard().then((response) => response.data.result),
+        () => lotteryApi.getMySummary().then((response) => response.data.result)
+      )
       toast.success('Đăng nhập thành công!')
       navigate(redirectTo, { replace: true })
     } catch (err: unknown) {

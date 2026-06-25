@@ -65,7 +65,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-0 z-50 flex h-16 w-full items-center justify-between bg-white/80 px-5 shadow-sm backdrop-blur-md lg:px-8">
+    <nav className="fixed top-0 z-40 flex h-16 w-full items-center justify-between bg-white/80 pl-20 pr-5 shadow-sm backdrop-blur-md lg:pr-8">
       <div className="flex items-center gap-8">
         <Link to="/dashboard" className="flex items-center gap-3 text-xl font-bold tracking-tight text-[#001f49]">
           <BrandLogo className="h-14 w-14 shrink-0" />

@@ -6,6 +6,8 @@ import { toast } from 'sonner'
 import { adminLotteryApi } from '@/admin/api/adminLottery'
 import { projectApi } from '@/api/project'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import DataPagination from '@/components/common/DataPagination'
+import { clampPage, getPageItems } from '@/components/common/pagination'
 import type { LotteryEventResponse } from '@/types'
 
 function statusTone(status: string) {
@@ -78,6 +80,8 @@ function useLotterySocket(eventId?: string) {
 export default function AdminLotteryEventsPage() {
   const queryClient = useQueryClient()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(5)
   const [eventName, setEventName] = useState('Dot quay NOXH')
   const [scheduledStartAt, setScheduledStartAt] = useState(dayjs().add(15, 'minute').add(30, 'second').format('YYYY-MM-DDTHH:mm'))
   const [projectId, setProjectId] = useState('')
@@ -105,6 +109,11 @@ export default function AdminLotteryEventsPage() {
     () => events.find((event) => event.id === selectedId) || events[0] || null,
     [events, selectedId]
   )
+  const safePage = clampPage(page, events.length, pageSize)
+  const paginatedEvents = useMemo(
+    () => getPageItems(events, safePage, pageSize),
+    [events, safePage, pageSize]
+  )
   const socketEvents = useLotterySocket(selectedEvent?.id)
 
   useEffect(() => {
@@ -120,6 +129,7 @@ export default function AdminLotteryEventsPage() {
     mutationFn: () => adminLotteryApi.createEvent({ projectId, name: eventName, scheduledStartAt }),
     onSuccess: (res) => {
       setSelectedId(res.data.result?.id || null)
+      setPage(0)
       refresh()
       toast.success('Da tao dot quay va commitment hash')
     },
@@ -260,7 +270,7 @@ export default function AdminLotteryEventsPage() {
             <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-[#002045]">Danh sach event</h2>
           </div>
           <div className="divide-y divide-[#c4c6cf]/20">
-            {events.map((event) => (
+            {paginatedEvents.map((event) => (
               <button
                 key={event.id}
                 type="button"
@@ -303,6 +313,17 @@ export default function AdminLotteryEventsPage() {
               <div className="py-16 text-center text-sm text-[#555f70]">Chua co dot quay nao.</div>
             )}
           </div>
+          <DataPagination
+            page={safePage}
+            pageSize={pageSize}
+            totalItems={events.length}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size)
+              setPage(0)
+            }}
+            itemLabel="event"
+          />
         </section>
 
         <aside className="rounded-xl border border-[#c4c6cf]/20 bg-[#dce9ff]/40 p-6">

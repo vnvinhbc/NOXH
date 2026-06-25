@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { ChevronLeft, ChevronRight, Download, Eye, FileBadge2, Filter, Mail, TrendingUp, CheckCircle2, Clock3, ShieldX } from 'lucide-react'
+import { Download, Eye, FileBadge2, Filter, Mail, TrendingUp, CheckCircle2, Clock3, ShieldX } from 'lucide-react'
 import { toast } from 'sonner'
 import { adminApplicationsApi } from '@/admin/api/adminApplications'
 import type { AdminApplicationStatus } from '@/admin/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 import FilePreviewDialog from '@/components/common/FilePreviewDialog'
+import DataPagination from '@/components/common/DataPagination'
 
 const tabs: { key: AdminApplicationStatus | 'ALL'; label: string }[] = [
   { key: 'ALL', label: 'Hang cho hien tai' },
@@ -15,8 +16,6 @@ const tabs: { key: AdminApplicationStatus | 'ALL'; label: string }[] = [
   { key: 'VERIFIED', label: 'Da duyet' },
   { key: 'REJECTED', label: 'Tu choi' },
 ]
-
-const pageSizeOptions = [10, 25, 50, 100]
 
 function statusPill(status: AdminApplicationStatus) {
   switch (status) {
@@ -43,7 +42,7 @@ function statusLabel(status: AdminApplicationStatus) {
 export default function AdminApplicationsPage() {
   const [activeTab, setActiveTab] = useState<AdminApplicationStatus | 'ALL'>('ALL')
   const [page, setPage] = useState(0)
-  const [pageSize, setPageSize] = useState(25)
+  const [pageSize, setPageSize] = useState(10)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [reviewReason, setReviewReason] = useState('')
   const [previewFile, setPreviewFile] = useState<{
@@ -70,9 +69,6 @@ export default function AdminApplicationsPage() {
   })
   const applications = applicationsPage?.items || []
   const totalElements = applicationsPage?.totalElements || 0
-  const totalPages = applicationsPage?.totalPages || 0
-  const pageStart = totalElements === 0 ? 0 : page * pageSize + 1
-  const pageEnd = Math.min((page + 1) * pageSize, totalElements)
 
   const selectedListApplication = useMemo(
     () => applications.find((application) => application.id === selectedId) || applications[0] || null,
@@ -87,11 +83,6 @@ export default function AdminApplicationsPage() {
     gcTime: 1000 * 60 * 30,
   })
   const selectedApplication = selectedDetail || selectedListApplication
-
-  useEffect(() => {
-    setPage(0)
-    setSelectedId(null)
-  }, [activeTab, pageSize])
 
   useEffect(() => {
     setReviewReason(selectedApplication?.rejectReason || '')
@@ -197,7 +188,11 @@ export default function AdminApplicationsPage() {
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => setActiveTab(tab.key)}
+                    onClick={() => {
+                      setActiveTab(tab.key)
+                      setPage(0)
+                      setSelectedId(null)
+                    }}
                     className={`rounded-md px-4 py-1.5 text-xs font-bold transition-colors ${
                       activeTab === tab.key
                         ? 'bg-[#002045] text-white'
@@ -220,18 +215,6 @@ export default function AdminApplicationsPage() {
                   Dang cap nhat
                 </span>
               )}
-              <label className="flex items-center gap-2 rounded-lg border border-[#002045]/15 bg-white px-3 py-2 text-xs font-bold text-[#002045]">
-                <span>Limit</span>
-                <select
-                  value={pageSize}
-                  onChange={(event) => setPageSize(Number(event.target.value))}
-                  className="bg-transparent text-xs font-bold outline-none"
-                >
-                  {pageSizeOptions.map((size) => (
-                    <option key={size} value={size}>{size}</option>
-                  ))}
-                </select>
-              </label>
               <button type="button" className="flex items-center gap-2 rounded-lg border border-[#002045]/15 px-4 py-2 text-xs font-bold text-[#002045] hover:bg-[#eff4ff]">
                 <Download size={14} />
                 Xuat file
@@ -313,34 +296,19 @@ export default function AdminApplicationsPage() {
             </table>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#c4c6cf]/20 bg-white px-4 py-3">
-            <p className="text-xs font-semibold text-[#555f70]">
-              Hien thi {pageStart.toLocaleString('vi-VN')}-{pageEnd.toLocaleString('vi-VN')} / {totalElements.toLocaleString('vi-VN')} ho so
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setPage((current) => Math.max(0, current - 1))}
-                disabled={page === 0 || isFetching}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#002045]/15 text-[#002045] disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Trang truoc"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <span className="min-w-28 text-center text-xs font-bold uppercase tracking-[0.16em] text-[#43474e]">
-                Page {totalPages === 0 ? 0 : page + 1} / {totalPages}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPage((current) => current + 1)}
-                disabled={totalPages === 0 || page >= totalPages - 1 || isFetching}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#002045]/15 text-[#002045] disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Trang sau"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
+          <DataPagination
+            page={page}
+            pageSize={pageSize}
+            totalItems={totalElements}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size)
+              setPage(0)
+              setSelectedId(null)
+            }}
+            itemLabel="ho so"
+            disabled={isFetching}
+          />
         </section>
 
         <aside className="rounded-xl border border-[#c4c6cf]/20 bg-[#dce9ff]/40 p-6">

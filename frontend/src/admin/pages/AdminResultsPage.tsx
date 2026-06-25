@@ -5,6 +5,8 @@ import { adminLotteryApi } from '@/admin/api/adminLottery'
 import api from '@/api/axios'
 import type { ApiResponse, LotteryResultResponse } from '@/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import DataPagination from '@/components/common/DataPagination'
+import { clampPage, getPageItems } from '@/components/common/pagination'
 
 function shortHash(value?: string) {
   if (!value) return '-'
@@ -14,6 +16,8 @@ function shortHash(value?: string) {
 export default function AdminResultsPage() {
   const [eventId, setEventId] = useState('')
   const [query, setQuery] = useState('')
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(10)
 
   const { data: events = [], isLoading: loadingEvents } = useQuery({
     queryKey: ['adminLotteryEvents'],
@@ -39,6 +43,11 @@ export default function AdminResultsPage() {
       (result.apartmentCode || '').toLowerCase().includes(keyword)
     )
   }, [query, results])
+  const safePage = clampPage(page, filteredResults.length, pageSize)
+  const paginatedResults = useMemo(
+    () => getPageItems(filteredResults, safePage, pageSize),
+    [filteredResults, safePage, pageSize]
+  )
 
   if (loadingEvents) {
     return <div className="flex justify-center py-20"><LoadingSpinner size="lg" /></div>
@@ -62,7 +71,7 @@ export default function AdminResultsPage() {
       <section className="mb-6 grid gap-4 bg-white p-5 shadow-sm md:grid-cols-[minmax(0,1fr)_minmax(260px,0.4fr)]">
         <label className="text-xs font-bold uppercase tracking-[0.2em] text-[#43474e]">
           Event
-          <select value={selectedEventId} onChange={(event) => setEventId(event.target.value)} className="mt-2 h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white px-3 text-sm font-medium normal-case tracking-normal outline-none focus:border-[#002045]">
+          <select value={selectedEventId} onChange={(event) => { setEventId(event.target.value); setPage(0) }} className="mt-2 h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white px-3 text-sm font-medium normal-case tracking-normal outline-none focus:border-[#002045]">
             {completedEvents.map((event) => (
               <option key={event.id} value={event.id}>{event.name} - {event.projectName}</option>
             ))}
@@ -72,7 +81,7 @@ export default function AdminResultsPage() {
           Tim kiem
           <span className="relative mt-2 block">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#74777f]" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ma boc tham, can ho..." className="h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white pl-10 pr-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]" />
+            <input value={query} onChange={(event) => { setQuery(event.target.value); setPage(0) }} placeholder="Ma boc tham, can ho..." className="h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white pl-10 pr-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]" />
           </span>
         </label>
       </section>
@@ -101,7 +110,7 @@ export default function AdminResultsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/20">
-                {filteredResults.map((result) => (
+                {paginatedResults.map((result) => (
                   <tr key={`${result.eventId}-${result.lotteryCode}`} className="hover:bg-[#eff4ff]/50">
                     <td className="px-5 py-4 font-mono text-xs font-bold text-[#002045]">{result.drawOrder ?? '-'}</td>
                     <td className="px-5 py-4 font-mono text-xs font-bold text-[#002045]">{result.lotteryCode}</td>
@@ -123,6 +132,15 @@ export default function AdminResultsPage() {
             </table>
           </div>
         )}
+        <DataPagination
+          page={safePage}
+          pageSize={pageSize}
+          totalItems={filteredResults.length}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(0) }}
+          itemLabel="ket qua"
+          disabled={loadingResults}
+        />
       </section>
     </div>
   )

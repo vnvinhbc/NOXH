@@ -5,6 +5,8 @@ import { Copy, Hash, Search, ShieldCheck } from 'lucide-react'
 import { adminAuditLogsApi } from '@/admin/api/adminAuditLogs'
 import { adminLotteryApi } from '@/admin/api/adminLottery'
 import LoadingSpinner from '@/components/common/LoadingSpinner'
+import DataPagination from '@/components/common/DataPagination'
+import { clampPage, getPageItems } from '@/components/common/pagination'
 
 function shortHash(value?: string) {
   if (!value) return '-'
@@ -14,6 +16,8 @@ function shortHash(value?: string) {
 export default function AdminAuditLogPage() {
   const [eventId, setEventId] = useState('')
   const [query, setQuery] = useState('')
+  const [page, setPage] = useState(0)
+  const [pageSize, setPageSize] = useState(10)
 
   const { data: events = [] } = useQuery({
     queryKey: ['adminLotteryEvents'],
@@ -36,6 +40,11 @@ export default function AdminAuditLogPage() {
       log.currentHash.toLowerCase().includes(keyword)
     )
   }, [logs, query])
+  const safePage = clampPage(page, filteredLogs.length, pageSize)
+  const paginatedLogs = useMemo(
+    () => getPageItems(filteredLogs, safePage, pageSize),
+    [filteredLogs, safePage, pageSize]
+  )
 
   return (
     <div className="px-4 py-6 md:px-8 md:py-8">
@@ -53,7 +62,7 @@ export default function AdminAuditLogPage() {
       <section className="mb-6 grid gap-4 bg-white p-5 shadow-sm md:grid-cols-[minmax(220px,0.45fr)_minmax(260px,1fr)]">
         <label className="text-xs font-bold uppercase tracking-[0.2em] text-[#43474e]">
           Event
-          <select value={eventId} onChange={(event) => setEventId(event.target.value)} className="mt-2 h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white px-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]">
+          <select value={eventId} onChange={(event) => { setEventId(event.target.value); setPage(0) }} className="mt-2 h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white px-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]">
             <option value="">Tat ca event</option>
             {events.map((event) => (
               <option key={event.id} value={event.id}>{event.name}</option>
@@ -64,7 +73,7 @@ export default function AdminAuditLogPage() {
           Tim kiem
           <span className="relative mt-2 block">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#74777f]" />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Event type, hash, payload..." className="h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white pl-10 pr-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]" />
+            <input value={query} onChange={(event) => { setQuery(event.target.value); setPage(0) }} placeholder="Event type, hash, payload..." className="h-11 w-full rounded-lg border border-[#c4c6cf]/40 bg-white pl-10 pr-3 text-sm normal-case tracking-normal outline-none focus:border-[#002045]" />
           </span>
         </label>
       </section>
@@ -90,7 +99,7 @@ export default function AdminAuditLogPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#c4c6cf]/20">
-                {filteredLogs.map((log) => (
+                {paginatedLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-[#eff4ff]/50">
                     <td className="px-5 py-4 text-sm text-[#555f70]">{dayjs(log.createdAt).format('DD/MM/YYYY HH:mm:ss')}</td>
                     <td className="px-5 py-4 text-sm font-bold text-[#0d1c2e]">{log.eventName}</td>
@@ -117,6 +126,15 @@ export default function AdminAuditLogPage() {
             </table>
           </div>
         )}
+        <DataPagination
+          page={safePage}
+          pageSize={pageSize}
+          totalItems={filteredLogs.length}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(0) }}
+          itemLabel="audit log"
+          disabled={isLoading}
+        />
       </section>
     </div>
   )
